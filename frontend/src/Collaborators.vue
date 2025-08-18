@@ -1,0 +1,1 @@
+<template><div class="p-4"><h1>Colaboradores</h1></div></template><script setup lang="ts"></script>
