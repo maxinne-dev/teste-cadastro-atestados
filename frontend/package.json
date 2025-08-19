@@ -11,6 +11,7 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@primeuix/themes": "^1.0.0",
     "axios": "^1.7.2",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",

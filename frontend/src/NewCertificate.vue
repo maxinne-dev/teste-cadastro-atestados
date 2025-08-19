@@ -3,7 +3,9 @@
     <h1>Novo Atestado</h1>
     <input v-model="term" placeholder="Buscar CID..." @input="search" />
     <ul>
-      <li v-for="r in results" :key="r.id">{{ r.theCode }} - {{ r.title?.@value || r.title }}</li>
+      <li v-for="r in results" :key="r.id">
+        {{ r.theCode }} - {{ r.title?.['@value'] || r.title }}
+      </li>
     </ul>
   </div>
 </template>

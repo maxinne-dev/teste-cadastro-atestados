@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../views/Login.vue'
-import Dashboard from '../views/Dashboard.vue'
-import Certificates from '../views/Certificates.vue'
-import NewCertificate from '../views/NewCertificate.vue'
-import Collaborators from '../views/Collaborators.vue'
+import Login from './Login.vue'
+import Dashboard from './Dashboard.vue'
+import Certificates from './Certificates.vue'
+import NewCertificate from './NewCertificate.vue'
+import Collaborators from './Collaborators.vue'
 
 const router = createRouter({
   history: createWebHistory(),

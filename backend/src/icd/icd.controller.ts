@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { IcdService } from './icd.service';
+import { IcdService } from './icd.service.js';
 
 @Controller('api/icd')
 export class IcdController {

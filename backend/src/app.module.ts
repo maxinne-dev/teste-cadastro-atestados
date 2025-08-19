@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { HealthController } from './health.controller';
-import { IcdModule } from './icd/icd.module';
+import { HealthController } from './health.controller.js';
+import { IcdModule } from './icd/icd.module.js';
 
 @Module({
   imports: [
