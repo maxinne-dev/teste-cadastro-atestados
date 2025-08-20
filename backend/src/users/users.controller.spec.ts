@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing'
 import { NotFoundException } from '@nestjs/common'
 import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
+import { PasswordService } from '../auth/password.service'
 
 describe('UsersController', () => {
   let controller: UsersController
@@ -17,13 +18,13 @@ describe('UsersController', () => {
 
     const module = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [{ provide: UsersService, useValue: service }],
+      providers: [PasswordService, { provide: UsersService, useValue: service }],
     }).compile()
 
     controller = module.get(UsersController)
   })
 
-  it('creates user via service', async () => {
+  it('creates user via service with hashed password', async () => {
     const res = await controller.create({
       email: 'Alice@Example.com',
       fullName: 'Alice',
@@ -33,7 +34,8 @@ describe('UsersController', () => {
     expect(service.create).toHaveBeenCalled()
     const payload = (service.create as jest.Mock).mock.calls[0][0]
     expect(payload.email).toBe('alice@example.com')
-    expect(payload.passwordHash).toBe('secret123')
+    expect(typeof payload.passwordHash).toBe('string')
+    expect(payload.passwordHash).not.toBe('secret123')
   })
 
   it('get throws 404 when not found', async () => {
@@ -54,4 +56,3 @@ describe('UsersController', () => {
     ).rejects.toBeInstanceOf(NotFoundException)
   })
 })
-

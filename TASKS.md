@@ -46,9 +46,9 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Authentication & Authorization
-1. [ ] Passwords: store BCrypt hashes, not plaintext (replace current seed `passwordHash` with hashing on create)
-    - [ ] Tests + validation: hashing and compare flows;
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+1. [x] Passwords: store BCrypt hashes, not plaintext (replace current seed `passwordHash` with hashing on create)
+    - [x] Tests + validation: hashing and compare flows;
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 2. [ ] JWT auth (4h session) + Redis session record
     - [ ] Login endpoint: POST `/auth/login` returns access token; invalidate old sessions (Redis blacklist optional)
     - [ ] Logout endpoint: POST `/auth/logout` (blacklist/expire session key in Redis)

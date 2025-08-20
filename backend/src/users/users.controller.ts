@@ -4,19 +4,23 @@ import { CreateUserDto } from './dto/create-user.dto.js'
 import { EmailParamDto } from './dto/email-param.dto.js'
 import { UpdateUserStatusDto } from './dto/update-status.dto.js'
 import { UpdateUserRolesDto } from './dto/update-roles.dto.js'
+import { PasswordService } from '../auth/password.service.js'
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly users: UsersService) {}
+  constructor(
+    private readonly users: UsersService,
+    private readonly passwords: PasswordService
+  ) {}
 
   @Post()
   async create(@Body() dto: CreateUserDto) {
-    // TODO: replace with proper password hashing in Auth task
     const email = String(dto.email).trim().toLowerCase()
+    const passwordHash = await this.passwords.hash(dto.password)
     const created = await this.users.create({
       email,
       fullName: dto.fullName,
-      passwordHash: dto.password,
+      passwordHash,
       roles: dto.roles,
     })
     return created
