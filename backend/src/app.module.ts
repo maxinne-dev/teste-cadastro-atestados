@@ -9,6 +9,8 @@ import { MedicalCertificatesModule } from './medical-certificates/medical-certif
 import { UsersModule } from './users/users.module.js';
 import { AuditModule } from './audit/audit.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt-auth.guard.js';
 
 @Module({
   imports: [
@@ -28,5 +30,11 @@ import { AuthModule } from './auth/auth.module.js';
     AuthModule,
   ],
   controllers: [HealthController],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}

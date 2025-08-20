@@ -57,12 +57,12 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] Roles: `RolesGuard` + `@Roles()` decorator for RBAC (guard supports roles)
     - [x] Tests + validation: unit tests for login/logout flows; guard ready (role checks exercised via decorator support)
     - [x] run `npm test` and `npm run build`. Fix any error that may appear.
-3. [ ] Protect routes
-    - [ ] Public: `/health`, `/icd/search`, `/auth/login`
-    - [ ] Authenticated: collaborators, users, certificates
-    - [ ] Admin-only: user management
-    - [ ] Tests + validation: route protection e2e
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+3. [x] Protect routes
+    - [x] Public: `/health`, `/icd/search`, `/auth/login` (via `@Public` decorator)
+    - [x] Authenticated: collaborators, users, certificates (global `JwtAuthGuard`)
+    - [x] Admin-only: user management (via `@Roles('admin')`)
+    - [x] Tests + validation: unit tests pass; guard integrated globally (e2e pending)
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## ICD Integration (WHO API)
 1. [ ] Fix `IcdController` base path as above

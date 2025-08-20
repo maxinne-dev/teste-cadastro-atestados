@@ -21,6 +21,6 @@ import { JwtService } from './jwt.service.js'
     },
   ],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthService, JwtService, RedisService],
 })
 export class AuthModule {}

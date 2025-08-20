@@ -5,8 +5,10 @@ import { EmailParamDto } from './dto/email-param.dto.js'
 import { UpdateUserStatusDto } from './dto/update-status.dto.js'
 import { UpdateUserRolesDto } from './dto/update-roles.dto.js'
 import { PasswordService } from '../auth/password.service.js'
+import { Roles } from '../auth/roles.decorator.js'
 
 @Controller('users')
+@Roles('admin')
 export class UsersController {
   constructor(
     private readonly users: UsersService,

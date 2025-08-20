@@ -2,6 +2,7 @@ import { Body, Controller, Post, Req, UnauthorizedException } from '@nestjs/comm
 import { AuthService } from './auth.service.js'
 import { IsEmail, IsString, MinLength } from 'class-validator'
 import { Transform } from 'class-transformer'
+import { Public } from './public.decorator.js'
 
 class LoginDto {
   @IsEmail()
@@ -18,6 +19,7 @@ export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Post('login')
+  @Public()
   async login(@Body() dto: LoginDto) {
     return this.auth.login(dto.email, dto.password)
   }
@@ -31,4 +33,3 @@ export class AuthController {
     return this.auth.logout(token)
   }
 }
-
