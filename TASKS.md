@@ -16,13 +16,13 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
       - [x] PATCH `/collaborators/:cpf/status` (activate/deactivate)
       - [x] Tests + validation: controller unit tests added (e2e pending Supertest)
       - [x] run `npm test` and `npm run build`. Fix any error that may appear.
-3. [ ] `UsersController`: minimal user management
-      - [ ] POST `/users` (admin-create user)
-      - [ ] GET `/users/:email` (get)
-      - [ ] PATCH `/users/:email/status` (enable/disable)
-      - [ ] PATCH `/users/:email/roles` (assign roles)
-      - [ ] Tests + validation: controller unit/e2e and role protection
-      - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+3. [x] `UsersController`: minimal user management
+      - [x] POST `/users` (admin-create user)
+      - [x] GET `/users/:email` (get)
+      - [x] PATCH `/users/:email/status` (enable/disable)
+      - [x] PATCH `/users/:email/roles` (assign roles)
+      - [x] Tests + validation: controller unit tests added (role protection/e2e pending auth)
+      - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 4. [ ] `MedicalCertificatesController`: register, query and cancel
     - [ ] POST `/medical-certificates` (create; denormalized ICD fields required)
     - [ ] GET `/medical-certificates` (filter by collaborator, range, status, icdCode; pagination with `limit/offset` + sorting by date)
