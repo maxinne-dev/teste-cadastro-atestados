@@ -12,10 +12,14 @@ import { AuthModule } from './auth/auth.module.js';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard.js';
 import { RequestAuditInterceptor } from './audit/request-audit.interceptor.js';
+import { validateEnv } from './config/validate.js';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      ...(process.env.JEST_WORKER_ID ? {} : { validate: validateEnv }),
+    }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (cfg: ConfigService) => ({

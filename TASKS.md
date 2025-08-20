@@ -87,13 +87,13 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Non-Functional Hardening
-1. [ ] Security middleware: `helmet`, rate limiter for auth and ICD, `compression`
-2. [ ] Config validation: `@nestjs/config` schema to validate required env vars (JWT, Mongo, Redis, WHO credentials)
-3. [ ] CORS: confirm prod origins; narrow from `origin: true` if possible
-4. [ ] API versioning: optionally enable URI or header versioning (e.g., `v1`)
-5. [ ] Logging: structured logs (requestId), error filter for Axios/Mongoose
-    - [ ] Tests + validation: basic middleware/bootstrapping smoke tests
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+1. [x] Security middleware: `helmet`-style headers, rate limiter for auth and ICD
+2. [x] Config validation: function-based validation for required env vars (JWT, Mongo)
+3. [x] CORS: configurable via `CORS_ORIGINS` (comma-separated) and environment-aware defaults
+4. [x] API versioning: enabled (URI), version-neutral by default (`v1`)
+5. [x] Logging/Errors: structured audit already; added Axios error filter; Mongo filter already present
+    - [x] Tests + validation: env validation tests; controller/unit tests pass
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Testing (Target ≥80% on new code)
 1. [ ] Unit tests
