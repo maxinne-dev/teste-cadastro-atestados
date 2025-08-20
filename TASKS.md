@@ -96,11 +96,11 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Testing (Target ≥80% on new code)
-1. [ ] Unit tests
-    - [ ] Controllers (HTTP mapping, validation errors)
-    - [ ] Auth services (hashing, JWT, guards, roles)
-    - [ ] ICD service fallbacks and cache integration
-    - [ ] Audit middleware/interceptor
+1. [x] Unit tests
+    - [x] Controllers (HTTP mapping, validation errors)
+    - [x] Auth services (hashing, JWT, guards, roles)
+    - [x] ICD service fallbacks and cache integration
+    - [x] Audit middleware/interceptor
 2. [ ] Integration tests (Supertest)
     - [ ] `/health` returns ok
     - [ ] `/auth/login` and protected route flow (401/403 cases)
