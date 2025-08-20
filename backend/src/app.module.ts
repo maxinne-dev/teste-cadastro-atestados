@@ -8,6 +8,7 @@ import { IcdCacheModule } from './icd-cache/icd-cache.module.js';
 import { MedicalCertificatesModule } from './medical-certificates/medical-certificates.module.js';
 import { UsersModule } from './users/users.module.js';
 import { AuditModule } from './audit/audit.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuditModule } from './audit/audit.module.js';
     MedicalCertificatesModule,
     UsersModule,
     AuditModule,
+    AuthModule,
   ],
   controllers: [HealthController],
 })

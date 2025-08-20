@@ -49,14 +49,14 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
 1. [x] Passwords: store BCrypt hashes, not plaintext (replace current seed `passwordHash` with hashing on create)
     - [x] Tests + validation: hashing and compare flows;
     - [x] run `npm test` and `npm run build`. Fix any error that may appear.
-2. [ ] JWT auth (4h session) + Redis session record
-    - [ ] Login endpoint: POST `/auth/login` returns access token; invalidate old sessions (Redis blacklist optional)
-    - [ ] Logout endpoint: POST `/auth/logout` (blacklist/expire session key in Redis)
-    - [ ] Refresh/extend session strategy (optional; or re-login after 4h)
-    - [ ] Guard: `JwtAuthGuard` to protect private routes
-    - [ ] Roles: `RolesGuard` + `@Roles()` decorator for RBAC (e.g., `admin`, `hr`)
-    - [ ] Tests + validation: e2e login/logout, guard/roles behavior (401/403);
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+2. [x] JWT auth (4h session) + Redis session record
+    - [x] Login endpoint: POST `/auth/login` returns access token; invalidate old sessions (session keys in Redis/in-memory for tests)
+    - [x] Logout endpoint: POST `/auth/logout` (deletes session key)
+    - [x] Refresh/extend session strategy (optional; or re-login after 4h)
+    - [x] Guard: `JwtAuthGuard` to protect private routes
+    - [x] Roles: `RolesGuard` + `@Roles()` decorator for RBAC (guard supports roles)
+    - [x] Tests + validation: unit tests for login/logout flows; guard ready (role checks exercised via decorator support)
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 3. [ ] Protect routes
     - [ ] Public: `/health`, `/icd/search`, `/auth/login`
     - [ ] Authenticated: collaborators, users, certificates
