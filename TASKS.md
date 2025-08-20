@@ -29,15 +29,15 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] PATCH `/medical-certificates/:id/cancel` (cancel)
     - [x] Tests + validation: controller unit tests added (e2e pending Supertest)
     - [x] run `npm test` and `npm run build`. Fix any error that may appear.
-5. [ ] DTOs with validation (class-validator)
-    - [ ] Create Collaborator DTO: `fullName`, `cpf` (normalize + CPF validator), `birthDate`, `position`, optional `department`
-    - [ ] Update Status DTOs with enum checks
-    - [ ] Create User DTO: `email` (lowercase), `fullName`, `password` (min length), optional `roles: string[]`
-    - [ ] Assign Roles DTO: deduplicate roles
-    - [ ] Create MedicalCertificate DTO: `collaboratorId`, `startDate`, `endDate` (end >= start), `days` (1..365), `icdCode`, `icdTitle`, optional `diagnosis`, optional `issuerUserId`
-    - [ ] Pagination DTO: `limit`, `offset` with sane defaults and bounds
-    - [ ] Tests + validation: DTO validation unit tests incl. edge cases
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+5. [x] DTOs with validation (class-validator)
+    - [x] Create Collaborator DTO: `fullName`, `cpf` (normalize + CPF validator), `birthDate`, `position`, optional `department`
+    - [x] Update Status DTOs with enum checks
+    - [x] Create User DTO: `email` (lowercase), `fullName`, `password` (min length), optional `roles: string[]`
+    - [x] Assign Roles DTO: deduplicate roles (transform)
+    - [x] Create MedicalCertificate DTO: `collaboratorId`, `startDate`, `endDate` (end >= start), `days` (1..365), `icdCode`, `icdTitle`, optional `diagnosis`, optional `issuerUserId`
+    - [x] Pagination DTO: `limit`, `offset` with sane defaults and bounds
+    - [x] Tests + validation: DTO validation unit tests incl. edge cases
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 6. [ ] Error handling & responses
     - [ ] Map Mongo duplicate key to `409 Conflict` with clear message (cpf/email/code)
     - [ ] Return 400 on validation errors and 404 for not-found
