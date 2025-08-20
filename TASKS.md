@@ -9,13 +9,13 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
 
 ## API Surface (Routes, DTOs, Controllers)
 1. [x] Fix route prefixes: use global prefix `api` only; change `IcdController` path from `api/icd` to `icd` to avoid `/api/api/*`.
-2. [ ] `CollaboratorsController`: CRUD-lite + search
-      - [ ] POST `/collaborators` (create)
-      - [ ] GET `/collaborators/:cpf` (get by CPF)
-      - [ ] GET `/collaborators` (search by name, pagination with `limit/offset`)
-      - [ ] PATCH `/collaborators/:cpf/status` (activate/deactivate)
-      - [ ] Tests + validation: controller unit/e2e (Supertest)
-      - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+2. [x] `CollaboratorsController`: CRUD-lite + search
+      - [x] POST `/collaborators` (create)
+      - [x] GET `/collaborators/:cpf` (get by CPF)
+      - [x] GET `/collaborators` (search by name, pagination with `limit/offset`)
+      - [x] PATCH `/collaborators/:cpf/status` (activate/deactivate)
+      - [x] Tests + validation: controller unit tests added (e2e pending Supertest)
+      - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 3. [ ] `UsersController`: minimal user management
       - [ ] POST `/users` (admin-create user)
       - [ ] GET `/users/:email` (get)
