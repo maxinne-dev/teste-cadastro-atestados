@@ -65,14 +65,14 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## ICD Integration (WHO API)
-1. [ ] Fix `IcdController` base path as above
-2. [ ] Token lifecycle: keep current in-memory cache; add clock-skew safety and error paths
-3. [ ] Result caching: on successful search, upsert codes to `icdcodes` via `IcdCacheService`
-4. [ ] Fallback: when WHO API fails, attempt to suggest from local `icdcodes` by code/title regex
-5. [ ] Rate limiting/circuit breaker for `/icd/search` to avoid abuse and spiky load
-6. [ ] Config: respect `WHO_ICD_BASE_URL` and optional release parameter; timeouts + retries with backoff
-    - [ ] Tests + validation: WHO happy path (mocked), fallback to cache, rate limiting
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+1. [x] Fix `IcdController` base path as above
+2. [x] Token lifecycle: keep current in-memory cache; add clock-skew safety and error paths
+3. [x] Result caching: on successful search, upsert codes to `icdcodes` via `IcdCacheService`
+4. [x] Fallback: when WHO API fails, attempt to suggest from local `icdcodes` by code/title regex
+5. [x] Rate limiting/circuit breaker for `/icd/search` to avoid abuse and spiky load
+6. [x] Config: respect `WHO_ICD_BASE_URL` and optional release parameter; timeouts + retries with backoff
+7. [x] Tests + validation: WHO happy path (mocked), fallback to cache, rate limiting
+8. [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Audit & Compliance
 1. [ ] Request audit middleware/interceptor
