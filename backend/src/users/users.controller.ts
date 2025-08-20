@@ -6,13 +6,15 @@ import { UpdateUserStatusDto } from './dto/update-status.dto.js'
 import { UpdateUserRolesDto } from './dto/update-roles.dto.js'
 import { PasswordService } from '../auth/password.service.js'
 import { Roles } from '../auth/roles.decorator.js'
+import { AuditService } from '../audit/audit.service.js'
 
 @Controller('users')
 @Roles('admin')
 export class UsersController {
   constructor(
     private readonly users: UsersService,
-    private readonly passwords: PasswordService
+    private readonly passwords: PasswordService,
+    private readonly audit: AuditService
   ) {}
 
   @Post()
@@ -39,6 +41,11 @@ export class UsersController {
   async updateStatus(@Param() params: EmailParamDto, @Body() dto: UpdateUserStatusDto) {
     const updated = await this.users.setStatus(params.email, dto.status)
     if (!updated) throw new NotFoundException('User not found')
+    await this.audit.record({
+      action: 'user.status.change',
+      targetId: params.email,
+      resource: 'PATCH /users/:email/status',
+    })
     return updated
   }
 
@@ -46,6 +53,12 @@ export class UsersController {
   async updateRoles(@Param() params: EmailParamDto, @Body() dto: UpdateUserRolesDto) {
     const updated = await this.users.assignRoles(params.email, dto.roles)
     if (!updated) throw new NotFoundException('User not found')
+    await this.audit.record({
+      action: 'user.roles.assign',
+      targetId: params.email,
+      resource: 'PATCH /users/:email/roles',
+      metadata: { roles: dto.roles },
+    })
     return updated
   }
 }

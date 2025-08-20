@@ -75,16 +75,16 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
 8. [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Audit & Compliance
-1. [ ] Request audit middleware/interceptor
-    - [ ] Log accesses that include CPF, collaboratorId, or certificate mutations
-    - [ ] Include `actorUserId`, `resource`, `targetId`, `ip`, `userAgent`
-2. [ ] Domain audit events on critical actions
-    - [ ] User status/role change, collaborator status change
-    - [ ] Certificate create/cancel
-3. [ ] TTL control: honor `AUDIT_TTL_DAYS` from env (already supported by schema factory)
-4. [ ] PII minimization: avoid logging full tokens/secrets; partial hashing for identifiers if needed
-    - [ ] Tests + validation: middleware unit/e2e and audit event recording
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+1. [x] Request audit middleware/interceptor
+    - [x] Log accesses that include CPF, collaboratorId, or certificate mutations
+    - [x] Include `actorUserId`, `resource`, `targetId`, `ip`, `userAgent`
+2. [x] Domain audit events on critical actions
+    - [x] User status/role change, collaborator status change
+    - [x] Certificate create/cancel
+3. [x] TTL control: honor `AUDIT_TTL_DAYS` from env (already supported by schema factory)
+4. [x] PII minimization: avoid logging full tokens/secrets; partial hashing for identifiers if needed
+    - [x] Tests + validation: interceptor unit test and audit event recording via controller actions
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Non-Functional Hardening
 1. [ ] Security middleware: `helmet`, rate limiter for auth and ICD, `compression`

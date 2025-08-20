@@ -2,14 +2,24 @@ import { Body, Controller, Get, NotFoundException, Param, Patch, Post, Query } f
 import { MedicalCertificatesService } from './medical-certificates.service.js'
 import { CreateMedicalCertificateDto } from './dto/create-medical-certificate.dto.js'
 import { FilterMedicalCertificatesDto } from './dto/filter-medical-certificates.dto.js'
+import { AuditService } from '../audit/audit.service.js'
 
 @Controller('medical-certificates')
 export class MedicalCertificatesController {
-  constructor(private readonly certs: MedicalCertificatesService) {}
+  constructor(
+    private readonly certs: MedicalCertificatesService,
+    private readonly audit: AuditService
+  ) {}
 
   @Post()
   async create(@Body() dto: CreateMedicalCertificateDto) {
     const created = await this.certs.create(dto as any)
+    await this.audit.record({
+      action: 'certificate.create',
+      targetId: (created as any)?._id?.toString?.(),
+      resource: 'POST /medical-certificates',
+      metadata: { collaboratorId: dto.collaboratorId, icdCode: dto.icdCode },
+    })
     return created
   }
 
@@ -39,6 +49,11 @@ export class MedicalCertificatesController {
   async cancel(@Param('id') id: string) {
     const updated = await this.certs.cancel(id)
     if (!updated) throw new NotFoundException('Medical certificate not found')
+    await this.audit.record({
+      action: 'certificate.cancel',
+      targetId: id,
+      resource: 'PATCH /medical-certificates/:id/cancel',
+    })
     return updated
   }
 }

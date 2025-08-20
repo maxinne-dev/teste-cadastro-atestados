@@ -9,8 +9,9 @@ import { MedicalCertificatesModule } from './medical-certificates/medical-certif
 import { UsersModule } from './users/users.module.js';
 import { AuditModule } from './audit/audit.module.js';
 import { AuthModule } from './auth/auth.module.js';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard.js';
+import { RequestAuditInterceptor } from './audit/request-audit.interceptor.js';
 
 @Module({
   imports: [
@@ -34,6 +35,10 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard.js';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestAuditInterceptor,
     },
   ],
 })
