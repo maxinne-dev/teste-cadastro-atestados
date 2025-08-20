@@ -23,12 +23,12 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
       - [x] PATCH `/users/:email/roles` (assign roles)
       - [x] Tests + validation: controller unit tests added (role protection/e2e pending auth)
       - [x] run `npm test` and `npm run build`. Fix any error that may appear.
-4. [ ] `MedicalCertificatesController`: register, query and cancel
-    - [ ] POST `/medical-certificates` (create; denormalized ICD fields required)
-    - [ ] GET `/medical-certificates` (filter by collaborator, range, status, icdCode; pagination with `limit/offset` + sorting by date)
-    - [ ] PATCH `/medical-certificates/:id/cancel` (cancel)
-    - [ ] Tests + validation: controller unit/e2e for create/filter/cancel
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+4. [x] `MedicalCertificatesController`: register, query and cancel
+    - [x] POST `/medical-certificates` (create; denormalized ICD fields required)
+    - [x] GET `/medical-certificates` (filter by collaborator, range, status, icdCode; pagination with `limit/offset` + sorting by date)
+    - [x] PATCH `/medical-certificates/:id/cancel` (cancel)
+    - [x] Tests + validation: controller unit tests added (e2e pending Supertest)
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 5. [ ] DTOs with validation (class-validator)
     - [ ] Create Collaborator DTO: `fullName`, `cpf` (normalize + CPF validator), `birthDate`, `position`, optional `department`
     - [ ] Update Status DTOs with enum checks
