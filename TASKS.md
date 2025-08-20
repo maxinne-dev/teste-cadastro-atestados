@@ -8,7 +8,7 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
 - Pagination: use `limit/offset` for list endpoints.
 
 ## API Surface (Routes, DTOs, Controllers)
-1. [ ] Fix route prefixes: use global prefix `api` only; change `IcdController` path from `api/icd` to `icd` to avoid `/api/api/*`.
+1. [x] Fix route prefixes: use global prefix `api` only; change `IcdController` path from `api/icd` to `icd` to avoid `/api/api/*`.
 2. [ ] `CollaboratorsController`: CRUD-lite + search
       - [ ] POST `/collaborators` (create)
       - [ ] GET `/collaborators/:cpf` (get by CPF)

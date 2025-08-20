@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { IcdService } from './icd.service.js';
 
-@Controller('api/icd')
+@Controller('icd')
 export class IcdController {
   constructor(private readonly icd: IcdService) {}
 
