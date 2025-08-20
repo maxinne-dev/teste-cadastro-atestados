@@ -3,6 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HealthController } from './health.controller.js';
 import { IcdModule } from './icd/icd.module.js';
+import { CollaboratorsModule } from './collaborators/collaborators.module.js';
+import { IcdCacheModule } from './icd-cache/icd-cache.module.js';
+import { MedicalCertificatesModule } from './medical-certificates/medical-certificates.module.js';
+import { UsersModule } from './users/users.module.js';
+import { AuditModule } from './audit/audit.module.js';
 
 @Module({
   imports: [
@@ -14,6 +19,11 @@ import { IcdModule } from './icd/icd.module.js';
       }),
     }),
     IcdModule,
+    CollaboratorsModule,
+    IcdCacheModule,
+    MedicalCertificatesModule,
+    UsersModule,
+    AuditModule,
   ],
   controllers: [HealthController],
 })

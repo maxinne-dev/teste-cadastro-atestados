@@ -38,6 +38,42 @@ Preencha as variáveis `WHO_ICD_CLIENT_ID` e `WHO_ICD_CLIENT_SECRET` no `.env`.
 └─ setup.ps1          # Script PowerShell para bootstrap no Windows
 ```
 
+## Backend — Camada de Dados
+- Modelos e coleções MongoDB:
+  - `collaborators`: colaboradores (RH) com `cpf` único.
+  - `users`: contas de aplicação com `email` único e `roles`.
+  - `icdcodes`: cache local de códigos CID (OMS), único por `code`.
+  - `medicalcertificates`: atestados vinculados a `collaboratorId`; guarda `icdCode/icdTitle` denormalizados.
+  - `auditlogs`: trilhas de auditoria com `timestamp` (TTL opcional via `AUDIT_TTL_DAYS`).
+  - `meta`: registros auxiliares (ex.: execução de seed).
+
+- Relacionamentos (texto):
+  - Collaborator 1—N MedicalCertificate (`medicalcertificates.collaboratorId → collaborators._id`).
+  - MedicalCertificate — ICD: sempre armazena `icdCode/icdTitle` e pode referenciar `icdcodes._id` (opcional).
+  - User N—roles (array embutido em `users.roles`).
+  - AuditLog → `actorUserId` (string) e `resource/targetId` como referências lógicas.
+
+- Índices esperados (checados por testes):
+  - `collaborators.cpf` único; `collaborators.fullName` texto.
+  - `medicalcertificates`: `{ collaboratorId, status }`, `issueDate: -1`, `{ startDate: 1, endDate: 1 }`.
+  - `users.email` único (case-insensitive) e índice em `users.roles`.
+  - `icdcodes.code` único.
+  - `auditlogs.timestamp` índice descendente (+ TTL opcional).
+
+- Execução local (backend):
+  ```bash
+  cd backend
+  npm run start:dev         # servidor Nest em watch
+  npm test                  # testes (Jest)
+  npm run build             # compila para dist/
+  npm run seed              # popular DB com dados de exemplo
+  ```
+
+- Seed de dados:
+  - Editar `backend/src/seeds/mock-data.ts` para ajustar usuários, colaboradores, CIDs e atestados.
+  - O seed é idempotente (usa chaves únicas e `metadata.seedKey`).
+  - Usa `MONGODB_URI` ou `mongodb://localhost:27017/atestados` por padrão.
+
 ## Observações
 - Este kit é propositalmente **mínimo** e compila/roda out‑of‑the‑box. Use-o como base para implementar os módulos descritos em `SPECS.md`/`MAIN.md`.
 - O frontend faz proxy de `/api` → `http://api:3000` no Docker e `http://localhost:3000` fora do Docker.

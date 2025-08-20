@@ -6,8 +6,7 @@
 */
 
 import mongoose from 'mongoose';
-import { fileURLToPath } from 'url';
-import path from 'path';
+// no need for __filename/__dirname in tests; avoid name clashes with CJS
 
 // Import mock arrays; keep the .js extension for NodeNext/ESM
 import {
@@ -17,8 +16,7 @@ import {
   mockCertificates,
 } from './mock-data.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// (intentionally unused)
 
 function getMongoUri(): string {
   return (
@@ -77,22 +75,37 @@ export async function run() {
   await insertIfAny('collaborators', mockCollaborators, 'cpf');
   await insertIfAny('users', mockUsers, 'email');
   await insertIfAny('icdcodes', mockIcdCodes, 'code');
-  await insertIfAny('medicalcertificates', mockCertificates);
+  // Link certificates to collaborators and upsert idempotently by a seedKey
+  if (Array.isArray(mockCertificates) && mockCertificates.length > 0) {
+    const collabCol = mongoose.connection.collection('collaborators');
+    const cpfs = mockCertificates.map((c: any) => c.collaboratorCpf).filter(Boolean);
+    let cpfMap: Record<string, any> = {};
+    if (cpfs.length) {
+      const found = await collabCol
+        .find({ cpf: { $in: Array.from(new Set(cpfs)) } })
+        .toArray();
+      cpfMap = Object.fromEntries(found.map((d: any) => [d.cpf, d._id]));
+    }
+    const certCol = mongoose.connection.collection('medicalcertificates');
+    for (const c of mockCertificates) {
+      const doc: any = { ...c };
+      if (!doc.collaboratorId && doc.collaboratorCpf) {
+        const id = cpfMap[doc.collaboratorCpf];
+        if (id) doc.collaboratorId = id;
+        delete doc.collaboratorCpf;
+      }
+      doc.metadata = doc.metadata || {};
+      if (!doc.metadata.seedKey) {
+        const s = [doc.icdCode, doc.startDate?.toString(), doc.endDate?.toString(), String(doc.collaboratorId || '')]
+          .filter(Boolean)
+          .join('|');
+        doc.metadata.seedKey = `seed:auto:${Buffer.from(s).toString('base64').slice(0, 16)}`;
+      }
+      await certCol.updateOne(
+        { 'metadata.seedKey': doc.metadata.seedKey },
+        { $setOnInsert: { ...doc, createdAt: new Date(), updatedAt: new Date() } },
+        { upsert: true }
+      );
+    }
+  }
 }
-
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  run()
-    .then(async () => {
-      // eslint-disable-next-line no-console
-      console.log('[seed] Completed successfully');
-      await mongoose.disconnect();
-      process.exit(0);
-    })
-    .catch(async (err) => {
-      // eslint-disable-next-line no-console
-      console.error('[seed] Failed:', err);
-      try { await mongoose.disconnect(); } catch {}
-      process.exit(1);
-    });
-}
-
