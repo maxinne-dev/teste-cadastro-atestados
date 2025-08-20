@@ -37,11 +37,12 @@ export class CollaboratorsController {
     const limit = q.limit ?? 20
     const offset = q.offset ?? 0
 
-    // Use existing service method and slice to emulate offset without changing service
-    const preLimit = limit + offset
-    const all = await this.collaborators.searchByName(term, preLimit)
-    const results = all.slice(offset, offset + limit)
-    return { results, limit, offset }
+    const { results, total } = await this.collaborators.searchByNameWithTotal(
+      term,
+      limit,
+      offset
+    )
+    return { results, limit, offset, total }
   }
 
   @Patch(':cpf/status')
@@ -51,4 +52,3 @@ export class CollaboratorsController {
     return updated
   }
 }
-

@@ -11,7 +11,7 @@ describe('CollaboratorsController', () => {
     service = {
       create: jest.fn(async (dto: any) => ({ _id: '1', ...dto })),
       findByCpf: jest.fn(async () => null),
-      searchByName: jest.fn(async () => []),
+      searchByNameWithTotal: jest.fn(async () => ({ results: [], total: 0 })),
       setStatus: jest.fn(async () => null),
     }
 
@@ -41,13 +41,15 @@ describe('CollaboratorsController', () => {
     )
   })
 
-  it('search applies offset and limit with wrapper', async () => {
-    ;(service.searchByName as jest.Mock).mockResolvedValue(
-      Array.from({ length: 15 }).map((_, i) => ({ fullName: `C${i}` }))
-    )
+  it('search returns results with total/limit/offset', async () => {
+    ;(service.searchByNameWithTotal as jest.Mock).mockResolvedValue({
+      results: Array.from({ length: 5 }).map((_, i) => ({ fullName: `C${i}` })),
+      total: 42,
+    })
     const res = await controller.search({ q: 'C', limit: 5, offset: 10 } as any)
-    expect(service.searchByName).toHaveBeenCalledWith('C', 15)
+    expect(service.searchByNameWithTotal).toHaveBeenCalledWith('C', 5, 10)
     expect(res.results).toHaveLength(5)
+    expect(res.total).toBe(42)
     expect(res.limit).toBe(5)
     expect(res.offset).toBe(10)
   })
@@ -58,4 +60,3 @@ describe('CollaboratorsController', () => {
     ).rejects.toBeInstanceOf(NotFoundException)
   })
 })
-

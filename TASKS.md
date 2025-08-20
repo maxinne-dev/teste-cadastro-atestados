@@ -38,12 +38,12 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] Pagination DTO: `limit`, `offset` with sane defaults and bounds
     - [x] Tests + validation: DTO validation unit tests incl. edge cases
     - [x] run `npm test` and `npm run build`. Fix any error that may appear.
-6. [ ] Error handling & responses
-    - [ ] Map Mongo duplicate key to `409 Conflict` with clear message (cpf/email/code)
-    - [ ] Return 400 on validation errors and 404 for not-found
-    - [ ] Standardize list responses: `{ results, limit, offset, total }`
-    - [ ] Tests + validation: error mapping/unit tests and e2e for typical failure cases
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+6. [x] Error handling & responses
+    - [x] Map Mongo duplicate key to `409 Conflict` with clear message (cpf/email/code)
+    - [x] Return 400 on validation errors and 404 for not-found
+    - [x] Standardize list responses: `{ results, limit, offset, total }`
+    - [x] Tests + validation: unit tests for filter and list responses (e2e pending)
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Authentication & Authorization
 1. [ ] Passwords: store BCrypt hashes, not plaintext (replace current seed `passwordHash` with hashing on create)

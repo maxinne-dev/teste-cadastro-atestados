@@ -30,8 +30,9 @@ export class MedicalCertificatesController {
     })
     const limit = q.limit ?? 20
     const offset = q.offset ?? 0
+    const total = sorted.length
     const results = sorted.slice(offset, offset + limit)
-    return { results, limit, offset }
+    return { results, limit, offset, total }
   }
 
   @Patch(':id/cancel')
@@ -41,4 +42,3 @@ export class MedicalCertificatesController {
     return updated
   }
 }
-

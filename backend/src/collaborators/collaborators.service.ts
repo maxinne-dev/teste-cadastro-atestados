@@ -39,10 +39,26 @@ export class CollaboratorsService {
     return this.model.find(q).limit(limit).exec()
   }
 
+  async searchByNameWithTotal(term: string, limit = 20, offset = 0) {
+    const q: FilterQuery<CollaboratorDocument> = {}
+    const trimmed = (term || '').trim()
+    if (trimmed) {
+      q.fullName = { $regex: trimmed, $options: 'i' }
+    }
+    const [results, total] = await Promise.all([
+      this.model
+        .find(q)
+        .skip(Math.max(0, offset))
+        .limit(Math.max(0, limit))
+        .exec(),
+      this.model.countDocuments(q).exec(),
+    ])
+    return { results, total }
+  }
+
   async setStatus(cpf: string, status: 'active' | 'inactive') {
     const normalized = normalizeCpf(cpf)
     await this.model.updateOne({ cpf: normalized }, { $set: { status } }).exec()
     return this.findByCpf(normalized)
   }
 }
-

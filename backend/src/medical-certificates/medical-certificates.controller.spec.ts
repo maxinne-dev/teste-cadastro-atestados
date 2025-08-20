@@ -35,7 +35,7 @@ describe('MedicalCertificatesController', () => {
     expect(res.icdCode).toBe('J06.9')
   })
 
-  it('lists with sorting and pagination', async () => {
+  it('lists with sorting and pagination and total', async () => {
     ;(service.filter as jest.Mock).mockResolvedValue([
       { issueDate: new Date('2025-01-02') },
       { issueDate: new Date('2025-01-03') },
@@ -44,6 +44,7 @@ describe('MedicalCertificatesController', () => {
     const res = await controller.list({ limit: 2, offset: 1 } as any)
     expect(service.filter).toHaveBeenCalled()
     expect(res.results).toHaveLength(2)
+    expect(res.total).toBe(3)
     // Middle two after sorting desc should be [2025-01-02, 2025-01-01]
     expect(new Date(res.results[0].issueDate).toISOString()).toBe(
       new Date('2025-01-02').toISOString()
@@ -56,4 +57,3 @@ describe('MedicalCertificatesController', () => {
     )
   })
 })
-
