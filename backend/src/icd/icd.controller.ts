@@ -2,8 +2,10 @@ import { Controller, Get, Query, Req } from '@nestjs/common';
 import { IcdService } from './icd.service.js';
 import { Public } from '../auth/public.decorator.js';
 import { RateLimiterService } from '../common/rate-limiter.service.js';
+import { ApiTags } from '@nestjs/swagger'
 
 @Controller('icd')
+@ApiTags('ICD')
 export class IcdController {
   constructor(
     private readonly icd: IcdService,

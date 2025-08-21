@@ -7,6 +7,7 @@ module.exports = {
   moduleNameMapper: {
     // Allow ESM-style .js extension in source imports while testing TS
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^@nestjs/swagger$': '<rootDir>/src/test-utils/swagger-mock.ts',
   },
   transform: {
     '^.+\\.ts$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }],

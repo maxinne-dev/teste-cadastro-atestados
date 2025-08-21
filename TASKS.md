@@ -117,13 +117,13 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] Validation: run `npm test` and `npm run build` after seed-related changes.
 
 ## DevOps & DX
-1. [ ] Add `@nestjs/swagger` and generate OpenAPI YAML
-    - [ ] Annotate DTOs and controllers
-    - [ ] Swagger setup (dev only) and script to emit `openapi.yaml` at repo root
-    - [ ] Add `npm run openapi:yaml` in backend to generate spec deterministically
-    - [ ] Security Schemes: Bearer JWT only, applied to protected routes
-    - [ ] Tests + validation: basic swagger boot + spec generation
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+1. [x] Add `@nestjs/swagger` and generate OpenAPI YAML
+    - [x] Annotate DTOs and controllers (tags + bearer on protected)
+    - [x] Swagger setup (dev only) and script to emit `openapi.yaml` at repo root
+    - [x] Add `npm run openapi:yaml` in backend to generate spec deterministically
+    - [x] Security Schemes: Bearer JWT only, applied to protected routes
+    - [x] Tests + validation: basic swagger boot + spec generation
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 2. [ ] Docker
     - [ ] Confirm healthcheck and prod `start` uses compiled `dist`
     - [ ] Ensure Redis/Mongo envs align with docker-compose

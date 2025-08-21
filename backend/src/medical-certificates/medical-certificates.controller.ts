@@ -3,8 +3,11 @@ import { MedicalCertificatesService } from './medical-certificates.service.js'
 import { CreateMedicalCertificateDto } from './dto/create-medical-certificate.dto.js'
 import { FilterMedicalCertificatesDto } from './dto/filter-medical-certificates.dto.js'
 import { AuditService } from '../audit/audit.service.js'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 @Controller('medical-certificates')
+@ApiTags('Medical Certificates')
+@ApiBearerAuth('bearer')
 export class MedicalCertificatesController {
   constructor(
     private readonly certs: MedicalCertificatesService,

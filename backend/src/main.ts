@@ -26,6 +26,20 @@ async function bootstrap() {
   // Security headers
   app.use(new SecurityHeadersMiddleware().use);
 
+  // Swagger (dev only)
+  const enableSwagger = process.env.NODE_ENV !== 'production' || process.env.SWAGGER === 'true'
+  if (enableSwagger) {
+    const { SwaggerModule, DocumentBuilder } = await import('@nestjs/swagger')
+    const config = new DocumentBuilder()
+      .setTitle('Atestados API')
+      .setDescription('API de atestados médicos')
+      .setVersion('1.0.0')
+      .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'bearer')
+      .build()
+    const doc = SwaggerModule.createDocument(app, config)
+    SwaggerModule.setup('api/docs', app, doc)
+  }
+
   const port = process.env.API_PORT || 3000;
   await app.listen(port);
   // eslint-disable-next-line no-console

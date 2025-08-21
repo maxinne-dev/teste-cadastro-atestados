@@ -1,9 +1,20 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "removeComments": true
+  },
   "exclude": [
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
-    "src/**/__tests__/**"
+    "src/**/__tests__/**",
+    "src/openapi.ts"
+  ],
+  "include": [
+    "src/**/*.ts"
   ]
 }
-
