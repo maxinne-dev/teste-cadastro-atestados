@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module.js'
-import { ValidationPipe, VersioningType } from '@nestjs/common'
+import { ValidationPipe } from '@nestjs/common'
 import { MongoExceptionFilter } from './common/filters/mongo-exception.filter.js'
 import { AxiosExceptionFilter } from './common/filters/axios-exception.filter.js'
 import { RequestAuditInterceptor } from './audit/request-audit.interceptor.js'
@@ -17,7 +17,7 @@ export async function buildOpenApiDocument() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }))
   app.useGlobalFilters(new MongoExceptionFilter())
   app.useGlobalFilters(new AxiosExceptionFilter())
-  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' })
+  // Keep OpenAPI routes version-neutral (no /v1 prefix)
 
   const { SwaggerModule, DocumentBuilder } = await import('@nestjs/swagger')
   const config = new DocumentBuilder()

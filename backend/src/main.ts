@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { MongoExceptionFilter } from './common/filters/mongo-exception.filter.js';
 import { AxiosExceptionFilter } from './common/filters/axios-exception.filter.js';
 import { SecurityHeadersMiddleware } from './common/middleware/security-headers.middleware.js';
@@ -21,8 +21,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new MongoExceptionFilter());
   app.useGlobalFilters(new AxiosExceptionFilter());
-  // Versioning (URI); routes remain version-neutral unless annotated
-  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
+  // Note: URI versioning removed to keep routes at /api/* without /v1
   // Security headers
   app.use(new SecurityHeadersMiddleware().use);
 

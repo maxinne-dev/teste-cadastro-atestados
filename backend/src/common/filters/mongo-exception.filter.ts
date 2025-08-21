@@ -37,18 +37,21 @@ export class MongoExceptionFilter implements ExceptionFilter {
       })
     }
 
-    if (exception instanceof HttpException) {
-      const status = exception.getStatus()
-      const res = exception.getResponse() as any
-      return response.status(status).json(res)
-    }
+  if (exception instanceof HttpException) {
+    const status = exception.getStatus()
+    const res = exception.getResponse() as any
+    // eslint-disable-next-line no-console
+    console.error('[HttpException]', { status, response: res })
+    return response.status(status).json(res)
+  }
 
-    // Fallback
-    return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      error: 'Internal Server Error',
-      message: exception?.message || 'Unexpected error',
-    })
+  // Fallback
+  // eslint-disable-next-line no-console
+  console.error('[UnhandledException]', { message: exception?.message, exception })
+  return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    error: 'Internal Server Error',
+    message: exception?.message || 'Unexpected error',
+  })
   }
 }
-
