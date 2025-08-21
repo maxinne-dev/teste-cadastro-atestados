@@ -48,6 +48,7 @@ Preencha as variáveis `WHO_ICD_CLIENT_ID` e `WHO_ICD_CLIENT_SECRET` no `.env`.
 ```
 
 ## Backend — Camada de Dados
+Para um guia detalhado do backend (scripts, seed, testes e rotas), consulte `backend/README.md`.
 - Modelos e coleções MongoDB:
   - `collaborators`: colaboradores (RH) com `cpf` único.
   - `users`: contas de aplicação com `email` único e `roles`.
