@@ -124,11 +124,11 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] Security Schemes: Bearer JWT only, applied to protected routes
     - [x] Tests + validation: basic swagger boot + spec generation
     - [x] run `npm test` and `npm run build`. Fix any error that may appear.
-2. [ ] Docker
-    - [ ] Confirm healthcheck and prod `start` uses compiled `dist`
-    - [ ] Ensure Redis/Mongo envs align with docker-compose
-    - [ ] Validation: local build and container start
-    - [ ] run `npm run build` before image build.
+2. [x] Docker
+    - [x] Confirm healthcheck and prod `start` uses compiled `dist`
+    - [x] Ensure Redis/Mongo envs align with docker-compose
+    - [x] Validation: local build and container start
+    - [x] run `npm run build` before image build.
 3. [ ] CI
     - [ ] Lint, typecheck (TS), unit+integration tests, and build
     - [ ] Optional: publish OpenAPI artifact as CI artifact
