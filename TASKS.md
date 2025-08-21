@@ -129,18 +129,18 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] Ensure Redis/Mongo envs align with docker-compose
     - [x] Validation: local build and container start
     - [x] run `npm run build` before image build.
-3. [ ] CI
-    - [ ] Lint, typecheck (TS), unit+integration tests, and build
-    - [ ] Optional: publish OpenAPI artifact as CI artifact
-    - [ ] Validation: ensure CI runs `npm test` and `npm run build` gates.
+3. [x] CI
+    - [x] Lint, typecheck (TS), unit+integration tests, and build
+    - [x] Optional: publish OpenAPI artifact as CI artifact
+    - [x] Validation: ensure CI runs `npm test` and `npm run build` gates.
 
 ## Documentation
-1. [ ] Update root `README.md` and add `backend/README.md`
-    - [ ] Setup (env vars, WHO credentials), run, test, seed, Docker notes
-    - [ ] Auth flow, roles, and protected routes
-    - [ ] ICD integration behavior (cache, fallback, rate limiting)
-2. [ ] Add `docs/` with API usage snippets and error codes
-3. [ ] Provide `openapi.yaml` at repo root and link it from README
+1. [x] Update root `README.md` and add `backend/README.md`
+    - [x] Setup (env vars, WHO credentials), run, test, seed, Docker notes
+    - [x] Auth flow, roles, and protected routes
+    - [x] ICD integration behavior (cache, fallback, rate limiting)
+2. [x] Add `docs/` with API usage snippets and error codes
+3. [x] Provide `openapi.yaml` at repo root and link it from README
 
 ---
 

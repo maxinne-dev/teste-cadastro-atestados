@@ -37,6 +37,26 @@ Preencha as variáveis `WHO_ICD_CLIENT_ID` e `WHO_ICD_CLIENT_SECRET` no `.env`.
 - Parar containers: `docker compose down`
 - Logs: `docker compose logs -f api` / `docker compose logs -f web`
 
+## OpenAPI / API Docs
+- Especificação OpenAPI: `./openapi.yaml` (gerada)
+- Para gerar/atualizar localmente:
+  ```bash
+  cd backend
+  npm run openapi:yaml
+  ```
+- O CI também publica `openapi.yaml` como artifact.
+
+## Autenticação e Acesso
+- Login: `POST /api/auth/login` → `{ accessToken }` (Bearer JWT, sessão 4h)
+- Logout: `POST /api/auth/logout` (envie Bearer token)
+- Rotas protegidas exigem Bearer; rotas de admin usam role `admin`.
+- Rate limit (por IP): login `AUTH_RATE_LIMIT_RPM` (padrão 30 rpm).
+
+## Docs adicionais
+- Guia do backend: `backend/README.md`
+- Exemplos de uso de API: `docs/API-usage.md`
+- Códigos de erro e payloads: `docs/Errors.md`
+
 ## Estrutura
 ```
 /
