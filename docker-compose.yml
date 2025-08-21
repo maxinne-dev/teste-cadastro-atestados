@@ -9,7 +9,6 @@ services:
       - "${API_PORT-3000}:3000"
     volumes:
       - ./backend:/usr/src/app
-      - /usr/src/app/node_modules
     healthcheck:
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/api/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))\" "]
       interval: 10s
@@ -29,7 +28,6 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
     depends_on:
       - api
 

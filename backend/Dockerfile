@@ -4,6 +4,7 @@ WORKDIR /usr/src/app
 
 # Install deps separately for better caching
 COPY package*.json ./
+RUN npm install
 RUN npm ci --omit=optional
 
 # Copy sources
