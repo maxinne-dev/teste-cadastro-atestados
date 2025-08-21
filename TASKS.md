@@ -107,8 +107,8 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] Collaborators create/find/search/status with mocked service
     - [x] Certificates create/filter/cancel; date range and status filters
     - [x] ICD `/icd/search` happy path (mock WHO) and fallback to cache
-3. [ ] Coverage: add `test:cov` to CI; ensure excludes for `main.ts`
-    - [ ] Validation: run `npm test` and `npm run build` on CI to fail fast.
+3. [x] Coverage: add `test:cov` to CI; ensure excludes for `main.ts`
+    - [x] Validation: run `npm test` and `npm run build` on CI to fail fast.
 
 ## Seed & Data
 1. [ ] Seed users with hashed password and meaningful roles (admin/hr)
