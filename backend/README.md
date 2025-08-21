@@ -78,14 +78,16 @@ Rotas principais
 - OAuth2 Client Credentials contra `https://icdaccessmanagement.who.int/connect/token`.
 - Variáveis de ambiente:
   - `WHO_ICD_CLIENT_ID` e `WHO_ICD_CLIENT_SECRET` (obrigatórias para chamadas à OMS)
-  - `WHO_ICD_BASE_URL` (padrão: `https://id.who.int/icd/release/11`)
+  - `WHO_ICD_BASE_URL` (padrão: `https://id.who.int`)
   - `WHO_ICD_RELEASE` (padrão: `2024-01`)
+  - `WHO_ICD_LANGUAGE` (opcional; padrão `en`)
   - `ICD_RATE_LIMIT_RPM` (padrão: `60`)
 - Comportamento:
   - Cache local: resultados válidos são upsertados na coleção `icdcodes` (serviço `IcdCacheService`).
   - Tolerância a falhas: se a OMS falhar, faz fallback pesquisando na coleção `icdcodes` por código/título.
   - Renovação de token: token é reutilizado até ~5 min antes da expiração; 401 força refresh e 1 retry.
   - Rate limit: janela em memória por IP com 429 ao exceder.
+  - Headers usados nas chamadas à OMS: `Authorization: Bearer <token>`, `API-Version: v2`, `Accept-Language` e `Accept: application/json`.
 
 ## Fluxo de Autenticação e Perfis
 - Sessões JWT de 4h com registro em Redis (chave `session:<jti>`); expirada → 401.

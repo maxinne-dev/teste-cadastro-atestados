@@ -6,8 +6,9 @@ import { IcdCacheService } from '../icd-cache/icd-cache.service.js';
 export class IcdService {
   private readonly logger = new Logger(IcdService.name);
   private token: { value: string; expiresAt: number } | null = null;
-  private baseUrl = process.env.WHO_ICD_BASE_URL || 'https://id.who.int/icd/release/11';
+  private baseRoot = (process.env.WHO_ICD_BASE_URL || 'https://id.who.int').replace(/\/$/, '');
   private release = process.env.WHO_ICD_RELEASE || '2024-01';
+  private language = process.env.WHO_ICD_LANGUAGE || 'en';
 
   constructor(private readonly cache: IcdCacheService) {}
 
@@ -34,8 +35,9 @@ export class IcdService {
 
     const res = await axios.post(tokenEndpoint, form, {
       headers: {
-        'Authorization': authHeader,
+        Authorization: authHeader,
         'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
       },
       timeout: 10000,
     });
@@ -47,13 +49,18 @@ export class IcdService {
 
   async search(term: string) {
     if (!term || term.length < 2) return [];
-    const url = `${this.baseUrl}/${this.release}/mms/search?flatResults=true&useFlexisearch=true&q=${encodeURIComponent(
+    const searchUrl = `${this.baseRoot}/icd/release/11/${this.release}/mms/search?flatResults=true&useFlexisearch=true&q=${encodeURIComponent(
       term
     )}`;
     const tryFetch = async () => {
       const token = await this.getToken();
-      return axios.get(url, {
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      return axios.get(searchUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Accept-Language': this.language,
+          'API-Version': 'v2',
+        },
         timeout: 8000,
       });
     };
