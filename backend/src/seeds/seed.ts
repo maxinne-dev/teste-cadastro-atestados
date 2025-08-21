@@ -84,7 +84,10 @@ export async function run() {
     }
   }
   await insertIfAny('users', users, 'email');
-  await insertIfAny('icdcodes', mockIcdCodes, 'code');
+  // Optionally skip ICD cache seeding via env flag (seed never calls WHO API)
+  if (String(process.env.SEED_DISABLE_ICD || '').toLowerCase() !== 'true') {
+    await insertIfAny('icdcodes', mockIcdCodes, 'code');
+  }
   // Link certificates to collaborators and upsert idempotently by a seedKey
   if (Array.isArray(mockCertificates) && mockCertificates.length > 0) {
     const collabCol = mongoose.connection.collection('collaborators');

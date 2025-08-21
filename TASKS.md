@@ -111,10 +111,10 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] Validation: run `npm test` and `npm run build` on CI to fail fast.
 
 ## Seed & Data
-1. [ ] Seed users with hashed password and meaningful roles (admin/hr)
-2. [ ] Option to disable WHO calls during seed; seed a few ICD codes in cache
-3. [ ] Document seed usage in README and ensure idempotency (already scaffolded)
-    - [ ] Validation: run `npm test` and `npm run build` after seed-related changes.
+1. [x] Seed users with hashed password and meaningful roles (admin/hr)
+2. [x] Option to disable WHO calls during seed; seed a few ICD codes in cache
+3. [x] Document seed usage in README and ensure idempotency (already scaffolded)
+    - [x] Validation: run `npm test` and `npm run build` after seed-related changes.
 
 ## DevOps & DX
 1. [ ] Add `@nestjs/swagger` and generate OpenAPI YAML

@@ -15,6 +15,15 @@ Este repositório inicializa um monorepo simples com **NestJS + TypeScript (API)
 4. Acesse:
    - API: http://localhost:3000/health
    - Web (dev): http://localhost:5173
+5. (Opcional) Popular o banco com dados de exemplo (seed):
+   ```bash
+   cd backend
+   npm run seed              # usa MONGODB_URI ou mongodb://localhost:27017/atestados
+   # Para pular a carga de ICD locais durante o seed:
+   SEED_DISABLE_ICD=true npm run seed
+   ```
+   - Usuários criados: `admin@example.com` (roles: admin) e `hr@example.com` (roles: hr)
+   - Senha padrão (seed): `dev-hash` — o script transforma em hash bcrypt automaticamente.
 
 ## Credenciais da OMS (ICD API)
 - Registre-se em: https://icd.who.int/icdapi
@@ -70,9 +79,11 @@ Preencha as variáveis `WHO_ICD_CLIENT_ID` e `WHO_ICD_CLIENT_SECRET` no `.env`.
   ```
 
 - Seed de dados:
-  - Editar `backend/src/seeds/mock-data.ts` para ajustar usuários, colaboradores, CIDs e atestados.
+  - Editar `backend/src/seeds/mock-data.ts` para ajustar usuários (admin/hr), colaboradores, CIDs e atestados.
   - O seed é idempotente (usa chaves únicas e `metadata.seedKey`).
   - Usa `MONGODB_URI` ou `mongodb://localhost:27017/atestados` por padrão.
+  - Hash de senhas: se `passwordHash` não for um hash bcrypt, o seed irá gerar um hash automaticamente (use um placeholder como `dev-hash`).
+  - OMS/ICD: o seed NÃO chama a API da OMS; ele apenas popula a coleção `icdcodes` com alguns códigos de exemplo. Para desabilitar essa etapa, defina `SEED_DISABLE_ICD=true` ao rodar o seed.
 
 ## Observações
 - Este kit é propositalmente **mínimo** e compila/roda out‑of‑the‑box. Use-o como base para implementar os módulos descritos em `SPECS.md`/`MAIN.md`.
