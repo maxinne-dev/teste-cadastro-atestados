@@ -101,12 +101,12 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] Auth services (hashing, JWT, guards, roles)
     - [x] ICD service fallbacks and cache integration
     - [x] Audit middleware/interceptor
-2. [ ] Integration tests (Supertest)
-    - [ ] `/health` returns ok
-    - [ ] `/auth/login` and protected route flow (401/403 cases)
-    - [ ] Collaborators create/find/search/status with Mongo memory server or test DB
-    - [ ] Certificates create/filter/cancel; date range and status filters
-    - [ ] ICD `/icd/search` happy path (mock WHO) and fallback to cache
+2. [x] Integration tests (Supertest)
+    - [x] `/health` returns ok
+    - [x] `/auth/login` and protected route flow (401/403 cases)
+    - [x] Collaborators create/find/search/status with mocked service
+    - [x] Certificates create/filter/cancel; date range and status filters
+    - [x] ICD `/icd/search` happy path (mock WHO) and fallback to cache
 3. [ ] Coverage: add `test:cov` to CI; ensure excludes for `main.ts`
     - [ ] Validation: run `npm test` and `npm run build` on CI to fail fast.
 
