@@ -1,5 +1,6 @@
 // Basic smoke test to ensure theme imports and app mount do not crash
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config'
@@ -16,7 +17,7 @@ describe('Theme smoke', () => {
     await router.isReady()
     const wrapper = mount(App, {
       global: {
-        plugins: [[PrimeVue, { theme: { preset: Aura } }], router],
+        plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()],
       },
     })
     expect(wrapper.exists()).toBe(true)
@@ -29,7 +30,7 @@ describe('Theme smoke', () => {
     const wrapper = mount(App, {
       attachTo: document.body,
       global: {
-        plugins: [[PrimeVue, { theme: { preset: Aura } }], router],
+        plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()],
       },
     })
     const toggle = wrapper.find('button[title^="Theme:"]')
@@ -42,4 +43,3 @@ describe('Theme smoke', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe(null)
   })
 })
-

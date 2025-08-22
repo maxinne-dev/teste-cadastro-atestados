@@ -147,23 +147,23 @@ Note: Specs prepared in docs/Pages-Plan.md (no code yet).
 ## Mock Data, State, and Utilities (No API)
 
 18. Local mock data
-   - [ ] Define fixtures in `src/mocks/` (users, collaborators, certificates, ICD list)
-   - [ ] Utility functions for basic CRUD against in-memory arrays
+   - [x] Define fixtures in `src/mocks/` (users, collaborators, certificates, ICD list)
+   - [x] Utility functions for basic CRUD against in-memory arrays
    - [ ] Seed mocks on app start (dev only)
 
 19. State management (Pinia)
-   - [ ] Stores: `auth`, `collaborators`, `certificates`, `ui`
-   - [ ] Actions work on local fixtures only; simulate latency with `setTimeout` where needed
-   - [ ] Derivations: active certificates, filters, counts
+   - [x] Stores: `auth`, `collaborators`, `certificates`, `ui`
+   - [x] Actions work on local fixtures only; simulate latency with `setTimeout` where needed
+   - [x] Derivations: active certificates, filters, counts
 
 20. Helpers and formatting
-   - [ ] CPF/Date/Number formatters
-   - [ ] Date range helpers (calculate days, clamp ranges)
+   - [x] CPF/Date/Number formatters
+   - [x] Date range helpers (calculate days, clamp ranges)
 
 - Section test checklist
-  - [ ] Store tests for local CRUD and derived getters (Pinia stores)
-  - [ ] Utility tests for CPF/date formatting and range helpers
-  - [ ] Typecheck pass (lint deferred)
+  - [x] Store tests for local CRUD and derived getters (Pinia stores)
+  - [x] Utility tests for CPF/date formatting and range helpers
+  - [x] Typecheck pass (lint deferred)
 
 ## Accessibility, Responsiveness, and Polish
 

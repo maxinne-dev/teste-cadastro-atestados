@@ -54,7 +54,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import PageHeader from './components/PageHeader.vue'
 import Toolbar from './components/Toolbar.vue'
 import DataTable from './components/DataTable.vue'
@@ -64,12 +64,16 @@ import ConfirmDialog from './components/ConfirmDialog.vue'
 import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
 import BaseInput from './components/base/BaseInput.vue'
-import { listCertificates, certificates as store, listCollaborators, cancelCertificate, Certificate } from './mocks/data'
+import type { Certificate } from './mocks/data'
+import { useCertificatesStore } from './stores/certificates'
+import { useCollaboratorsStore } from './stores/collaborators'
 import { formatDateBR } from './utils/formatters'
 
-const rows = ref(listCertificates())
-const collabs = listCollaborators()
-const collabOptions = [{ label: 'Todos', value: null as any }, ...collabs.map(c => ({ label: c.fullName, value: c.id }))]
+const certStore = useCertificatesStore()
+const collabStore = useCollaboratorsStore()
+onMounted(() => { if (!certStore.items.length) certStore.fetchAll(); if (!collabStore.items.length) collabStore.fetchAll() })
+const rows = computed(() => certStore.items)
+const collabOptions = computed(() => [{ label: 'Todos', value: null as any }, ...collabStore.items.map(c => ({ label: c.fullName, value: c.id }))])
 const statusOptions = [
   { label: 'Todos', value: null as any },
   { label: 'Ativo', value: 'active' },
@@ -95,7 +99,7 @@ const filtered = computed(() => rows.value.filter(r => {
   return okCollab && okStatus && okStart && okEnd && okIcd
 }))
 
-function nameOf(id?: string) { return collabs.find(c => c.id === id)?.fullName || '' }
+function nameOf(id?: string) { return collabStore.items.find(c => c.id === id)?.fullName || '' }
 function d(date?: string | null) { return formatDateBR(date || '') }
 
 const drawer = ref(false)
@@ -107,8 +111,7 @@ let toCancel: Certificate | null = null
 function confirmCancel(row: Certificate) { toCancel = row; confirm.value = true }
 function doCancel() {
   if (!toCancel) return
-  cancelCertificate(toCancel.id)
-  rows.value = listCertificates()
+  certStore.cancel(toCancel.id)
 }
 </script>
 <style scoped>

@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 import router from './router'
@@ -24,7 +25,7 @@ describe('App Shell & Layout', () => {
   it('renders AppLayout with Dashboard title via route meta', async () => {
     const wrapper = mount(App, {
       global: {
-        plugins: [[PrimeVue, { theme: { preset: Aura } }], router],
+        plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()],
       },
     })
 
@@ -37,7 +38,7 @@ describe('App Shell & Layout', () => {
     const wrapper = mount(App, {
       attachTo: document.body,
       global: {
-        plugins: [[PrimeVue, { theme: { preset: Aura } }], router],
+        plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()],
       },
     })
 

@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 import router from '../router'
@@ -9,7 +10,7 @@ describe('Pages render and navigation', () => {
     if (path !== '/login') localStorage.setItem('token', 'dev')
     await router.push(path)
     await router.isReady()
-    return mount(App, { global: { plugins: [[PrimeVue, { theme: { preset: Aura } }], router] } })
+    return mount(App, { global: { plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()] } })
   }
 
   it('renders Login', async () => {
@@ -42,4 +43,3 @@ describe('Pages render and navigation', () => {
     expect(w.text()).toContain('Página não encontrada')
   })
 })
-

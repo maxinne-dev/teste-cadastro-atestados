@@ -24,14 +24,24 @@
   </div>
 </template>
 <script setup lang="ts">
+import { onMounted, computed } from 'vue'
 import PageHeader from './components/PageHeader.vue'
 import StatCard from './components/StatCard.vue'
 import Card from './components/Card.vue'
-import { collaborators, certificates } from './mocks/data'
+import { useCollaboratorsStore } from './stores/collaborators'
+import { useCertificatesStore } from './stores/certificates'
 
-const collaboratorCount = collaborators.length
-const certificateCount = certificates.length
-const activeCertificates = certificates.filter(c => c.status === 'active').length
+const collabStore = useCollaboratorsStore()
+const certStore = useCertificatesStore()
+
+onMounted(() => {
+  if (!collabStore.items.length) collabStore.fetchAll()
+  if (!certStore.items.length) certStore.fetchAll()
+})
+
+const collaboratorCount = computed(() => collabStore.items.length)
+const certificateCount = computed(() => certStore.items.length)
+const activeCertificates = computed(() => certStore.active.length)
 </script>
 <style scoped>
 .chart-placeholder { height: 220px; border: 1px dashed var(--color-border); border-radius: var(--radius-md); display: grid; place-items: center; color: var(--color-text-secondary); }

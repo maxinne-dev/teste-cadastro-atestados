@@ -26,7 +26,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHeader from './components/PageHeader.vue'
 import Card from './components/Card.vue'
@@ -35,11 +35,16 @@ import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
 import BaseInput from './components/base/BaseInput.vue'
 import BaseTextarea from './components/base/BaseTextarea.vue'
-import { addCertificate, icdList, listCollaborators } from './mocks/data'
+import { icdList } from './mocks/data'
 import Banner from './components/Banner.vue'
+import { useCertificatesStore } from './stores/certificates'
+import { useCollaboratorsStore } from './stores/collaborators'
 
 const router = useRouter()
-const collabOptions = listCollaborators().map(c => ({ label: c.fullName, value: c.id }))
+const certStore = useCertificatesStore()
+const collabStore = useCollaboratorsStore()
+onMounted(() => { if (!collabStore.items.length) collabStore.fetchAll() })
+const collabOptions = computed(() => collabStore.items.map(c => ({ label: c.fullName, value: c.id })))
 const form = reactive({ collaboratorId: '' as string | null, startDate: '' as string | null, endDate: '' as string | null, days: 0, diagnosis: '' })
 const errors = reactive<{ [k: string]: string | undefined }>({})
 const formError = ref(false)
@@ -67,7 +72,7 @@ function validate() {
 }
 function onSubmit() {
   if (!validate()) { formError.value = true; return }
-  addCertificate({ collaboratorId: form.collaboratorId!, startDate: form.startDate!, endDate: form.endDate!, days: Number(daysStr.value || 0), diagnosis: form.diagnosis, icdCode: (form as any).icdCode, icdTitle: (form as any).icdTitle })
+  certStore.create({ collaboratorId: form.collaboratorId!, startDate: form.startDate!, endDate: form.endDate!, days: Number(daysStr.value || 0), diagnosis: form.diagnosis, icdCode: (form as any).icdCode, icdTitle: (form as any).icdTitle })
   router.push({ name: 'certificates' })
 }
 function reset() {

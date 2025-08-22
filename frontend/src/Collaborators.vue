@@ -81,7 +81,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, onMounted } from 'vue'
 import PageHeader from './components/PageHeader.vue'
 import Toolbar from './components/Toolbar.vue'
 import DataTable from './components/DataTable.vue'
@@ -93,7 +93,8 @@ import FormField from './components/base/FormField.vue'
 import BaseInput from './components/base/BaseInput.vue'
 import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
-import { listCollaborators, collaborators as store, addOrUpdateCollaborator, toggleCollaboratorStatus, Collaborator, certificates } from './mocks/data'
+import { Collaborator, certificates } from './mocks/data'
+import { useCollaboratorsStore } from './stores/collaborators'
 import { formatCpf, formatDateBR } from './utils/formatters'
 
 const search = ref('')
@@ -104,7 +105,9 @@ const statusOptions = [
   { label: 'Inativo', value: 'inactive' },
 ]
 const statusOptionsNoAll = statusOptions.slice(1)
-const rows = ref(listCollaborators())
+const collabStore = useCollaboratorsStore()
+const rows = computed(() => collabStore.items)
+onMounted(() => { if (!collabStore.items.length) collabStore.fetchAll() })
 const sortBy = ref<string | null>(null)
 const sortDir = ref<'asc' | 'desc' | null>(null)
 const filtered = computed(() => rows.value.filter(r => {
@@ -143,16 +146,14 @@ function validate() {
 }
 function save() {
   if (!validate()) { formErrorBanner.value = true; return }
-  addOrUpdateCollaborator(editing)
-  rows.value = listCollaborators()
+  collabStore.save(editing as Collaborator)
   editor.value = false
   formErrorBanner.value = false
 }
 function confirmToggle(row: Collaborator) { confirmTarget.value = row; confirmMsg.value = `Confirmar ${row.status === 'active' ? 'desativação' : 'ativação'}?`; confirm.value = true }
 function doToggle() {
   if (!confirmTarget.value) return
-  toggleCollaboratorStatus(confirmTarget.value.id)
-  rows.value = listCollaborators()
+  collabStore.toggleStatus(confirmTarget.value.id)
 }
 
 function displayCpf(cpf: string) { return formatCpf(cpf) }
