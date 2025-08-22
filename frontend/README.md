@@ -91,4 +91,4 @@ A modern, sober, GUI-only frontend for Atestados. This phase focuses on building
 
 ## Notes
 - ESLint is deferred in this phase to speed up scaffolding; re-enable later with `npm run lint` and fix findings.
-- PrimeVue `Sidebar` is used for mobile overlay; v4 marks it deprecated in favor of `Drawer` — consider replacing in a polish pass.
+- PrimeVue `Drawer` is used for mobile overlay (migrated from deprecated `Sidebar`).

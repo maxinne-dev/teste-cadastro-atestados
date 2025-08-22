@@ -14,9 +14,9 @@
     </aside>
 
     <!-- Mobile sidebar overlay -->
-    <Sidebar v-model:visible="mobileSidebarVisible" position="left" :modal="true" :showCloseIcon="true" :dismissable="true" :blockScroll="true">
+    <Drawer v-model:visible="mobileSidebarVisible" position="left" :modal="true" :showCloseIcon="true" :dismissable="true" :blockScroll="true">
       <AppSidebar :collapsed="false" @navigate="() => (mobileSidebarVisible = false)" />
-    </Sidebar>
+    </Drawer>
 
     <main id="content" class="app-content">
       <header class="page-header container">
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Sidebar from 'primevue/sidebar'
+import Drawer from 'primevue/drawer'
 import AppTopbar from '../components/AppTopbar.vue'
 import AppSidebar from '../components/AppSidebar.vue'
 import AppBreadcrumbs from '../components/AppBreadcrumbs.vue'

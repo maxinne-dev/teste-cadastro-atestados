@@ -4,14 +4,14 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 import AppLayout from './layouts/AppLayout.vue'
 import AppTopbar from './components/AppTopbar.vue'
 
-// Stub PrimeVue Sidebar to expose v-model:visible via attribute
-vi.mock('primevue/sidebar', () => {
+// Stub PrimeVue Drawer to expose v-model:visible via attribute
+vi.mock('primevue/drawer', () => {
   return {
     default: {
-      name: 'StubSidebar',
+      name: 'StubDrawer',
       props: { visible: { type: Boolean, default: false } },
       emits: ['update:visible'],
-      template: '<div class="stub-sidebar" :data-visible="String(visible)"><slot /></div>',
+      template: '<div class="stub-drawer" :data-visible="String(visible)"><slot /></div>',
     },
   }
 })
@@ -44,7 +44,7 @@ describe('Viewport behavior (sidebar + layout)', () => {
     // Click menu button in topbar
     const btn = wrap.find('.app-topbar .icon-btn')
     await btn.trigger('click')
-    const stub = wrap.find('.stub-sidebar')
+    const stub = wrap.find('.stub-drawer')
     expect(stub.attributes('data-visible')).toBe('true')
   })
 
@@ -53,7 +53,7 @@ describe('Viewport behavior (sidebar + layout)', () => {
     const wrap = await mountLayout()
     const btn = wrap.find('.app-topbar .icon-btn')
     await btn.trigger('click')
-    const stub = wrap.find('.stub-sidebar')
+    const stub = wrap.find('.stub-drawer')
     expect(stub.attributes('data-visible')).toBe('true')
   })
 
