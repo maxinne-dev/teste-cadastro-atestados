@@ -1,21 +1,15 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-  NotFoundException,
-} from '@nestjs/common'
+import { Body, Controller, Get, Param, Patch, Post, Query, NotFoundException } from '@nestjs/common'
 import { CollaboratorsService } from './collaborators.service.js'
 import { CreateCollaboratorDto } from './dto/create-collaborator.dto.js'
 import { CpfParamDto } from './dto/cpf-param.dto.js'
 import { SearchCollaboratorsDto } from './dto/search-collaborators.dto.js'
 import { UpdateStatusDto } from './dto/update-status.dto.js'
 import { AuditService } from '../audit/audit.service.js'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 @Controller('collaborators')
+@ApiTags('Collaborators')
+@ApiBearerAuth('bearer')
 export class CollaboratorsController {
   constructor(
     private readonly collaborators: CollaboratorsService,

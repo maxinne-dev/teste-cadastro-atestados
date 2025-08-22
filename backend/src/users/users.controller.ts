@@ -7,9 +7,12 @@ import { UpdateUserRolesDto } from './dto/update-roles.dto.js'
 import { PasswordService } from '../auth/password.service.js'
 import { Roles } from '../auth/roles.decorator.js'
 import { AuditService } from '../audit/audit.service.js'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 @Controller('users')
 @Roles('admin')
+@ApiTags('Users')
+@ApiBearerAuth('bearer')
 export class UsersController {
   constructor(
     private readonly users: UsersService,
