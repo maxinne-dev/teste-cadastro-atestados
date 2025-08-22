@@ -17,6 +17,18 @@
         <ul v-if="icdTerm.length >= 2" class="suggestions">
           <li v-for="icd in icdFiltered" :key="icd.code" @click="pickICD(icd)" class="sugg">{{ icd.code }} — {{ icd.title }}</li>
         </ul>
+        <!-- Attachments placeholder (future file upload integration) -->
+        <section class="attachments-placeholder" aria-labelledby="att-title">
+          <h3 id="att-title">Anexos</h3>
+          <p class="att-hint">(Futuro) Área para anexar arquivos do atestado (PDF, imagens). Não envia ainda.</p>
+          <div class="att-drop" role="button" tabindex="0" aria-label="Área de anexos (placeholder)">
+            <span class="att-icon" aria-hidden="true">📎</span>
+            <span>Arraste e solte arquivos aqui ou clique para selecionar</span>
+          </div>
+          <ul class="att-list" v-if="pendingFiles.length">
+            <li v-for="f in pendingFiles" :key="f.name">{{ f.name }} <small>({{ formatSize(f.size) }})</small></li>
+          </ul>
+        </section>
         <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px;">
           <button class="btn" type="button" @click="reset">Limpar</button>
           <button class="btn primary" type="submit" :disabled="!canSubmit">Salvar</button>
@@ -45,13 +57,22 @@ const certStore = useCertificatesStore()
 const collabStore = useCollaboratorsStore()
 onMounted(() => { if (!collabStore.items.length) collabStore.fetchAll() })
 const collabOptions = computed(() => collabStore.items.map(c => ({ label: c.fullName, value: c.id })))
-const form = reactive({ collaboratorId: '' as string | null, startDate: '' as string | null, endDate: '' as string | null, days: 0, diagnosis: '' })
+interface CertificateForm {
+  collaboratorId: string | null
+  startDate: string | null
+  endDate: string | null
+  days: number
+  diagnosis: string
+  icdCode?: string
+  icdTitle?: string
+}
+const form = reactive<CertificateForm>({ collaboratorId: '' , startDate: '' , endDate: '' , days: 0, diagnosis: '' })
 const errors = reactive<{ [k: string]: string | undefined }>({})
 const formError = ref(false)
 const icdTerm = ref('')
 const icdFiltered = computed(() => icdList.filter(i => i.code.toLowerCase().includes(icdTerm.value.toLowerCase()) || i.title.toLowerCase().includes(icdTerm.value.toLowerCase())))
 
-function pickICD(icd: { code: string; title: string }) { form['icdCode' as any] = icd.code as any; (form as any)['icdTitle'] = icd.title; icdTerm.value = `${icd.code} — ${icd.title}` }
+function pickICD(icd: { code: string; title: string }) { form.icdCode = icd.code; form.icdTitle = icd.title; icdTerm.value = `${icd.code} — ${icd.title}` }
 const daysStr = ref('0')
 watch([() => form.startDate, () => form.endDate], () => {
   if (form.startDate && form.endDate) {
@@ -77,7 +98,7 @@ function validate() {
 }
 function onSubmit() {
   if (!validate()) { formError.value = true; return }
-  certStore.create({ collaboratorId: form.collaboratorId!, startDate: form.startDate!, endDate: form.endDate!, days: Number(daysStr.value || 0), diagnosis: form.diagnosis, icdCode: (form as any).icdCode, icdTitle: (form as any).icdTitle })
+  certStore.create({ collaboratorId: form.collaboratorId!, startDate: form.startDate!, endDate: form.endDate!, days: Number(daysStr.value || 0), diagnosis: form.diagnosis, icdCode: form.icdCode, icdTitle: form.icdTitle })
   router.push({ name: 'certificates' })
 }
 const canSubmit = computed(() => {
@@ -93,6 +114,15 @@ function reset() {
   form.diagnosis = ''
   daysStr.value = '0'
   icdTerm.value = ''
+  pendingFiles.value = []
+}
+
+// Attachments placeholder logic (no real upload)
+const pendingFiles = ref<{ name: string; size: number }[]>([])
+function formatSize(size: number) {
+  if (size < 1024) return size + 'B'
+  if (size < 1024 * 1024) return (size / 1024).toFixed(1) + 'KB'
+  return (size / (1024 * 1024)).toFixed(2) + 'MB'
 }
 </script>
 <style scoped>
@@ -101,4 +131,11 @@ function reset() {
 .suggestions { list-style: none; margin: 8px 0 0; padding: 0; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
 .sugg { padding: 8px 12px; cursor: pointer; background: var(--color-surface-2); }
 .sugg:hover { background: var(--color-surface); }
+.attachments-placeholder { margin-top:24px; border-top:1px solid var(--color-border); padding-top:16px; }
+.attachments-placeholder h3 { margin:0 0 4px; font-size:1rem; }
+.att-hint { margin:0 0 8px; font-size:0.75rem; color: var(--color-text-secondary); }
+.att-drop { display:flex; flex-direction:column; align-items:center; gap:4px; padding:20px; border:2px dashed var(--color-border); border-radius: var(--radius-md); font-size:0.875rem; color: var(--color-text-secondary); background: var(--color-surface-2); }
+.att-drop:focus { outline:2px solid var(--color-primary); outline-offset:2px; }
+.att-icon { font-size:1.25rem; }
+.att-list { list-style:none; padding:8px 0 0; margin:0; font-size:0.75rem; display:grid; gap:4px; }
 </style>
