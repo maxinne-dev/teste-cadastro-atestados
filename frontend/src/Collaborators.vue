@@ -90,7 +90,7 @@
         <FormField label="Status" for="status"><BaseSelect id="status" v-model="editing.status" :options="statusOptionsNoAll" /></FormField>
         <div style="display:flex; gap:8px; justify-content:flex-end;">
           <button class="btn" type="button" @click="editor = false">Cancelar</button>
-          <button class="btn primary" type="submit">Salvar</button>
+          <button class="btn primary" type="submit" :disabled="!canSave">Salvar</button>
         </div>
       </form>
     </SidePanel>
@@ -113,7 +113,7 @@ import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
 import { Collaborator, certificates } from './mocks/data'
 import { useCollaboratorsStore } from './stores/collaborators'
-import { formatCpf, formatDateBR } from './utils/formatters'
+import { formatCpf, formatDateBR, normalizeCpf } from './utils/formatters'
 
 const search = ref('')
 const status = ref<string | null>(null)
@@ -156,7 +156,8 @@ function view(row: Collaborator) { current.value = row; drawer.value = true }
 function edit(row: Collaborator) { Object.assign(editing, row); editor.value = true }
 function validate() {
   formErrors.fullName = editing.fullName ? undefined : 'Obrigatório'
-  formErrors.cpf = editing.cpf ? undefined : 'Obrigatório'
+  const cpfDigits = normalizeCpf(editing.cpf)
+  formErrors.cpf = cpfDigits.length === 11 ? undefined : 'CPF inválido'
   formErrors.birthDate = editing.birthDate ? undefined : 'Obrigatório'
   formErrors.position = editing.position ? undefined : 'Obrigatório'
   formErrors.department = editing.department ? undefined : 'Obrigatório'
@@ -176,6 +177,13 @@ function doToggle() {
 
 function displayCpf(cpf: string) { return formatCpf(cpf) }
 function dateBR(date: string) { return formatDateBR(date) }
+const canSave = computed(() => {
+  // lightweight pre-check to toggle disabled state without showing errors yet
+  const cpfDigits = normalizeCpf(editing.cpf)
+  return Boolean(
+    editing.fullName && editing.birthDate && editing.position && editing.department && cpfDigits.length === 11
+  )
+})
 </script>
 <style scoped>
 .btn { padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }

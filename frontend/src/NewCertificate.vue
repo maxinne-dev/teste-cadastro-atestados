@@ -19,7 +19,7 @@
         </ul>
         <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px;">
           <button class="btn" type="button" @click="reset">Limpar</button>
-          <button class="btn primary" type="submit">Salvar</button>
+          <button class="btn primary" type="submit" :disabled="!canSubmit">Salvar</button>
         </div>
       </form>
     </Card>
@@ -68,6 +68,11 @@ function validate() {
   errors.endDate = form.endDate ? undefined : 'Obrigatório'
   const days = Number(daysStr.value || 0)
   errors.days = days > 0 ? undefined : 'Informe os dias'
+  if (form.startDate && form.endDate) {
+    const s = new Date(form.startDate)
+    const e = new Date(form.endDate)
+    if (s > e) errors.endDate = 'Fim deve ser após o início'
+  }
   return !Object.values(errors).some(Boolean)
 }
 function onSubmit() {
@@ -75,6 +80,13 @@ function onSubmit() {
   certStore.create({ collaboratorId: form.collaboratorId!, startDate: form.startDate!, endDate: form.endDate!, days: Number(daysStr.value || 0), diagnosis: form.diagnosis, icdCode: (form as any).icdCode, icdTitle: (form as any).icdTitle })
   router.push({ name: 'certificates' })
 }
+const canSubmit = computed(() => {
+  if (!form.collaboratorId || !form.startDate || !form.endDate) return false
+  const s = new Date(form.startDate)
+  const e = new Date(form.endDate)
+  const days = Number(daysStr.value || 0)
+  return s <= e && days > 0
+})
 function reset() {
   form.collaboratorId = ''
   form.startDate = form.endDate = ''

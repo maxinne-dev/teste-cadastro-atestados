@@ -45,8 +45,8 @@ describe('App Shell & Layout', () => {
     const before = wrapper.find('.app-shell')
     expect(before.classes()).not.toContain('sidebar-collapsed')
 
-    // Find the hamburger button (aria-label="Open menu") and click
-    const btn = wrapper.find('button[aria-label="Open menu"]')
+    // Find the hamburger button in the topbar and click
+    const btn = wrapper.find('.app-topbar .icon-btn')
     expect(btn.exists()).toBe(true)
     await btn.trigger('click')
 

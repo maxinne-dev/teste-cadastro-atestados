@@ -191,8 +191,8 @@ Note: Specs prepared in docs/Pages-Plan.md (no code yet).
 ## Validation, Testing, and QA (UI-only)
 
 24. Form validation (client-only)
-   - [ ] Required fields, formats (email, CPF), date ranges
-   - [ ] Inline errors + disabled submit until valid
+   - [x] Required fields, formats (email, CPF), date ranges
+   - [x] Inline errors + disabled submit until valid
 
 25. Component tests (optional but recommended)
    - [ ] Configure Vitest + Vue Test Utils for basic render/interaction tests
