@@ -37,19 +37,19 @@ Note: ESLint checks are temporarily deferred to speed up UI scaffolding. We will
 ## Routing and Navigation
 
 4. Router and guards (dummy only)
-   - [ ] Define routes: `/login`, `/` (Dashboard), `/collaborators`, `/certificates`, `/certificates/new`, and 404
-   - [ ] Keep a simple dummy auth guard using in-memory flag/localStorage (no API)
-   - [ ] Configure basic role meta placeholders for future use (no enforcement yet)
+   - [x] Define routes: `/login`, `/` (Dashboard), `/collaborators`, `/certificates`, `/certificates/new`, and 404
+   - [x] Keep a simple dummy auth guard using in-memory flag/localStorage (no API)
+   - [x] Configure basic role meta placeholders for future use (no enforcement yet)
 
 5. Navigation components
-   - [ ] Sidebar menu with active route highlighting
-   - [ ] Topbar quick actions (e.g., “New Certificate”)
-   - [ ] Breadcrumbs tied to route meta
+   - [x] Sidebar menu with active route highlighting
+   - [x] Topbar quick actions (e.g., “New Certificate”)
+   - [x] Breadcrumbs tied to route meta
 
 - Section test checklist
-  - [ ] Router unit tests: routes exist, guards redirect unauthenticated to login, nested routes render
-  - [ ] Update/extend `src/router.spec.ts` with added cases
-  - [ ] Typecheck pass (lint deferred)
+  - [x] Router unit tests: routes exist, guards redirect unauthenticated to login, nested routes render
+  - [x] Update/extend `src/router.spec.ts` with added cases
+  - [x] Typecheck pass (lint deferred)
 
 ## Base Components
 
