@@ -43,7 +43,10 @@ describe('Form Validation (client-only)', () => {
 
   it('Collaborators: Save disabled until required fields and valid CPF (11 digits)', async () => {
     const pinia = createPinia()
-    const wrap = mount(Collaborators, { global: { plugins: [pinia] }, attachTo: document.body })
+    const wrap = mount(Collaborators, {
+      global: { plugins: [pinia] },
+      attachTo: document.body,
+    })
     // Open create editor
     await wrap.find('button.btn.primary').trigger('click')
     const save = () => wrap.find('button[type="submit"]')
@@ -62,4 +65,3 @@ describe('Form Validation (client-only)', () => {
     expect(save().attributes('disabled')).toBeUndefined()
   })
 })
-

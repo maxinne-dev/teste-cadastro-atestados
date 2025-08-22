@@ -4,7 +4,12 @@ import FormField from './FormField.vue'
 describe('FormField', () => {
   it('renders label, hint and errors', () => {
     const wrapper = mount(FormField, {
-      props: { label: 'Email', hint: 'Use corporate email', error: ['Required', 'Invalid format'], for: 'email' },
+      props: {
+        label: 'Email',
+        hint: 'Use corporate email',
+        error: ['Required', 'Invalid format'],
+        for: 'email',
+      },
       slots: { default: '<input id="email" />' },
     })
     expect(wrapper.text()).toContain('Email')
@@ -13,4 +18,3 @@ describe('FormField', () => {
     expect(wrapper.text()).toContain('Invalid format')
   })
 })
-

@@ -9,4 +9,3 @@ describe('Modal', () => {
     expect(wrapper.emitted('update:visible')?.[0]?.[0]).toBe(false)
   })
 })
-

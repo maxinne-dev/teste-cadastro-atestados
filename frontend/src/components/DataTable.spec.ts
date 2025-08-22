@@ -3,7 +3,9 @@ import DataTable from './DataTable.vue'
 
 describe('DataTable', () => {
   it('renders empty state', () => {
-    const wrapper = mount(DataTable, { props: { rows: [], emptyMessage: 'Nada aqui' } })
+    const wrapper = mount(DataTable, {
+      props: { rows: [], emptyMessage: 'Nada aqui' },
+    })
     expect(wrapper.text()).toContain('Nada aqui')
   })
 
@@ -23,7 +25,7 @@ describe('DataTable', () => {
 
   it('paginates with next/prev controls', async () => {
     const rows = [{ name: 'A' }, { name: 'B' }]
-    let page = 1
+    const page = 1
     const wrapper = mount(DataTable, {
       props: { rows, rowsPerPage: 1, page },
       slots: {
@@ -62,14 +64,22 @@ describe('DataTable', () => {
     // Click header to sort asc
     await th.trigger('click')
     await wrapper.setProps({ sortBy: 'name', sortDir: 'asc' })
-    expect(wrapper.find('th[data-sort="name"]').attributes('aria-sort')).toBe('ascending')
-    expect(wrapper.find('th[data-sort="name"]').find('.sort-icon').classes()).toContain('pi-sort-amount-up')
+    expect(wrapper.find('th[data-sort="name"]').attributes('aria-sort')).toBe(
+      'ascending',
+    )
+    expect(
+      wrapper.find('th[data-sort="name"]').find('.sort-icon').classes(),
+    ).toContain('pi-sort-amount-up')
     expect(wrapper.findAll('tbody td')[0].text()).toBe('A')
     // Click again to sort desc
     await wrapper.find('th[data-sort="name"]').trigger('click')
     await wrapper.setProps({ sortBy: 'name', sortDir: 'desc' })
-    expect(wrapper.find('th[data-sort="name"]').attributes('aria-sort')).toBe('descending')
-    expect(wrapper.find('th[data-sort="name"]').find('.sort-icon').classes()).toContain('pi-sort-amount-down')
+    expect(wrapper.find('th[data-sort="name"]').attributes('aria-sort')).toBe(
+      'descending',
+    )
+    expect(
+      wrapper.find('th[data-sort="name"]').find('.sort-icon').classes(),
+    ).toContain('pi-sort-amount-down')
     expect(wrapper.findAll('tbody td')[0].text()).toBe('B')
   })
 })

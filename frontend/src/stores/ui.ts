@@ -4,8 +4,13 @@ type Theme = 'light' | 'dark' | 'system'
 
 export const useUiStore = defineStore('ui', {
   state: () => ({
-    theme: ((typeof localStorage !== 'undefined' && (localStorage.getItem('theme') as Theme)) || 'system') as Theme,
-    sidebarCollapsed: (typeof localStorage !== 'undefined' && localStorage.getItem('sidebar:collapsed') === 'true') || false,
+    theme: ((typeof localStorage !== 'undefined' &&
+      (localStorage.getItem('theme') as Theme)) ||
+      'system') as Theme,
+    sidebarCollapsed:
+      (typeof localStorage !== 'undefined' &&
+        localStorage.getItem('sidebar:collapsed') === 'true') ||
+      false,
   }),
   actions: {
     setTheme(t: Theme) {
@@ -14,8 +19,8 @@ export const useUiStore = defineStore('ui', {
     },
     toggleSidebar() {
       this.sidebarCollapsed = !this.sidebarCollapsed
-      if (typeof localStorage !== 'undefined') localStorage.setItem('sidebar:collapsed', String(this.sidebarCollapsed))
+      if (typeof localStorage !== 'undefined')
+        localStorage.setItem('sidebar:collapsed', String(this.sidebarCollapsed))
     },
   },
 })
-

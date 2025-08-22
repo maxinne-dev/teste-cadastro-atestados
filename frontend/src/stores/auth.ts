@@ -4,17 +4,20 @@ type User = { email: string; roles: string[] } | null
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: (typeof localStorage !== 'undefined' && localStorage.getItem('token')) || null as string | null,
+    token:
+      (typeof localStorage !== 'undefined' && localStorage.getItem('token')) ||
+      (null as string | null),
     user: null as User,
   }),
   getters: {
     isAuthed: (s) => !!s.token,
   },
   actions: {
-    async loginDummy(email: string, _password: string) {
+    async loginDummy(email: string) {
       await new Promise((r) => setTimeout(r, 50))
       this.token = 'dev'
-      if (typeof localStorage !== 'undefined') localStorage.setItem('token', this.token)
+      if (typeof localStorage !== 'undefined')
+        localStorage.setItem('token', this.token)
       this.user = { email, roles: ['hr'] }
     },
     async logout() {
@@ -25,4 +28,3 @@ export const useAuthStore = defineStore('auth', {
     },
   },
 })
-

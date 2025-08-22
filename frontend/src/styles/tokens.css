@@ -1,33 +1,42 @@
 :root {
   /* Brand & Status */
-  --color-primary: #2563EB; /* blue-600 */
-  --color-secondary: #7C3AED; /* violet-600 */
-  --color-success: #16A34A; /* green-600 */
-  --color-warning: #D97706; /* amber-600 */
-  --color-error: #DC2626;   /* red-600 */
-  --color-info: #0891B2;    /* cyan-700 */
+  --color-primary: #2563eb; /* blue-600 */
+  --color-secondary: #7c3aed; /* violet-600 */
+  --color-success: #16a34a; /* green-600 */
+  --color-warning: #d97706; /* amber-600 */
+  --color-error: #dc2626; /* red-600 */
+  --color-info: #0891b2; /* cyan-700 */
 
   /* Surfaces & Text (light) */
-  --color-bg: #FFFFFF;
-  --color-surface: #F8FAFC;    /* slate-50 */
-  --color-surface-2: #FFFFFF;
-  --color-border: #E5E7EB;     /* gray-200 */
-  --color-text: #0F172A;       /* slate-900 */
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc; /* slate-50 */
+  --color-surface-2: #ffffff;
+  --color-border: #e5e7eb; /* gray-200 */
+  --color-text: #0f172a; /* slate-900 */
   --color-text-secondary: #475569; /* slate-600 */
-  --color-text-muted: #94A3B8;     /* slate-400 */
+  --color-text-muted: #94a3b8; /* slate-400 */
 
   /* Typography */
-  --font-family-base: Inter, "SF Pro Text", "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", system-ui, -apple-system, sans-serif;
+  --font-family-base:
+    Inter, 'SF Pro Text', 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans',
+    system-ui, -apple-system, sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --fs-h1: 32px; --lh-h1: 40px;
-  --fs-h2: 24px; --lh-h2: 32px;
-  --fs-h3: 20px; --lh-h3: 28px;
-  --fs-h4: 18px; --lh-h4: 26px;
-  --fs-body-lg: 16px; --lh-body-lg: 24px;
-  --fs-body: 14px; --lh-body: 22px;
-  --fs-caption: 12px; --lh-caption: 18px;
+  --fs-h1: 32px;
+  --lh-h1: 40px;
+  --fs-h2: 24px;
+  --lh-h2: 32px;
+  --fs-h3: 20px;
+  --lh-h3: 28px;
+  --fs-h4: 18px;
+  --lh-h4: 26px;
+  --fs-body-lg: 16px;
+  --lh-body-lg: 24px;
+  --fs-body: 14px;
+  --lh-body: 22px;
+  --fs-caption: 12px;
+  --lh-caption: 18px;
 
   /* Spacing Scale */
   --space-0: 0px;
@@ -57,20 +66,19 @@
   --focus-width: 2px;
 }
 
-[data-theme="dark"] {
-  --color-primary: #60A5FA; /* blue-400 */
-  --color-secondary: #A78BFA; /* violet-400 */
-  --color-success: #34D399; /* emerald-400 */
-  --color-warning: #FBBF24; /* amber-400 */
-  --color-error: #F87171;   /* red-400 */
-  --color-info: #67E8F9;    /* cyan-300 */
+[data-theme='dark'] {
+  --color-primary: #60a5fa; /* blue-400 */
+  --color-secondary: #a78bfa; /* violet-400 */
+  --color-success: #34d399; /* emerald-400 */
+  --color-warning: #fbbf24; /* amber-400 */
+  --color-error: #f87171; /* red-400 */
+  --color-info: #67e8f9; /* cyan-300 */
 
-  --color-bg: #0B1220;
-  --color-surface: #111827;    /* gray-900 */
-  --color-surface-2: #1F2937;  /* gray-800 */
-  --color-border: #374151;     /* gray-700 */
-  --color-text: #E5E7EB;       /* gray-200 */
-  --color-text-secondary: #9CA3AF; /* gray-400 */
-  --color-text-muted: #6B7280;     /* gray-500 */
+  --color-bg: #0b1220;
+  --color-surface: #111827; /* gray-900 */
+  --color-surface-2: #1f2937; /* gray-800 */
+  --color-border: #374151; /* gray-700 */
+  --color-text: #e5e7eb; /* gray-200 */
+  --color-text-secondary: #9ca3af; /* gray-400 */
+  --color-text-muted: #6b7280; /* gray-500 */
 }
-

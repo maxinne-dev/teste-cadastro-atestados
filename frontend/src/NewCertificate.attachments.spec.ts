@@ -13,7 +13,15 @@ describe('New Certificate attachments placeholder', () => {
     localStorage.setItem('token', 'dev')
     await router.push('/certificates/new')
     await router.isReady()
-    const wrapper = mount(App, { global: { plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()] } })
+    const wrapper = mount(App, {
+      global: {
+        plugins: [
+          [PrimeVue, { theme: { preset: Aura } }],
+          router,
+          createPinia(),
+        ],
+      },
+    })
     expect(wrapper.find('.attachments-placeholder').exists()).toBe(true)
     expect(wrapper.text()).toContain('Anexos')
     expect(wrapper.text()).toContain('Área para anexar arquivos')

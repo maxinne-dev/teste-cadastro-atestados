@@ -1,6 +1,8 @@
 <template>
   <div class="data-table">
-    <div class="header"><slot name="header" /></div>
+    <div class="header">
+      <slot name="header" />
+    </div>
     <div v-if="rows.length && isCardView && hasCard" class="cards" role="list">
       <div v-for="(r, i) in pagedRows" :key="i" class="card" role="listitem">
         <slot name="card" :row="r" :index="i" />
@@ -8,21 +10,35 @@
     </div>
     <div v-else-if="rows.length" class="table-scroll">
       <table :aria-label="ariaLabel">
-        <thead ref="thead" @click="onHeaderClick" @keydown="onHeaderKeydown"><slot name="columns" /></thead>
+        <thead ref="thead" @click="onHeaderClick" @keydown="onHeaderKeydown">
+          <slot name="columns" />
+        </thead>
         <tbody>
-          <slot name="row" v-for="(r, i) in pagedRows" :row="r" :index="i" :key="i" />
+          <slot
+            v-for="(r, i) in pagedRows"
+            :key="i"
+            name="row"
+            :row="r"
+            :index="i"
+          />
         </tbody>
       </table>
     </div>
     <div v-else class="empty">
-      <slot name="empty">{{ emptyMessage }}</slot>
+      <slot name="empty">
+        {{ emptyMessage }}
+      </slot>
     </div>
     <div class="footer">
       <slot name="footer" />
       <div v-if="showPagination" class="pagination">
-        <button class="btn" :disabled="page <= 1" @click="prev">Anterior</button>
+        <button class="btn" :disabled="page <= 1" @click="prev">
+          Anterior
+        </button>
         <span>Página {{ page }} de {{ totalPages }}</span>
-        <button class="btn" :disabled="page >= totalPages" @click="next">Próxima</button>
+        <button class="btn" :disabled="page >= totalPages" @click="next">
+          Próxima
+        </button>
       </div>
     </div>
   </div>
@@ -30,16 +46,39 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useSlots, watch } from 'vue'
-const props = withDefaults(defineProps<{ rows: any[]; loading?: boolean; emptyMessage?: string; total?: number; page?: number; rowsPerPage?: number; sortBy?: string | null; sortDir?: 'asc' | 'desc' | null; ariaLabel?: string; cardBreakpoint?: number }>(), {
-  rows: () => [],
-  emptyMessage: 'No data',
-  page: 1,
-  rowsPerPage: 10,
-  sortBy: null,
-  sortDir: null,
-  cardBreakpoint: 640,
-})
-const emit = defineEmits<{ (e: 'update:page', v: number): void; (e: 'update:rowsPerPage', v: number): void; (e: 'sort', payload: { sortBy: string | null; sortDir: 'asc' | 'desc' | null }): void; (e: 'update:sortBy', v: string | null): void; (e: 'update:sortDir', v: 'asc' | 'desc' | null): void }>()
+const props = withDefaults(
+  defineProps<{
+    rows: any[]
+    loading?: boolean
+    emptyMessage?: string
+    total?: number
+    page?: number
+    rowsPerPage?: number
+    sortBy?: string | null
+    sortDir?: 'asc' | 'desc' | null
+    ariaLabel?: string
+    cardBreakpoint?: number
+  }>(),
+  {
+    rows: () => [],
+    emptyMessage: 'No data',
+    page: 1,
+    rowsPerPage: 10,
+    sortBy: null,
+    sortDir: null,
+    cardBreakpoint: 640,
+  },
+)
+const emit = defineEmits<{
+  (e: 'update:page', v: number): void
+  (e: 'update:rowsPerPage', v: number): void
+  (
+    e: 'sort',
+    payload: { sortBy: string | null; sortDir: 'asc' | 'desc' | null },
+  ): void
+  (e: 'update:sortBy', v: string | null): void
+  (e: 'update:sortDir', v: 'asc' | 'desc' | null): void
+}>()
 
 function getByPath(obj: any, path: string) {
   return path.split('.').reduce((acc, k) => (acc == null ? acc : acc[k]), obj)
@@ -65,14 +104,22 @@ const pagedRows = computed(() => {
   return sortedRows.value.slice(start, start + props.rowsPerPage)
 })
 const totalItems = computed(() => props.total ?? props.rows.length)
-const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / props.rowsPerPage)))
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(totalItems.value / props.rowsPerPage)),
+)
 const page = computed(() => Math.min(props.page, totalPages.value))
 const showPagination = computed(() => totalItems.value > props.rowsPerPage)
-function prev() { if (page.value > 1) emit('update:page', page.value - 1) }
-function next() { if (page.value < totalPages.value) emit('update:page', page.value + 1) }
+function prev() {
+  if (page.value > 1) emit('update:page', page.value - 1)
+}
+function next() {
+  if (page.value < totalPages.value) emit('update:page', page.value + 1)
+}
 
 function onHeaderClick(e: MouseEvent) {
-  const target = (e.target as HTMLElement).closest('[data-sort]') as HTMLElement | null
+  const target = (e.target as HTMLElement).closest(
+    '[data-sort]',
+  ) as HTMLElement | null
   if (!target) return
   const key = target.getAttribute('data-sort')
   if (!key) return
@@ -85,16 +132,25 @@ function onHeaderClick(e: MouseEvent) {
 
 // Responsive card mode detection
 const width = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
-function onResize() { width.value = window.innerWidth }
-onMounted(() => { window.addEventListener('resize', onResize, { passive: true }) })
-onUnmounted(() => { window.removeEventListener('resize', onResize) })
+function onResize() {
+  width.value = window.innerWidth
+}
+onMounted(() => {
+  window.addEventListener('resize', onResize, { passive: true })
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', onResize)
+})
 const isCardView = computed(() => width.value < (props.cardBreakpoint || 0))
 const slots = useSlots()
 const hasCard = computed(() => Boolean(slots.card))
 
 // A11y: manage aria-sort on sortable headers
 const thead = ref<HTMLElement | null>(null)
-function ensureSortIcon(th: HTMLElement, state: 'none' | 'ascending' | 'descending') {
+function ensureSortIcon(
+  th: HTMLElement,
+  state: 'none' | 'ascending' | 'descending',
+) {
   let icon = th.querySelector<HTMLElement>('span.sort-icon')
   if (!icon) {
     icon = document.createElement('span')
@@ -102,7 +158,11 @@ function ensureSortIcon(th: HTMLElement, state: 'none' | 'ascending' | 'descendi
     icon.setAttribute('aria-hidden', 'true')
     th.appendChild(icon)
   }
-  icon.classList.remove('pi-sort-alt', 'pi-sort-amount-up', 'pi-sort-amount-down')
+  icon.classList.remove(
+    'pi-sort-alt',
+    'pi-sort-amount-up',
+    'pi-sort-amount-down',
+  )
   if (state === 'ascending') icon.classList.add('pi-sort-amount-up')
   else if (state === 'descending') icon.classList.add('pi-sort-amount-down')
   else icon.classList.add('pi-sort-alt')
@@ -114,7 +174,14 @@ function updateAriaSort() {
   allThs.forEach((th) => {
     const key = th.getAttribute('data-sort')
     const isSortable = key != null
-    const val: 'none' | 'ascending' | 'descending' = isSortable && props.sortBy === key ? (props.sortDir === 'asc' ? 'ascending' : props.sortDir === 'desc' ? 'descending' : 'none') : 'none'
+    const val: 'none' | 'ascending' | 'descending' =
+      isSortable && props.sortBy === key
+        ? props.sortDir === 'asc'
+          ? 'ascending'
+          : props.sortDir === 'desc'
+            ? 'descending'
+            : 'none'
+        : 'none'
     th.setAttribute('role', 'columnheader')
     th.setAttribute('aria-sort', val)
     if (isSortable) {
@@ -128,43 +195,113 @@ function updateAriaSort() {
   })
 }
 function onHeaderKeydown(e: KeyboardEvent) {
-  const keyEl = (e.target as HTMLElement).closest('[data-sort]') as HTMLElement | null
+  const keyEl = (e.target as HTMLElement).closest(
+    '[data-sort]',
+  ) as HTMLElement | null
   if (!keyEl) return
   if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault()
     const sortKey = keyEl.getAttribute('data-sort')
     if (!sortKey) return
     let nextDir: 'asc' | 'desc' = 'asc'
-    if (props.sortBy === sortKey) nextDir = props.sortDir === 'asc' ? 'desc' : 'asc'
+    if (props.sortBy === sortKey)
+      nextDir = props.sortDir === 'asc' ? 'desc' : 'asc'
     emit('update:sortBy', sortKey)
     emit('update:sortDir', nextDir)
     emit('sort', { sortBy: sortKey, sortDir: nextDir })
   }
 }
 onMounted(updateAriaSort)
-watch(() => [props.sortBy, props.sortDir], () => updateAriaSort())
+watch(
+  () => [props.sortBy, props.sortDir],
+  () => updateAriaSort(),
+)
 </script>
 
-<style scoped>
-.data-table { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
-.table-scroll { width: 100%; overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-thead th { text-align: left; color: var(--color-text-secondary); font-weight: var(--font-weight-medium); padding: 8px 12px; border-bottom: 1px solid var(--color-border); }
-thead [data-sort] { cursor: pointer; }
-tbody td { padding: 10px 12px; border-top: 1px solid var(--color-border); }
-.empty { padding: var(--space-6); color: var(--color-text-secondary); text-align: center; }
-.header, .footer { padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; }
-.pagination { display: inline-flex; align-items: center; gap: var(--space-3); }
-.btn { padding: 6px 10px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+<style>
+.data-table {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+thead th {
+  text-align: left;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+thead [data-sort] {
+  cursor: pointer;
+}
+tbody td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--color-border);
+}
+.empty {
+  padding: var(--space-6);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+.header,
+.footer {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.btn {
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* Cards */
-.cards { display: grid; gap: var(--space-3); padding: var(--space-3); }
-.card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); }
+.cards {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
 
 /* Sort icon positioning */
-thead th { position: relative; }
-thead th .sort-icon { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); font-size: 12px; }
-thead th[aria-sort="ascending"] .sort-icon,
-thead th[aria-sort="descending"] .sort-icon { color: var(--color-text-secondary); }
+thead th {
+  position: relative;
+}
+thead th .sort-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+thead th[aria-sort='ascending'] .sort-icon,
+thead th[aria-sort='descending'] .sort-icon {
+  color: var(--color-text-secondary);
+}
 </style>

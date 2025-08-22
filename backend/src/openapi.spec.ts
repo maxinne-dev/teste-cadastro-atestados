@@ -9,14 +9,14 @@ jest.mock('@nestjs/core', () => ({
       close: async () => {},
     })),
   },
-}))
+}));
 
-import { buildOpenApiDocument } from './openapi'
+import { buildOpenApiDocument } from './openapi';
 
 describe('OpenAPI generation', () => {
   it('builds a document with bearer scheme', async () => {
-    const doc = await buildOpenApiDocument()
-    expect(doc.openapi).toMatch(/^3\./)
-    expect(doc.components?.securitySchemes?.bearer).toBeDefined()
-  })
-})
+    const doc = await buildOpenApiDocument();
+    expect(doc.openapi).toMatch(/^3\./);
+    expect(doc.components?.securitySchemes?.bearer).toBeDefined();
+  });
+});

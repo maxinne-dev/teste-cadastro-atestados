@@ -24,12 +24,38 @@ export type ICD = { code: string; title: string }
 
 // Dummy data (in-memory only)
 export const collaborators: Collaborator[] = [
-  { id: 'c1', fullName: 'Maria da Silva', cpf: '52998224725', birthDate: '1990-05-10', position: 'Analista', department: 'RH', status: 'active' },
-  { id: 'c2', fullName: 'João Pereira', cpf: '12345678909', birthDate: '1985-08-20', position: 'Dev', department: 'TI', status: 'inactive' },
+  {
+    id: 'c1',
+    fullName: 'Maria da Silva',
+    cpf: '52998224725',
+    birthDate: '1990-05-10',
+    position: 'Analista',
+    department: 'RH',
+    status: 'active',
+  },
+  {
+    id: 'c2',
+    fullName: 'João Pereira',
+    cpf: '12345678909',
+    birthDate: '1985-08-20',
+    position: 'Dev',
+    department: 'TI',
+    status: 'inactive',
+  },
 ]
 
 export const certificates: Certificate[] = [
-  { id: 'm1', collaboratorId: 'c1', startDate: '2025-01-01', endDate: '2025-01-05', days: 5, diagnosis: 'Resfriado', icdCode: 'J06.9', icdTitle: 'Acute upper respiratory infection, unspecified', status: 'active' },
+  {
+    id: 'm1',
+    collaboratorId: 'c1',
+    startDate: '2025-01-01',
+    endDate: '2025-01-05',
+    days: 5,
+    diagnosis: 'Resfriado',
+    icdCode: 'J06.9',
+    icdTitle: 'Acute upper respiratory infection, unspecified',
+    status: 'active',
+  },
 ]
 
 export const icdList: ICD[] = [
@@ -42,13 +68,16 @@ export function listCollaborators() {
   return [...collaborators]
 }
 
-export function addOrUpdateCollaborator(input: Partial<Collaborator> & { id?: string }) {
+export function addOrUpdateCollaborator(
+  input: Partial<Collaborator> & { id?: string },
+) {
   if (input.id) {
-    const idx = collaborators.findIndex(c => c.id === input.id)
-    if (idx >= 0) collaborators[idx] = { ...collaborators[idx], ...input } as Collaborator
+    const idx = collaborators.findIndex((c) => c.id === input.id)
+    if (idx >= 0)
+      collaborators[idx] = { ...collaborators[idx], ...input } as Collaborator
     return collaborators[idx]
   }
-  const id = 'c' + (Math.random() * 1e6 | 0)
+  const id = 'c' + ((Math.random() * 1e6) | 0)
   const created: Collaborator = {
     id,
     fullName: input.fullName || '',
@@ -63,7 +92,7 @@ export function addOrUpdateCollaborator(input: Partial<Collaborator> & { id?: st
 }
 
 export function toggleCollaboratorStatus(id: string) {
-  const c = collaborators.find(c => c.id === id)
+  const c = collaborators.find((c) => c.id === id)
   if (c) c.status = c.status === 'active' ? 'inactive' : 'active'
   return c
 }
@@ -72,16 +101,23 @@ export function listCertificates() {
   return [...certificates]
 }
 
-export function addCertificate(input: Omit<Certificate, 'id' | 'status'> & { status?: Certificate['status'] }) {
-  const id = 'm' + (Math.random() * 1e6 | 0)
-  const created: Certificate = { id, status: input.status || 'active', ...input }
+export function addCertificate(
+  input: Omit<Certificate, 'id' | 'status'> & {
+    status?: Certificate['status']
+  },
+) {
+  const id = 'm' + ((Math.random() * 1e6) | 0)
+  const created: Certificate = {
+    id,
+    status: input.status || 'active',
+    ...input,
+  }
   certificates.push(created)
   return created
 }
 
 export function cancelCertificate(id: string) {
-  const m = certificates.find(c => c.id === id)
+  const m = certificates.find((c) => c.id === id)
   if (m && m.status === 'active') m.status = 'cancelled'
   return m
 }
-

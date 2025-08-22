@@ -1,13 +1,13 @@
-import { Test } from '@nestjs/testing'
-import { NotFoundException } from '@nestjs/common'
-import { UsersController } from './users.controller'
-import { UsersService } from './users.service'
-import { PasswordService } from '../auth/password.service'
-import { AuditService } from '../audit/audit.service'
+import { Test } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+import { PasswordService } from '../auth/password.service';
+import { AuditService } from '../audit/audit.service';
 
 describe('UsersController', () => {
-  let controller: UsersController
-  let service: jest.Mocked<Partial<UsersService>>
+  let controller: UsersController;
+  let service: jest.Mocked<Partial<UsersService>>;
 
   beforeEach(async () => {
     service = {
@@ -15,7 +15,7 @@ describe('UsersController', () => {
       findByEmail: jest.fn(async () => null),
       setStatus: jest.fn(async () => null),
       assignRoles: jest.fn(async () => null),
-    }
+    };
 
     const module = await Test.createTestingModule({
       controllers: [UsersController],
@@ -24,10 +24,10 @@ describe('UsersController', () => {
         { provide: UsersService, useValue: service },
         { provide: AuditService, useValue: { record: jest.fn() } },
       ],
-    }).compile()
+    }).compile();
 
-    controller = module.get(UsersController)
-  })
+    controller = module.get(UsersController);
+  });
 
   it('creates user via service with hashed password', async () => {
     // eslint-disable-next-line no-console
@@ -37,29 +37,35 @@ describe('UsersController', () => {
       fullName: 'Alice',
       password: 'secret123',
       roles: ['admin', 'hr'],
-    } as any)
-    expect(service.create).toHaveBeenCalled()
-    const payload = (service.create as jest.Mock).mock.calls[0][0]
-    expect(payload.email).toBe('alice@example.com')
-    expect(typeof payload.passwordHash).toBe('string')
-    expect(payload.passwordHash).not.toBe('secret123')
-  })
+    } as any);
+    expect(service.create).toHaveBeenCalled();
+    const payload = (service.create as jest.Mock).mock.calls[0][0];
+    expect(payload.email).toBe('alice@example.com');
+    expect(typeof payload.passwordHash).toBe('string');
+    expect(payload.passwordHash).not.toBe('secret123');
+  });
 
   it('get throws 404 when not found', async () => {
-    await expect(controller.get({ email: 'nobody@example.com' } as any)).rejects.toBeInstanceOf(
-      NotFoundException
-    )
-  })
+    await expect(
+      controller.get({ email: 'nobody@example.com' } as any),
+    ).rejects.toBeInstanceOf(NotFoundException);
+  });
 
   it('updateStatus throws 404 when service returns null', async () => {
     await expect(
-      controller.updateStatus({ email: 'nobody@example.com' } as any, { status: 'disabled' } as any)
-    ).rejects.toBeInstanceOf(NotFoundException)
-  })
+      controller.updateStatus(
+        { email: 'nobody@example.com' } as any,
+        { status: 'disabled' } as any,
+      ),
+    ).rejects.toBeInstanceOf(NotFoundException);
+  });
 
   it('updateRoles throws 404 when service returns null', async () => {
     await expect(
-      controller.updateRoles({ email: 'nobody@example.com' } as any, { roles: ['admin'] } as any)
-    ).rejects.toBeInstanceOf(NotFoundException)
-  })
-})
+      controller.updateRoles(
+        { email: 'nobody@example.com' } as any,
+        { roles: ['admin'] } as any,
+      ),
+    ).rejects.toBeInstanceOf(NotFoundException);
+  });
+});

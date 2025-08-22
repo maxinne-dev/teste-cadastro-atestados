@@ -9,4 +9,3 @@ describe('BaseInput', () => {
     expect(emits?.[0]?.[0]).toBe('hello')
   })
 })
-

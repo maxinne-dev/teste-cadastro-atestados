@@ -12,8 +12,8 @@ async function bootstrap() {
   const origins = (process.env.CORS_ORIGINS || '')
     .split(',')
     .map((s) => s.trim())
-    .filter(Boolean)
-  const isProd = process.env.NODE_ENV === 'production'
+    .filter(Boolean);
+  const isProd = process.env.NODE_ENV === 'production';
   app.enableCors({
     origin: origins.length ? origins : isProd ? false : true,
     credentials: true,
@@ -26,17 +26,21 @@ async function bootstrap() {
   app.use(new SecurityHeadersMiddleware().use);
 
   // Swagger (dev only)
-  const enableSwagger = process.env.NODE_ENV !== 'production' || process.env.SWAGGER === 'true'
+  const enableSwagger =
+    process.env.NODE_ENV !== 'production' || process.env.SWAGGER === 'true';
   if (enableSwagger) {
-    const { SwaggerModule, DocumentBuilder } = await import('@nestjs/swagger')
+    const { SwaggerModule, DocumentBuilder } = await import('@nestjs/swagger');
     const config = new DocumentBuilder()
       .setTitle('Atestados API')
       .setDescription('API de atestados médicos')
       .setVersion('1.0.0')
-      .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'bearer')
-      .build()
-    const doc = SwaggerModule.createDocument(app, config)
-    SwaggerModule.setup('api/docs', app, doc)
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'bearer',
+      )
+      .build();
+    const doc = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, doc);
   }
 
   const port = process.env.API_PORT || 3000;

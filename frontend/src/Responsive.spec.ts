@@ -39,4 +39,3 @@ describe('Responsive DataTable', () => {
     expect(wrap.find('.cards').exists()).toBe(false)
   })
 })
-

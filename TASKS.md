@@ -1,432 +1,180 @@
-# TASKS — Full Integration Roadmap (Backend + Frontend)
-
-> Objetivo: Implementar **todas** as funcionalidades descritas em `MAIN.md` e `SPECS.md`, evoluindo do estado atual (frontend mock + backend parcial) até um sistema integrado, seguro, testado, monitorado e pronto para produção.
-
-Legenda de prioridade: (P0 crítico) (P1 alto) (P2 médio) (P3 extra / opcional). Use a numeração principal para rastreio (ex.: 3.4). Marque subtarefas com checkbox.
-
----
-
-## 1. Fundamentos & Preparação de Ambiente
-1.1 Repositório & Organização (P0)
-- [ ] Confirmar estrutura monorepo final (folders `backend/`, `frontend/`, infra, docs) alinhada ao plano.
-- [ ] Revisar/atualizar `.env.example` cobrindo todas as variáveis (JWT, Mongo, Redis, WHO, segurança, auditoria).
-- [ ] Adicionar `.env.local.example` se for separar variáveis sensíveis do CI.
-- [ ] Validar `.gitignore` para não vazar segredos / artefatos.
-
-1.2 Docker & Compose (P0)
-- [ ] Validar serviços: api, web, mongodb, redis (e opcional: elastic/opensearch, prometheus, grafana).
-- [ ] Implementar healthcheck robusto para API e opcional para frontend (nginx ou node serve).
-- [ ] Adicionar rede interna nomeada + volumes persistentes (mongo_data, redis_data opcional).
-- [ ] Parametrizar versões de imagens via build args / env.
-
-1.3 Qualidade & Tooling (P1)
-- [ ] Ativar ESLint + Prettier no frontend (atualmente diferido) com scripts `lint`, `lint:fix`.
-- [ ] Padronizar config TypeScript (paths, `strict`, `noImplicitAny`).
-- [ ] Configurar Husky / lint-staged (opcional) para pré-commit.
-- [ ] Definir matrizes Node (ex.: 20.x) no CI.
-
-1.4 Segurança de Desenvolvimento (P1)
-- [ ] Implementar verificação de dependências (npm audit / osv scanner) no pipeline.
-- [ ] Checagem de segredos (gitleaks) opcional.
-- [ ] Definir processo de rotação de segredos (.md de runbook).
-
----
-
-## 2. Autenticação, Sessões & Autorização
-2.1 Backend Auth Core (P0)
-- [ ] JWT emissão com `jti` e expiração 4h conforme especificação.
-- [ ] Armazenar sessão em Redis (`session:<jti>`) com TTL 4h.
-- [ ] Logout invalidando sessão (deleção Redis) + testes.
-- [ ] Middleware/guard que rejeita token expirado ou sessão ausente.
-- [ ] Refresh token (DECISÃO: não implementar se não previsto; documentar). 
-
-2.2 RBAC & Roles (P0)
-- [ ] Decorator `@Roles()` e `RolesGuard` funcional.
-- [ ] Tabelar permissões (admin, hr, user) em doc.
-- [ ] Endpoints admin protegidos (`/users`, relatórios executivos futuros).
-
-2.3 Rate Limiting e Proteções (P1)
-- [ ] Limite de tentativas de login (`AUTH_RATE_LIMIT_RPM`).
-- [ ] Throttling para `/api/icd/search` (`ICD_RATE_LIMIT_RPM`).
-- [ ] Proteção básica contra brute force (incremento exponencial opcional).
-
-2.4 Frontend Integração Auth (P0)
-- [ ] Criar `authService` (login, logout, estado).
-- [ ] Armazenar token (localStorage) + injetar em Authorization header via interceptor.
-- [ ] Guard de rota usando roles (redirecionar se não autorizado).
-- [ ] Auto-logout com 401 ou expiração detectada (timer + checagem).
-- [ ] Feedback de erros de login (credenciais inválidas vs rate limit vs genérico).
-
----
-
-## 3. Módulo de Colaboradores
-3.1 Backend Model & Schema (P0)
-- [ ] Definir schema (fullName, cpf único, birthDate, jobTitle, status enum active/inactive, timestamps).
-- [ ] Índice texto em `fullName` para busca.
-- [ ] Índice único `cpf` normalizado (somente dígitos).
-
-3.2 DTOs & Validação (P0)
-- [ ] DTO create/update com validação de CPF (biblioteca brasileira) e formatos de datas.
-- [ ] Normalizador de CPF (remove máscara) em pipe/transform.
-
-3.3 Endpoints & Casos (P0)
-- [ ] POST /collaborators (criação) + 409 para duplicado.
-- [ ] GET /collaborators com filtros: nome (texto), status, paginação, ordenação.
-- [ ] PATCH /collaborators/:id (editar campos).
-- [ ] PATCH /collaborators/:id/status (toggle ativo/inativo) ou inclusão em patch geral.
-- [ ] GET /collaborators/:id (detalhe).
-
-3.4 Backend Testes (P0)
-- [ ] Unit: service (criação, duplicação, busca filtrada, alteração status).
-- [ ] E2E: fluxo CRUD completo + paginação.
-
-3.5 Frontend Integração (P0)
-- [ ] Adaptar store `collaborators` para usar API real mantendo a interface.
-- [ ] Implementar busca incremental (debounce) + filtros.
-- [ ] Formulário: validação reativa (CPF, campos obrigatórios) + máscaras.
-- [ ] Toggle ativo/inativo com confirmação (modal/confirm dialog).
-- [ ] Mensagens de sucesso/erro alinhadas com `Errors.md`.
-
-3.6 Extras (P2)
-- [ ] Importação CSV (parcial) com relatório de erros.
-- [ ] Auditoria de alterações (liga com módulo audit).
-
----
-
-## 4. Integração ICD (OMS)
-4.1 Credenciais & Config (P0)
-- [ ] Variáveis exigidas: WHO_ICD_CLIENT_ID, WHO_ICD_CLIENT_SECRET, WHO_ICD_RELEASE, WHO_ICD_BASE_URL.
-- [ ] Serviço de obtenção de token OAuth2 (Client Credentials) com cache + renovação 5min antes do expirar.
-
-4.2 Serviço de Busca (P0)
-- [ ] `GET /api/icd/search?q=` valida parâmetro (min length 2).
-- [ ] Chamada upstream com headers corretos (Authorization, API-Version, Accept, Accept-Language).
-- [ ] Tratamento de erros (timeout, 401→refresh, 5xx → fallback local).
-- [ ] Limite de resultados configurável (e.g., ?limit=10).
-
-4.3 Cache Local & Fallback (P0)
-- [ ] Persistir resultados relevantes em coleção `icdcodes` (code, title, release, language).
-- [ ] Fallback local: busca por code prefix / title regex quando upstream indisponível.
-- [ ] Circuit breaker simples (contador de falhas, janela de reset).
-
-4.4 Rate Limit & Observabilidade (P1)
-- [ ] Métricas: contagem de chamadas upstream vs cache hits.
-- [ ] Log estruturado com código de erro upstream / latência.
-
-4.5 Frontend Autocomplete CID (P0)
-- [ ] Composable `useCidAutocomplete` trocar mocks por chamadas reais com debounce 300ms.
-- [ ] Exibir indicador de fonte (ex.: “WHO” vs “Local Cache”).
-- [ ] Lidar com estados: carregando, sem resultados, erro fallback.
-- [ ] Limitar chamadas quando input <2 chars.
-
-4.6 Testes (P0)
-- [ ] Unit: token service, search service (cache hit/miss, refresh token, fallback).
-- [ ] E2E: endpoint search (cenário upstream ok / falha / fallback).
-- [ ] Frontend: componente autocomplete (Vitest + mock API / MSW).
-
----
-
-## 5. Módulo de Atestados Médicos
-5.1 Backend Schema (P0)
-- [ ] Campos: collaboratorId (ref), issueDate (auto?), startDate, endDate, daysCalculated, icdCode, icdTitle, diagnosis (texto livre), status (active|cancelled|expired), notes, timestamps.
-- [ ] Índices: { collaboratorId, status }, issueDate -1, { startDate:1, endDate:1 }.
-- [ ] Hook para calcular days (end - start + 1) e status expired via processo (cron) opcional.
-
-5.2 DTOs & Validações (P0)
-- [ ] startDate <= endDate.
-- [ ] Dias máximo 365.
-- [ ] Collaborator ativo obrigatório (validar status antes de criar).
-- [ ] ICD opcional, mas se presente exigir `icdCode` + `icdTitle` combinados.
-
-5.3 Endpoints (P0)
-- [ ] POST /medical-certificates (criar).
-- [ ] GET /medical-certificates (filtros: collaboratorId, período, icdCode, status; paginação + sort por issueDate desc default).
-- [ ] GET /medical-certificates/:id.
-- [ ] PATCH /medical-certificates/:id (cancelar / editar notas apenas se regra permitir).
-- [ ] (P2) Export: `/medical-certificates/report.csv`.
-
-5.4 Expiração & Status (P1)
-- [ ] Job (cron) diário para marcar expired quando endDate < hoje e status active.
-- [ ] Endpoint para recálculo manual (admin) (P2).
-
-5.5 Testes Backend (P0)
-- [ ] Unit: criação válida, invalid date range, collaborator inativo, limite dias.
-- [ ] E2E: fluxo criar → listar → filtrar → cancelar.
-
-5.6 Frontend Integração (P0)
-- [ ] Adaptar store `certificates` para API real.
-- [ ] Tela Novo Atestado: buscar colaboradores (lazy search), preencher datas, autocomplete CID, validação dinâmica dias.
-- [ ] Calcular e exibir dias automaticamente ao alterar datas.
-- [ ] Submeter criação e redirecionar para lista com toast.
-- [ ] Lista: filtros persistidos (query params), paginação, ordenação.
-- [ ] Exibição de status com badges (active/cancelled/expired).
-- [ ] Cancelamento via ação contextual com confirmação.
-
-5.7 UX & Acessibilidade (P1)
-- [ ] Estados de loading skeleton.
-- [ ] Empty states claros com CTAs.
-- [ ] Feedback de erro mapeado para categorias (validação, conflito, upstream, rede).
-
----
-
-## 6. Dashboard & Relatórios
-6.1 KPIs Básicos (P1)
-- [ ] Total de atestados (período selecionado).
-- [ ] Afastamentos ativos.
-- [ ] Top 5 CIDs (período).
-- [ ] Dias afastados acumulados no período.
-
-6.2 Endpoints de Agregação (P1)
-- [ ] `/metrics/certificates/summary?range=` retornando agregados.
-- [ ] (P2) Distribuição por departamento (se colaborador tiver departamento futuramente).
-
-6.3 Frontend Dashboard (P1)
-- [ ] Cards de estatísticas (com skeletons e atualização ao mudar range).
-- [ ] Gráfico (P2) — libs: Chart.js ou ECharts.
-
-6.4 Relatórios Avançados (P3 Extra)
-- [ ] Bradford score cálculo.
-- [ ] Detecção de picos sazonais.
-
----
-
-## 7. Auditoria, Segurança & LGPD
-7.1 Auditoria (P0)
-- [ ] Middleware/Interceptor registra ações sensíveis (criação/edição de colaborador, atestado, login, busca CID?).
-- [ ] Estrutura `auditlogs`: actorUserId, action, resource, targetId, timestamp, ip, userAgent.
-- [ ] TTL opcional via `AUDIT_TTL_DAYS`.
-
-7.2 Criptografia & Proteção de Dados (P1)
-- [ ] Definir se algum campo sensível (diagnosis, notes) precisa criptografia em repouso.
-- [ ] Implementar serviço AES-256-GCM (como no plano) se necessário.
-
-7.3 Controle de Acesso Fino (P1)
-- [ ] Restringir edição/cancelamento de atestados a roles específicas (hr/admin).
-- [ ] Logs de acesso a dados sensíveis (CPF) marcados com tipo de evento.
-
-7.4 Políticas LGPD (P1)
-- [ ] Documento de base legal e finalidade de cada dado (`docs/privacy-processing.md`).
-- [ ] Endpoint de exportação (P3) de dados do colaborador (portabilidade).
-- [ ] Endpoint de anonimização (P3) — sobrescrever dados não mandatórios.
-
-7.5 Segurança Operacional (P1)
-- [ ] Helmet / segurança de headers HTTP.
-- [ ] Sanitização de entrada (XSS, NoSQL injection) — revisar queries Mongoose.
-- [ ] Limite de payload (body size limit).
-- [ ] Logging de falhas de autenticação.
-
----
-
-## 8. Observabilidade & Monitoramento
-8.1 Logging Estruturado (P1)
-- [ ] Winston / Pino com correlação (requestId).
-- [ ] Níveis: info, warn, error, debug (toggle por env).
-- [ ] Logs de integração WHO (latência, status, cacheHit boolean).
-
-8.2 Health & Readiness (P1)
-- [ ] `/health` agregando Mongo, Redis, WHO (ping leve ou simulado / cache freshness).
-- [ ] `/ready` sem chamadas externas para orquestradores.
-
-8.3 Métricas (P2)
-- [ ] Expor Prometheus metrics (ops/sec, latência, errors, cache hits, ICD fallback count).
-- [ ] Dashboards básicos (Grafana) — doc com queries.
-
-8.4 Alertas (P3)
-- [ ] Definir limiares (ex. taxa de fallback >30% em 5m).
-
----
-
-## 9. Testes & Qualidade
-9.1 Backend Test Strategy (P0)
-- [ ] Cobertura mínima 80% lines/functions.
-- [ ] Testes unitários módulos: auth, collaborators, medical-certificates, icd, audit.
-- [ ] E2E: principais fluxos encadeados (login → criar colaborador → criar atestado → listar → cancelar).
-- [ ] Testes de índices (garantir criação / duplicados retornam 409).
-
-9.2 Frontend Test Strategy (P0)
-- [ ] Atualizar testes existentes para usar MSW (mock API) em vez de stores mockadas diretas.
-- [ ] Testar fluxo login (redirecionamento, guarda de rota).
-- [ ] Testar criação de colaborador (validação CPF, sucesso, conflito 409 simulado).
-- [ ] Testar autocomplete CID (debounce + fallback + empty state).
-- [ ] Testar formulário novo atestado (datas inválidas, cálculo dias, submissão ok).
-
-9.3 Integração & Contratos (P1)
-- [ ] Testes de contrato (gerar OpenAPI → validar responses com zod/outra lib no frontend).
-- [ ] Snapshot OpenAPI diffs no CI para detectar breaking changes.
-
-9.4 Performance / Smoke (P2)
-- [ ] Script k6 ou autocannon simples para endpoints críticos (login, icd search, create certificate).
-- [ ] Alvos de latência p95 documentados.
-
-9.5 Segurança (P2)
-- [ ] Teste de força bruta simulado (rate limit efetivo).
-- [ ] Teste de injeção (caracteres especiais nos filtros / queries).
-
----
-
-## 10. Frontend Infra & UX Refinements
-10.1 Camada HTTP (P0)
-- [ ] Criar `httpClient` com interceptors (auth header, 401 handler, error normalization).
-- [ ] Mapear erros backend → mensagens amigáveis (conflict, validation, upstream, fallback, rate limit).
-
-10.2 Estado Global (P1)
-- [ ] Adaptar stores para objetos de paginação padronizados `{ items, page, pageSize, total }`.
-- [ ] Cache leve (in-memory) de últimas buscas de ICD + invalidation.
-
-10.3 Acessibilidade (P1)
-- [ ] Rever semantics ARIA nos novos componentes (autocomplete CID, tabela atestados com sort).
-- [ ] Testar navegação teclado fluxo completo (login → criar atestado sem mouse).
-
-10.4 Responsividade (P1)
-- [ ] Ajustar layout certificados para cartões em mobile sem perda de filtros.
-
-10.5 Dark Mode Consistência (P2)
-- [ ] Validar contraste de badges de status em modo escuro.
-
----
-
-## 11. DevOps & CI/CD
-11.1 Pipeline CI (P0)
-- [ ] Jobs: lint, typecheck, test backend, test frontend, build artifacts, publicar OpenAPI.
-- [ ] Cache de dependências (npm cache / actions/setup-node).
-- [ ] Artefatos: cobertura, openapi.yaml, relatórios de testes.
-
-11.2 Pipeline CD (P1)
-- [ ] Deploy staging (branch main) automático.
-- [ ] Gate manual para produção.
-- [ ] Versão semântica (semver) tag automática (P2).
-
-11.3 Imagens Docker (P1)
-- [ ] Multi-stage builds com camadas node_modules isoladas.
-- [ ] Labels (org.opencontainers) para rastreio.
-- [ ] Scan de vulnerabilidades (trivy) no CI (P2).
-
-11.4 Configuração de Runtime (P1)
-- [ ] Variáveis sensíveis via secrets manager (documentar).
-- [ ] Estratégia de backup Mongo (cron + doc runbook).
-
----
-
-## 12. Documentação & Runbooks
-12.1 Atualização de READMEs (P0)
-- [ ] Backend README: incluir novos endpoints, exemplos filtrados, códigos de erro.
-- [ ] Frontend README: remover aviso “GUI-only” após integração; adicionar instruções de apontar para API.
-
-12.2 OpenAPI & Referência (P0)
-- [ ] Automatizar geração em build + commit ou artifact.
-- [ ] Seção de erros padronizados (tabela) sincronizada com `docs/Errors.md`.
-
-12.3 Guia de Integração (P1)
-- [ ] Passo a passo para obter credenciais OMS + configurar env.
-- [ ] Fluxo de fallback (como testar desligando WHO).
-
-12.4 Runbooks (P1)
-- [ ] Incidente: WHO API indisponível (procedimentos, métricas).
-- [ ] Recuperação de backup Mongo.
-- [ ] Rotação de segredos.
-
-12.5 LGPD & Segurança (P2)
-- [ ] Política de retenção de logs.
-- [ ] Mapeamento de dados pessoais → finalidade.
-
----
-
-## 13. Migração do Frontend (Mocks → API)
-13.1 Faseamento (P0)
-- [ ] Introduzir feature flags (ex.: `USE_REAL_API`) para transição.
-- [ ] Converter store `auth` primeiro, depois `collaborators`, depois `certificates`.
-- [ ] Remover mocks apenas após cobertura de testes equivalente.
-
-13.2 Compatibilidade (P1)
-- [ ] Garantir que componentes não mudem assinatura de props/eventos durante a troca.
-- [ ] Documentar diferenças de latência e estados de loading adicionais.
-
-13.3 Clean-up (P1)
-- [ ] Remover arquivos em `mocks/` não utilizados.
-- [ ] Atualizar testes que dependiam de mocks diretos para MSW.
-
----
-
-## 14. Performance & Escalabilidade
-14.1 Backend (P1)
-- [ ] Validar índices criados vs plano de execução (Mongo explain) para buscas por período + status.
-- [ ] Cache de resultados frequentes (ex.: top CIDs) em Redis TTL curto (P2).
-- [ ] Circuit breaker WHO parametrizável.
-
-14.2 Frontend (P2)
-- [ ] Code splitting por rota (analisar bundle report).
-- [ ] Debounce / throttle em filtros intensivos.
-
-14.3 Carga & Stress (P2)
-- [ ] Teste com volume simulado de 50k colaboradores e 500k atestados (seed script escalável).
-
----
-
-## 15. Funcionalidades Avançadas / Extras (Opcional)
-15.1 Integrações Externas (P3)
-- [ ] Integração folha/ponto export JSON/CSV.
-- [ ] Webhook notificação criação/cancelamento de atestado.
-
-15.2 Inteligência / Analytics (P3)
-- [ ] Bradford score back-office endpoint.
-- [ ] Alertas automáticos (ex.: muitos afastamentos em curto período).
-
-15.3 Mobile & PWA (P3)
-- [ ] Manifest + service worker básico (offline caching páginas principais).
-
----
-
-## 16. Critérios de Pronto (Definition of Done Global)
-- [ ] Todas tarefas P0 concluídas e testadas.
-- [ ] Cobertura backend & frontend ≥80% linhas.
-- [ ] Integração ICD funcional com fallback comprovado (teste desligando WHO endpoint).
-- [ ] Fluxos principais manuais validados: (login → criar colaborador → criar atestado → listar/filtrar → cancelar → dashboard KPIs).
-- [ ] Logs estruturados visíveis (ex.: em console / agregador).
-- [ ] Healthcheck retorna 200 integrando dependências.
-- [ ] README(s), OpenAPI e guia OMS atualizados.
-- [ ] Pipeline CI verde em 3 execuções consecutivas.
-- [ ] Nenhum segredo nos commits (scan OK).
-
----
-
-## 17. Sequenciamento Sugerido (High-Level Sprint Flow)
-1. Infra + Auth + Colaboradores (P0 base).
-2. ICD Integration + Autocomplete + Ajustes Auth front.
-3. Atestados backend + frontend + filtros.
-4. Dashboard KPIs + Auditoria + Segurança baseline.
-5. Testes ampliação + Observabilidade + Docs.
-6. Performance tuning + DevOps pipeline + Clean-up.
-7. Extras / P2-P3 conforme tempo.
-
----
-
-## 18. Assumptions (Documentar para Alinhamento)
-* Não haverá refresh token inicialmente; sessão expira e usuário reloga.
-* Criptografia em repouso só aplicada se diagnosis/notes forem considerados sensíveis pela política interna.
-* Fallback ICD usa somente cache local populado por buscas anteriores e seed opcional (não há dataset completo offline).
-* Exportações avançadas e análises (Bradford) são extras e não bloqueiam release inicial.
-
----
-
-## 19. Riscos & Mitigações Rápidas
-| Risco | Impacto | Mitigação |
-|-------|---------|-----------|
-| WHO API instável | Bloqueia criação de atestados com CID | Fallback local + circuit breaker + métricas de fallback |
-| Index ausente em consultas grandes | Lentidão / timeouts | Planejar índices cedo + testes explain |
-| Acoplamento forte frontend/stores mocks | Retrabalho grande | Camada de serviço + feature flag transicional |
-| Fuga de segredos em logs | Incidente segurança | Revisão logging + máscara CPF parcial + scans |
-| Baixa cobertura testes em módulos críticos | Regressões | Gate de cobertura no CI |
-
----
-
-## 20. Métricas de Sucesso
-- Tempo médio busca CID (p95) < 800ms com cache aquecido.
-- Latência p95 criação atestado < 300ms.
-- Taxa fallback WHO < 10% (normal), alerta >30% em 5m.
-- Erros 5xx < 1% das requisições.
-- Tempo build CI < 8 min.
-- Cobertura testes ≥ 80% e tendência estável.
-
----
-
-Fim do documento.
+# Project Tasks — Full Integration Plan
+
+This task list consolidates MAIN.md, SPECS.md, and project READMEs into an actionable plan to fully integrate the Vue 3 frontend with the NestJS backend, including WHO ICD API, authentication, persistence, tests, and Dockerized dev/prod flows.
+
+## Environment & Bootstrap
+1. Repo and tooling
+   - [x] Confirm Node.js 20+, Docker 24+, Compose, and Git installed
+   - [x] Copy `.env.example` to `.env` and set all variables (API, Web, Mongo, Redis, WHO ICD)
+   - [x] Validate CORS origins and `VITE_API_BASE_URL`/proxy settings for local/dev
+   - [x] Verify ESLint/Prettier configs run clean on both apps
+2. Containers and services
+   - [x] Run `docker compose up -d --build` and ensure API, web, MongoDB, and Redis are healthy
+   - [x] Confirm API health: `http://localhost:3000/health`
+   - [x] Confirm frontend dev/preview renders and proxies `/api` correctly
+3. Seed and base data
+   - [x] Seed sample data from backend (`npm run seed`) against dev MongoDB
+   - [x] Verify created users (`admin@example.com`, `hr@example.com`) and baseline collections
+
+## Security, Auth & Sessions (Backend)
+1. JWT + sessions
+   - [ ] Implement login: `POST /api/auth/login` returning JWT with 4h expiry
+   - [ ] Store session metadata in Redis (`session:<jti>`) with 4h TTL
+   - [ ] Implement logout: `POST /api/auth/logout` invalidating token/session
+   - [ ] Add guards: `JwtAuthGuard`, `@Public()` for health, login, ICD search
+2. RBAC
+   - [ ] Implement roles and `@Roles('admin'|'hr')` guard
+   - [ ] Protect admin-only endpoints (e.g., users)
+3. Rate limiting & security headers
+   - [ ] Apply rate limit for auth (`AUTH_RATE_LIMIT_RPM`) and ICD endpoint (`ICD_RATE_LIMIT_RPM`)
+   - [ ] Configure secure headers (CORS, no sniff, frameguard) and request validation pipeline
+
+## WHO ICD Integration (Backend)
+1. OAuth2 Client Credentials
+   - [ ] Configure token endpoint `https://icdaccessmanagement.who.int/connect/token`
+   - [ ] Implement token acquisition with client id/secret; reuse until near-expiry
+   - [ ] Handle 401 by refreshing token once and retrying
+2. Search endpoint
+   - [ ] Create `GET /api/icd/search?q=term` with query validation and rate limit
+   - [ ] Call WHO API with required headers (`Authorization`, `API-Version: v2`, `Accept-Language`)
+   - [ ] Map WHO responses to `{ code, title/description }` flat structure
+3. Caching & fallback
+   - [ ] Cache token in memory and/or Redis with expiry
+   - [ ] Upsert successful results into `icdcodes` collection
+   - [ ] Implement fallback: on WHO API failure, query `icdcodes` by code/title
+   - [ ] Log upstream errors with structured context
+
+## Data Model & Persistence (Backend)
+1. Collections and schemas
+   - [ ] `users` with email(unique), password hash, roles, status
+   - [ ] `collaborators` with fullName, cpf(unique), birthDate, position, status
+   - [ ] `icdcodes` with code(unique), title/description, metadata
+   - [ ] `medicalcertificates` with collaboratorId, issueDate, startDate, endDate, days, icdCode/icdTitle, notes, status
+   - [ ] `auditlogs` with actor, action, resource, targetId, timestamp (TTL optional)
+2. Indexes
+   - [ ] Ensure unique and compound indexes as referenced in README (cpf, email, icdcodes.code, medicalcertificates composite)
+   - [ ] Add text/indexes needed for search and typical queries
+3. Validation
+   - [ ] Validate CPF (Brazil) on DTOs
+   - [ ] Enforce date ranges and required fields on certificate creation
+
+## Business Endpoints (Backend)
+1. Health & meta
+   - [ ] `/api/health` reports Mongo, Redis, and WHO API status
+2. Auth
+   - [ ] `POST /api/auth/login`, `POST /api/auth/logout`
+3. Collaborators
+   - [ ] `GET /api/collaborators` with search/filter/pagination/sort
+   - [ ] `POST /api/collaborators` create with validation (CPF, required fields)
+   - [ ] `PATCH /api/collaborators/:id` update fields and status (active/inactive)
+   - [ ] Conflict handling (11000) → 409 with structured error payload
+4. Medical Certificates
+   - [ ] `GET /api/medical-certificates` with filters (collaborator, period, CID), pagination, sort
+   - [ ] `POST /api/medical-certificates` create; denormalize `icdCode/icdTitle`
+   - [ ] `PATCH /api/medical-certificates/:id` to cancel/update status
+5. ICD Search
+   - [ ] `GET /api/icd/search?q=term` (public, rate limited, fallback to cache)
+
+## Frontend Integration (Vue 3)
+1. HTTP client & auth plumbing
+   - [ ] Create `src/services/http.ts` with base URL (`/api` via proxy or `VITE_API_BASE_URL`)
+   - [ ] Add interceptors to attach Bearer token, handle 401 (logout/redirect), and unify errors
+   - [ ] Persist token in `localStorage`; expose helper for auth header
+2. Replace mocks with real services
+   - [ ] Implement `src/services/auth.ts` → login/logout using API
+   - [ ] Implement `src/services/collaborators.ts` → list/create/update/toggle
+   - [ ] Implement `src/services/certificates.ts` → list/create/cancel
+   - [ ] Implement `src/services/icd.ts` → search with debounce/autocomplete
+   - [ ] Remove/disable mock latency and data once API is wired
+3. Stores migration (Pinia)
+   - [ ] Update `auth` store to call `auth` service and manage token/session expiry
+   - [ ] Update `collaborators` store to use API; align filters/pagination with backend query params
+   - [ ] Update `certificates` store to use API; ensure sorting and pagination map correctly
+4. Routing guards & UX
+   - [ ] Route guard uses token presence and (optionally) role checks
+   - [ ] Protect dashboard/collaborators/certificates routes; keep `/login` public
+5. UI flows
+   - [ ] Login: validate form, call API, store token, redirect
+   - [ ] Collaborators: list (filters, paging, sort), create/edit, toggle status
+   - [ ] Certificates: list (filters: collaborator, period, CID; paging; sort)
+   - [ ] New Certificate: select collaborator, dates/days, ICD autocomplete via API, optional notes, submit
+   - [ ] ICD Autocomplete: debounce, loading states, empty/error states, selection shows `code - title`
+
+## UX, Validation & Accessibility
+1. Forms and validation
+   - [ ] Client-side validation mirrors backend DTOs (CPF, dates, required fields)
+   - [ ] Show inline errors and disable submit when invalid
+2. Feedback & states
+   - [ ] Loading skeletons and progress indicators on list/fetch
+   - [ ] Toasts/banners for success, warnings, and error cases (401/403/409/422)
+   - [ ] Show ICD integration status and fallback indicator when WHO API is down
+3. Responsiveness & a11y
+   - [ ] Ensure pages are responsive (DataTable → cards on small screens)
+   - [ ] Maintain skip link, focus trapping in dialogs, ARIA roles/labels
+
+## Testing (Backend & Frontend)
+1. Backend unit/integration (Jest + Supertest)
+   - [ ] Health endpoint tests (Mongo/Redis/WHO checks stubbed)
+   - [ ] Auth: login/logout, JWT expiry, guards, RBAC
+   - [ ] Collaborators: create/list/update with filters, 409 on duplicate CPF
+   - [ ] ICD search: token handling, success/fallback, rate limit behavior (mock WHO)
+   - [ ] Certificates: create/list/cancel with filters/pagination/sorting
+   - [ ] Index and schema constraints (duplicate keys, invalid ObjectId)
+2. Frontend unit (Vitest + Vue Test Utils)
+   - [ ] Auth store/service: login flow, 401 handling, token persistence
+   - [ ] Collaborators list: filters, pagination, sorting interactions
+   - [ ] Certificates list & creation: validations and API calls
+   - [ ] ICD autocomplete: debounce and rendering results
+   - [ ] Accessibility basics: skip link, focus states, `aria-sort`
+3. E2E smoke (optional, if time)
+   - [ ] Happy path: login → create collaborator → create certificate with ICD → list appears
+   - [ ] Error path: duplicate CPF → 409 surfaced in UI
+
+## Observability & Error Handling
+1. Structured logging
+   - [ ] Add structured logs for auth, ICD calls, CRUD operations, and errors
+   - [ ] Correlate requests where possible; include WHO upstream error codes
+2. Healthchecks & readiness
+   - [ ] Health endpoint aggregates Mongo, Redis, WHO ICD status
+   - [ ] Docker healthchecks for API container
+3. Error mapping
+   - [ ] Backend exception filters for Mongo 11000, validation errors, upstream (map to 4xx/5xx)
+   - [ ] Frontend maps API errors to user-friendly messages and actions
+
+## DevOps & Delivery
+1. Docker & compose
+   - [ ] Confirm `docker-compose.yml` builds API/Web with proper env wiring
+   - [ ] Ensure `/api` proxy in frontend (dev/prod) targets correct host/container
+2. CI basics (optional now, recommended)
+   - [ ] Lint, typecheck, test, and build steps for backend and frontend
+   - [ ] Publish `openapi.yaml` artifact from backend
+3. OpenAPI
+   - [ ] Generate/refresh `openapi.yaml` (`npm run openapi:yaml` in backend)
+   - [ ] (Optional) Generate frontend API types from OpenAPI and refactor services to use them
+
+## Documentation & Handover
+1. Environment & credentials
+   - [ ] Document how to obtain WHO credentials and configure `.env`
+   - [ ] Note rate limits, language/release parameters (`WHO_ICD_RELEASE`, `WHO_ICD_LANGUAGE`)
+2. Running locally
+   - [ ] Update root `README.md` with exact run/seed instructions and troubleshooting
+   - [ ] Add usage examples for all API endpoints
+3. User flows
+   - [ ] Add short guide with screenshots for: login, collaborators, certificates, ICD search
+
+## Acceptance Checklist (End-to-End)
+1. Core features
+   - [ ] Login works; protected routes enforce auth; session expires in ~4h
+   - [ ] Manage collaborators with CPF validation and status; duplicate CPF rejected
+   - [ ] Create certificates with valid date ranges and ICD selection
+   - [ ] List certificates with filters (collaborator, period, CID), pagination, and sort
+2. ICD integration
+   - [ ] WHO ICD autocomplete returns real-time results with debounce
+   - [ ] On WHO outage, search falls back to local cache with clear UI indicator
+3. Quality gates
+   - [ ] Backend tests pass (including ICD stubs); coverage ≥ 80% on new code
+   - [ ] Frontend tests pass; coverage ≥ 80% on new code
+   - [ ] Lint/typecheck clean; Docker build runs; healthcheck green
+4. Docs & ops
+   - [ ] OpenAPI updated; READMEs cover setup and credentials
+   - [ ] Docker Compose up/down verified; logs documented

@@ -8,7 +8,10 @@ import { useCertificatesStore } from './stores/certificates'
 describe('Mock data updates visible', () => {
   it('creating certificate updates store items', async () => {
     const pinia = createPinia()
-    const wrap = mount(NewCertificate, { global: { plugins: [pinia, router] }, attachTo: document.body })
+    const wrap = mount(NewCertificate, {
+      global: { plugins: [pinia, router] },
+      attachTo: document.body,
+    })
     const store = useCertificatesStore()
     const before = store.items.length
     // Set valid form values via component instance

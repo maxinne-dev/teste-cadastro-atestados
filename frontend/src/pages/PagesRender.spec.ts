@@ -10,7 +10,15 @@ describe('Pages render and navigation', () => {
     if (path !== '/login') localStorage.setItem('token', 'dev')
     await router.push(path)
     await router.isReady()
-    return mount(App, { global: { plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()] } })
+    return mount(App, {
+      global: {
+        plugins: [
+          [PrimeVue, { theme: { preset: Aura } }],
+          router,
+          createPinia(),
+        ],
+      },
+    })
   }
 
   it('renders Login', async () => {

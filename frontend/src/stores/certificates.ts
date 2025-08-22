@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import type { Certificate } from '../mocks/data'
-import { listCertificates, addCertificate, cancelCertificate } from '../mocks/data'
+import {
+  listCertificates,
+  addCertificate,
+  cancelCertificate,
+} from '../mocks/data'
 
 export const useCertificatesStore = defineStore('certificates', {
   state: () => ({
@@ -9,7 +13,8 @@ export const useCertificatesStore = defineStore('certificates', {
   }),
   getters: {
     active: (s) => s.items.filter((m) => m.status === 'active'),
-    byCollaborator: (s) => (collaboratorId: string) => s.items.filter((m) => m.collaboratorId === collaboratorId),
+    byCollaborator: (s) => (collaboratorId: string) =>
+      s.items.filter((m) => m.collaboratorId === collaboratorId),
     count: (s) => s.items.length,
   },
   actions: {
@@ -19,7 +24,11 @@ export const useCertificatesStore = defineStore('certificates', {
       this.items = listCertificates()
       this.loading = false
     },
-    async create(input: Omit<Certificate, 'id' | 'status'> & { status?: Certificate['status'] }) {
+    async create(
+      input: Omit<Certificate, 'id' | 'status'> & {
+        status?: Certificate['status']
+      },
+    ) {
       await new Promise((r) => setTimeout(r, 40))
       addCertificate(input)
       this.items = listCertificates()
@@ -31,4 +40,3 @@ export const useCertificatesStore = defineStore('certificates', {
     },
   },
 })
-

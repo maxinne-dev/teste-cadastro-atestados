@@ -4,9 +4,15 @@ export function normalizeCpf(input: string): string {
 
 export function formatCpf(input: string): string {
   const digits = normalizeCpf(input)
-  const parts = [digits.slice(0, 3), digits.slice(3, 6), digits.slice(6, 9), digits.slice(9, 11)].filter(Boolean)
+  const parts = [
+    digits.slice(0, 3),
+    digits.slice(3, 6),
+    digits.slice(6, 9),
+    digits.slice(9, 11),
+  ].filter(Boolean)
   if (parts.length === 0) return ''
-  if (parts.length < 4) return [parts[0], parts[1], parts[2]].filter(Boolean).join('.')
+  if (parts.length < 4)
+    return [parts[0], parts[1], parts[2]].filter(Boolean).join('.')
   return `${parts[0]}.${parts[1]}.${parts[2]}-${parts[3]}`
 }
 

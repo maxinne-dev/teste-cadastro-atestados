@@ -17,7 +17,11 @@ describe('Theme smoke', () => {
     await router.isReady()
     const wrapper = mount(App, {
       global: {
-        plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()],
+        plugins: [
+          [PrimeVue, { theme: { preset: Aura } }],
+          router,
+          createPinia(),
+        ],
       },
     })
     expect(wrapper.exists()).toBe(true)
@@ -30,7 +34,11 @@ describe('Theme smoke', () => {
     const wrapper = mount(App, {
       attachTo: document.body,
       global: {
-        plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()],
+        plugins: [
+          [PrimeVue, { theme: { preset: Aura } }],
+          router,
+          createPinia(),
+        ],
       },
     })
     const toggle = wrapper.find('button[title^="Tema:"]')
@@ -43,10 +51,14 @@ describe('Theme smoke', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe(null)
     // Persisted state applied on next mount
     localStorage.setItem('theme', 'dark')
-    const wrapper2 = mount(App, {
+    mount(App, {
       attachTo: document.body,
       global: {
-        plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()],
+        plugins: [
+          [PrimeVue, { theme: { preset: Aura } }],
+          router,
+          createPinia(),
+        ],
       },
     })
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark')

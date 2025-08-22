@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import type { Collaborator } from '../mocks/data'
-import { listCollaborators, addOrUpdateCollaborator, toggleCollaboratorStatus } from '../mocks/data'
+import {
+  listCollaborators,
+  addOrUpdateCollaborator,
+  toggleCollaboratorStatus,
+} from '../mocks/data'
 
 export const useCollaboratorsStore = defineStore('collaborators', {
   state: () => ({
@@ -30,4 +34,3 @@ export const useCollaboratorsStore = defineStore('collaborators', {
     },
   },
 })
-

@@ -3,35 +3,98 @@
     <PageHeader title="Novo Atestado" />
     <Card class="mt-4">
       <form @submit.prevent="onSubmit">
-        <Banner v-if="formError" severity="warn" title="Corrija os campos" description="Algumas informações obrigatórias estão faltando." closable @close="formError=false" />
+        <Banner
+          v-if="formError"
+          severity="warn"
+          title="Corrija os campos"
+          description="Algumas informações obrigatórias estão faltando."
+          closable
+          @close="formError = false"
+        />
         <FormField label="Colaborador" :error="errors.collaboratorId" for="c">
-          <BaseSelect id="c" v-model="form.collaboratorId" :options="collabOptions" placeholder="Selecione" />
+          <BaseSelect
+            id="c"
+            v-model="form.collaboratorId"
+            :options="collabOptions"
+            placeholder="Selecione"
+          />
         </FormField>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:16px;">
-          <FormField label="Início" :error="errors.startDate" for="start"><BaseDate id="start" v-model="form.startDate" /></FormField>
-          <FormField label="Fim" :error="errors.endDate" for="end"><BaseDate id="end" v-model="form.endDate" /></FormField>
-          <FormField label="Dias" :error="errors.days" for="days"><BaseInput id="days" type="number" v-model="daysStr" /></FormField>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+          "
+        >
+          <FormField label="Início" :error="errors.startDate" for="start">
+            <BaseDate id="start" v-model="form.startDate" />
+          </FormField>
+          <FormField label="Fim" :error="errors.endDate" for="end">
+            <BaseDate id="end" v-model="form.endDate" />
+          </FormField>
+          <FormField label="Dias" :error="errors.days" for="days">
+            <BaseInput id="days" v-model="daysStr" type="number" />
+          </FormField>
         </div>
-        <FormField label="Diagnóstico" for="diag"><BaseTextarea id="diag" v-model="form.diagnosis" /></FormField>
-        <FormField label="CID" for="icd"><BaseInput id="icd" v-model="icdTerm" placeholder="Buscar CID (lista local)" /></FormField>
+        <FormField label="Diagnóstico" for="diag">
+          <BaseTextarea id="diag" v-model="form.diagnosis" />
+        </FormField>
+        <FormField label="CID" for="icd">
+          <BaseInput
+            id="icd"
+            v-model="icdTerm"
+            placeholder="Buscar CID (lista local)"
+          />
+        </FormField>
         <ul v-if="icdTerm.length >= 2" class="suggestions">
-          <li v-for="icd in icdFiltered" :key="icd.code" @click="pickICD(icd)" class="sugg">{{ icd.code }} — {{ icd.title }}</li>
+          <li
+            v-for="icd in icdFiltered"
+            :key="icd.code"
+            class="sugg"
+            @click="pickICD(icd)"
+          >
+            {{ icd.code }} — {{ icd.title }}
+          </li>
         </ul>
         <!-- Attachments placeholder (future file upload integration) -->
         <section class="attachments-placeholder" aria-labelledby="att-title">
           <h3 id="att-title">Anexos</h3>
-          <p class="att-hint">(Futuro) Área para anexar arquivos do atestado (PDF, imagens). Não envia ainda.</p>
-          <div class="att-drop" role="button" tabindex="0" aria-label="Área de anexos (placeholder)">
+          <p class="att-hint">
+            (Futuro) Área para anexar arquivos do atestado (PDF, imagens). Não
+            envia ainda.
+          </p>
+          <div
+            class="att-drop"
+            role="button"
+            tabindex="0"
+            aria-label="Área de anexos (placeholder)"
+          >
             <span class="att-icon" aria-hidden="true">📎</span>
             <span>Arraste e solte arquivos aqui ou clique para selecionar</span>
           </div>
-          <ul class="att-list" v-if="pendingFiles.length">
-            <li v-for="f in pendingFiles" :key="f.name">{{ f.name }} <small>({{ formatSize(f.size) }})</small></li>
+          <ul v-if="pendingFiles.length" class="att-list">
+            <li v-for="f in pendingFiles" :key="f.name">
+              {{ f.name }} <small>({{ formatSize(f.size) }})</small>
+            </li>
           </ul>
         </section>
-        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px;">
+        <div
+          style="
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 16px;
+          "
+        >
           <button class="btn" type="button" @click="reset">Limpar</button>
-          <button class="btn primary" type="submit" :disabled="!canSubmit">Salvar</button>
+          <button
+            class="btn primary"
+            type="submit"
+            :disabled="!canSubmit"
+            @click.prevent="onSubmit"
+          >
+            Salvar
+          </button>
         </div>
       </form>
     </Card>
@@ -55,8 +118,12 @@ import { useCollaboratorsStore } from './stores/collaborators'
 const router = useRouter()
 const certStore = useCertificatesStore()
 const collabStore = useCollaboratorsStore()
-onMounted(() => { if (!collabStore.items.length) collabStore.fetchAll() })
-const collabOptions = computed(() => collabStore.items.map(c => ({ label: c.fullName, value: c.id })))
+onMounted(() => {
+  if (!collabStore.items.length) collabStore.fetchAll()
+})
+const collabOptions = computed(() =>
+  collabStore.items.map((c) => ({ label: c.fullName, value: c.id })),
+)
 interface CertificateForm {
   collaboratorId: string | null
   startDate: string | null
@@ -66,13 +133,29 @@ interface CertificateForm {
   icdCode?: string
   icdTitle?: string
 }
-const form = reactive<CertificateForm>({ collaboratorId: '' , startDate: '' , endDate: '' , days: 0, diagnosis: '' })
+const form = reactive<CertificateForm>({
+  collaboratorId: '',
+  startDate: '',
+  endDate: '',
+  days: 0,
+  diagnosis: '',
+})
 const errors = reactive<{ [k: string]: string | undefined }>({})
 const formError = ref(false)
 const icdTerm = ref('')
-const icdFiltered = computed(() => icdList.filter(i => i.code.toLowerCase().includes(icdTerm.value.toLowerCase()) || i.title.toLowerCase().includes(icdTerm.value.toLowerCase())))
+const icdFiltered = computed(() =>
+  icdList.filter(
+    (i) =>
+      i.code.toLowerCase().includes(icdTerm.value.toLowerCase()) ||
+      i.title.toLowerCase().includes(icdTerm.value.toLowerCase()),
+  ),
+)
 
-function pickICD(icd: { code: string; title: string }) { form.icdCode = icd.code; form.icdTitle = icd.title; icdTerm.value = `${icd.code} — ${icd.title}` }
+function pickICD(icd: { code: string; title: string }) {
+  form.icdCode = icd.code
+  form.icdTitle = icd.title
+  icdTerm.value = `${icd.code} — ${icd.title}`
+}
 const daysStr = ref('0')
 watch([() => form.startDate, () => form.endDate], () => {
   if (form.startDate && form.endDate) {
@@ -97,8 +180,19 @@ function validate() {
   return !Object.values(errors).some(Boolean)
 }
 function onSubmit() {
-  if (!validate()) { formError.value = true; return }
-  certStore.create({ collaboratorId: form.collaboratorId!, startDate: form.startDate!, endDate: form.endDate!, days: Number(daysStr.value || 0), diagnosis: form.diagnosis, icdCode: form.icdCode, icdTitle: form.icdTitle })
+  if (!validate()) {
+    formError.value = true
+    return
+  }
+  certStore.create({
+    collaboratorId: form.collaboratorId!,
+    startDate: form.startDate!,
+    endDate: form.endDate!,
+    days: Number(daysStr.value || 0),
+    diagnosis: form.diagnosis,
+    icdCode: form.icdCode,
+    icdTitle: form.icdTitle,
+  })
   router.push({ name: 'certificates' })
 }
 const canSubmit = computed(() => {
@@ -126,16 +220,73 @@ function formatSize(size: number) {
 }
 </script>
 <style scoped>
-.btn { padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }
-.primary { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
-.suggestions { list-style: none; margin: 8px 0 0; padding: 0; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
-.sugg { padding: 8px 12px; cursor: pointer; background: var(--color-surface-2); }
-.sugg:hover { background: var(--color-surface); }
-.attachments-placeholder { margin-top:24px; border-top:1px solid var(--color-border); padding-top:16px; }
-.attachments-placeholder h3 { margin:0 0 4px; font-size:1rem; }
-.att-hint { margin:0 0 8px; font-size:0.75rem; color: var(--color-text-secondary); }
-.att-drop { display:flex; flex-direction:column; align-items:center; gap:4px; padding:20px; border:2px dashed var(--color-border); border-radius: var(--radius-md); font-size:0.875rem; color: var(--color-text-secondary); background: var(--color-surface-2); }
-.att-drop:focus { outline:2px solid var(--color-primary); outline-offset:2px; }
-.att-icon { font-size:1.25rem; }
-.att-list { list-style:none; padding:8px 0 0; margin:0; font-size:0.75rem; display:grid; gap:4px; }
+.btn {
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+.primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+.suggestions {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.sugg {
+  padding: 8px 12px;
+  cursor: pointer;
+  background: var(--color-surface-2);
+}
+.sugg:hover {
+  background: var(--color-surface);
+}
+.attachments-placeholder {
+  margin-top: 24px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 16px;
+}
+.attachments-placeholder h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+.att-hint {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+.att-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 20px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-2);
+}
+.att-drop:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.att-icon {
+  font-size: 1.25rem;
+}
+.att-list {
+  list-style: none;
+  padding: 8px 0 0;
+  margin: 0;
+  font-size: 0.75rem;
+  display: grid;
+  gap: 4px;
+}
 </style>

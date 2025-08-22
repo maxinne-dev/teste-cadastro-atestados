@@ -1,48 +1,49 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import type { HydratedDocument } from 'mongoose'
-import { applyBaseSchemaOptions } from '../common/database/index.js'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import type { HydratedDocument } from 'mongoose';
+import { applyBaseSchemaOptions } from '../common/database/index.js';
 
-export type AuditLogDocument = HydratedDocument<AuditLog>
+export type AuditLogDocument = HydratedDocument<AuditLog>;
 
 @Schema({ timestamps: true })
 export class AuditLog {
   @Prop({ required: true })
-  action!: string
+  action!: string;
 
   @Prop({ type: String })
-  actorUserId?: string // stored as string to avoid tight coupling
+  actorUserId?: string; // stored as string to avoid tight coupling
 
   @Prop({ required: false })
-  resource?: string
+  resource?: string;
 
   @Prop({ required: false })
-  targetId?: string
+  targetId?: string;
 
   @Prop({ required: false })
-  ip?: string
+  ip?: string;
 
   @Prop({ required: false })
-  userAgent?: string
+  userAgent?: string;
 
   @Prop({ type: Date, default: () => new Date(), index: true })
-  timestamp!: Date
+  timestamp!: Date;
 
   @Prop({ type: Object })
-  metadata?: Record<string, any>
+  metadata?: Record<string, any>;
 }
 
 export function createAuditLogSchema(opts?: { ttlDays?: number }) {
-  const schema = SchemaFactory.createForClass(AuditLog)
-  applyBaseSchemaOptions(schema)
+  const schema = SchemaFactory.createForClass(AuditLog);
+  applyBaseSchemaOptions(schema);
   // Ensure a descending index for common queries
-  schema.index({ timestamp: -1 })
+  schema.index({ timestamp: -1 });
   if (opts?.ttlDays && opts.ttlDays > 0) {
-    const seconds = Math.floor(opts.ttlDays * 24 * 60 * 60)
-    schema.index({ timestamp: 1 }, { expireAfterSeconds: seconds })
+    const seconds = Math.floor(opts.ttlDays * 24 * 60 * 60);
+    schema.index({ timestamp: 1 }, { expireAfterSeconds: seconds });
   }
-  return schema
+  return schema;
 }
 
-const envTtl = process.env.AUDIT_TTL_DAYS ? Number(process.env.AUDIT_TTL_DAYS) : undefined
-export const AuditLogSchema = createAuditLogSchema({ ttlDays: envTtl })
-
+const envTtl = process.env.AUDIT_TTL_DAYS
+  ? Number(process.env.AUDIT_TTL_DAYS)
+  : undefined;
+export const AuditLogSchema = createAuditLogSchema({ ttlDays: envTtl });

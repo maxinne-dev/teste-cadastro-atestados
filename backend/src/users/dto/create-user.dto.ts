@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer'
+import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsEmail,
@@ -7,29 +7,29 @@ import {
   IsString,
   MaxLength,
   MinLength,
-} from 'class-validator'
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'alice@example.com' })
   @IsEmail()
   @Transform(({ value }) => String(value).trim().toLowerCase())
-  email!: string
+  email!: string;
 
   @ApiProperty({ example: 'Alice', maxLength: 200 })
   @IsString()
   @IsNotEmpty()
   @MaxLength(200)
-  fullName!: string
+  fullName!: string;
 
   @ApiProperty({ example: 'secret12345', minLength: 8 })
   @IsString()
   @MinLength(8)
   @MaxLength(200)
-  password!: string
+  password!: string;
 
   @ApiPropertyOptional({ type: [String], example: ['admin'] })
   @IsOptional()
   @IsArray()
-  roles?: string[]
+  roles?: string[];
 }

@@ -9,6 +9,8 @@ const year = new Date().getFullYear()
 </script>
 
 <style scoped>
-.app-footer { color: var(--color-text-secondary); padding: var(--space-6) 0; }
+.app-footer {
+  color: var(--color-text-secondary);
+  padding: var(--space-6) 0;
+}
 </style>
-

@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, createMemoryHistory } from 'vue-router'
 import Login from './Login.vue'
 import Dashboard from './Dashboard.vue'
 import Certificates from './Certificates.vue'
@@ -8,18 +8,72 @@ import AppLayout from './layouts/AppLayout.vue'
 import NotFound from './NotFound.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history:
+    typeof window === 'undefined' || process.env.NODE_ENV === 'test'
+      ? createMemoryHistory()
+      : createWebHistory(),
   routes: [
-    { path: '/login', name: 'login', component: Login, meta: { title: 'Login' } },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: { title: 'Login' },
+    },
     {
       path: '/',
       component: AppLayout,
       meta: { requiresAuth: true },
       children: [
-        { path: '', name: 'dashboard', component: Dashboard, meta: { title: 'Dashboard', breadcrumb: [{ label: 'Dashboard' }], roles: ['hr', 'admin'] } },
-        { path: 'collaborators', name: 'collaborators', component: Collaborators, meta: { title: 'Colaboradores', breadcrumb: [{ label: 'Dashboard', to: '/' }, { label: 'Colaboradores' }], roles: ['hr', 'admin'] } },
-        { path: 'certificates', name: 'certificates', component: Certificates, meta: { title: 'Atestados', breadcrumb: [{ label: 'Dashboard', to: '/' }, { label: 'Atestados' }], roles: ['hr', 'admin'] } },
-        { path: 'certificates/new', name: 'new-certificate', component: NewCertificate, meta: { title: 'Novo Atestado', breadcrumb: [{ label: 'Dashboard', to: '/' }, { label: 'Atestados', to: '/certificates' }, { label: 'Novo' }], roles: ['hr', 'admin'] } },
+        {
+          path: '',
+          name: 'dashboard',
+          component: Dashboard,
+          meta: {
+            title: 'Dashboard',
+            breadcrumb: [{ label: 'Dashboard' }],
+            roles: ['hr', 'admin'],
+          },
+        },
+        {
+          path: 'collaborators',
+          name: 'collaborators',
+          component: Collaborators,
+          meta: {
+            title: 'Colaboradores',
+            breadcrumb: [
+              { label: 'Dashboard', to: '/' },
+              { label: 'Colaboradores' },
+            ],
+            roles: ['hr', 'admin'],
+          },
+        },
+        {
+          path: 'certificates',
+          name: 'certificates',
+          component: Certificates,
+          meta: {
+            title: 'Atestados',
+            breadcrumb: [
+              { label: 'Dashboard', to: '/' },
+              { label: 'Atestados' },
+            ],
+            roles: ['hr', 'admin'],
+          },
+        },
+        {
+          path: 'certificates/new',
+          name: 'new-certificate',
+          component: NewCertificate,
+          meta: {
+            title: 'Novo Atestado',
+            breadcrumb: [
+              { label: 'Dashboard', to: '/' },
+              { label: 'Atestados', to: '/certificates' },
+              { label: 'Novo' },
+            ],
+            roles: ['hr', 'admin'],
+          },
+        },
       ],
     },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
