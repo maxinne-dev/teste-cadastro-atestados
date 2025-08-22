@@ -50,5 +50,13 @@ describe('IcdService', () => {
     const res = await service.search('herp')
     expect(res).toEqual([{ code: 'B00', title: 'Herpesviral infection' }])
   })
-})
 
+  it('retries once on 401 then succeeds', async () => {
+    ;(axios.post as any).mockResolvedValue({ data: { access_token: 't', expires_in: 3600 } })
+    ;(axios.get as any)
+      .mockRejectedValueOnce({ response: { status: 401 } })
+      .mockResolvedValueOnce({ data: { destinationEntities: [{ code: 'A00', title: 'Cholera' }] } })
+    const res = await service.search('cho')
+    expect(res).toEqual([{ code: 'A00', title: 'Cholera' }])
+  })
+})

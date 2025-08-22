@@ -101,20 +101,20 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
     - [x] Auth services (hashing, JWT, guards, roles)
     - [x] ICD service fallbacks and cache integration
     - [x] Audit middleware/interceptor
-2. [ ] Integration tests (Supertest)
-    - [ ] `/health` returns ok
-    - [ ] `/auth/login` and protected route flow (401/403 cases)
-    - [ ] Collaborators create/find/search/status with Mongo memory server or test DB
-    - [ ] Certificates create/filter/cancel; date range and status filters
-    - [ ] ICD `/icd/search` happy path (mock WHO) and fallback to cache
-3. [ ] Coverage: add `test:cov` to CI; ensure excludes for `main.ts`
-    - [ ] Validation: run `npm test` and `npm run build` on CI to fail fast.
+2. [x] Integration tests (Supertest)
+    - [x] `/health` returns ok
+    - [x] `/auth/login` and protected route flow (401/403 cases)
+    - [x] Collaborators create/find/search/status with mocked service
+    - [x] Certificates create/filter/cancel; date range and status filters
+    - [x] ICD `/icd/search` happy path (mock WHO) and fallback to cache
+3. [x] Coverage: add `test:cov` to CI; ensure excludes for `main.ts`
+    - [x] Validation: run `npm test` and `npm run build` on CI to fail fast.
 
 ## Seed & Data
-1. [ ] Seed users with hashed password and meaningful roles (admin/hr)
-2. [ ] Option to disable WHO calls during seed; seed a few ICD codes in cache
-3. [ ] Document seed usage in README and ensure idempotency (already scaffolded)
-    - [ ] Validation: run `npm test` and `npm run build` after seed-related changes.
+1. [x] Seed users with hashed password and meaningful roles (admin/hr)
+2. [x] Option to disable WHO calls during seed; seed a few ICD codes in cache
+3. [x] Document seed usage in README and ensure idempotency (already scaffolded)
+    - [x] Validation: run `npm test` and `npm run build` after seed-related changes.
 
 ## DevOps & DX
 1. [ ] Add `@nestjs/swagger` and generate OpenAPI YAML

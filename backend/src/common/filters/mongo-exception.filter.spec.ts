@@ -1,5 +1,5 @@
 import { MongoExceptionFilter } from './mongo-exception.filter'
-import { ArgumentsHost, HttpStatus } from '@nestjs/common'
+import { ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common'
 
 function createHostMock() {
   const json = jest.fn()
@@ -38,5 +38,20 @@ describe('MongoExceptionFilter', () => {
       expect.objectContaining({ statusCode: HttpStatus.BAD_REQUEST })
     )
   })
-})
 
+  it('passes through HttpException response and handles fallback 500', () => {
+    const filter = new MongoExceptionFilter()
+    const { host, status, json } = createHostMock()
+    const httpEx = new HttpException({ statusCode: 418, message: 'teapot' }, 418)
+    filter.catch(httpEx as any, host)
+    expect(status).toHaveBeenCalledWith(418)
+    expect(json).toHaveBeenCalledWith({ statusCode: 418, message: 'teapot' })
+
+    const { host: host2, status: st2, json: js2 } = createHostMock()
+    filter.catch(new Error('oops') as any, host2)
+    expect(st2).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR)
+    expect(js2).toHaveBeenCalledWith(
+      expect.objectContaining({ statusCode: HttpStatus.INTERNAL_SERVER_ERROR })
+    )
+  })
+})
