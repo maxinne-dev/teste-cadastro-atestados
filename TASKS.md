@@ -199,10 +199,10 @@ Note: Specs prepared in docs/Pages-Plan.md (no code yet).
    - [x] Snapshot key components (`BaseInput`, `DataTable` wrapper, `ConfirmDialog`)
 
 26. QA checklist
-   - [ ] All routes reachable via sidebar and direct URL
-   - [ ] All modals/drawers open/close and trap focus correctly
-   - [ ] Forms validate and show feedback; mock data updates visible
-   - [ ] Theme consistent across pages; dark mode (if added) holds state
+   - [x] All routes reachable via sidebar and direct URL
+   - [x] All modals/drawers open/close and trap focus correctly
+   - [x] Forms validate and show feedback; mock data updates visible
+   - [x] Theme consistent across pages; dark mode (if added) holds state
 
 - Section test checklist
   - [ ] Full test suite: `npm run test` with coverage summary
