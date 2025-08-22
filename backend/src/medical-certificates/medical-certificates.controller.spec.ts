@@ -40,7 +40,7 @@ describe('MedicalCertificatesController', () => {
   })
 
   it('lists with sorting and pagination and total', async () => {
-    ;(service.filter as jest.Mock).mockResolvedValue([
+    (service.filter as jest.Mock).mockResolvedValue([
       { issueDate: new Date('2025-01-02') },
       { issueDate: new Date('2025-01-03') },
       { issueDate: new Date('2025-01-01') },

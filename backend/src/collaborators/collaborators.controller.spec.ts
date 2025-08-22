@@ -46,7 +46,7 @@ describe('CollaboratorsController', () => {
   })
 
   it('search returns results with total/limit/offset', async () => {
-    ;(service.searchByNameWithTotal as jest.Mock).mockResolvedValue({
+    (service.searchByNameWithTotal as jest.Mock).mockResolvedValue({
       results: Array.from({ length: 5 }).map((_, i) => ({ fullName: `C${i}` })),
       total: 42,
     })

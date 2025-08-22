@@ -5,7 +5,7 @@ export function IsEndDateGteStartDate(
   endField: string,
   validationOptions?: ValidationOptions
 ) {
-  return function (object: Object, propertyName: string) {
+  return function (object: any, propertyName: string) {
     registerDecorator({
       name: 'isEndDateGteStartDate',
       target: (object as any).constructor,

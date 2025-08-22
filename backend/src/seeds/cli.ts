@@ -15,7 +15,9 @@ main()
     console.error('[seed] Failed:', err)
     try {
       await mongoose.disconnect()
-    } catch {}
+    } catch {
+      // ignore
+    }
     process.exit(1)
   })
 

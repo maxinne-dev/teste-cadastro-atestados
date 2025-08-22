@@ -2,7 +2,6 @@ import { Test } from '@nestjs/testing'
 import { IcdController } from './icd.controller'
 import { IcdService } from './icd.service'
 import { RateLimiterService } from '../common/rate-limiter.service'
-import { Public } from '../auth/public.decorator'
 
 describe('IcdController', () => {
   it('enforces rate limiting', async () => {

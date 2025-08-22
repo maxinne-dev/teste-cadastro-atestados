@@ -30,6 +30,8 @@ describe('UsersController', () => {
   })
 
   it('creates user via service with hashed password', async () => {
+    // eslint-disable-next-line no-console
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const res = await controller.create({
       email: 'Alice@Example.com',
       fullName: 'Alice',

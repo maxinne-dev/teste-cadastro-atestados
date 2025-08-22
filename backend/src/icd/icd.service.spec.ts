@@ -20,13 +20,17 @@ describe('IcdService', () => {
 
     service = module.get(IcdService)
 
-    ;(axios.post as any).mockReset()
-    ;(axios.get as any).mockReset()
+    // eslint-disable-next-line no-unexpected-multiline
+    (axios.post as any).mockReset()
+    // eslint-disable-next-line no-unexpected-multiline
+    (axios.get as any).mockReset()
   })
 
   it('search fetches WHO results and upserts cache', async () => {
-    ;(axios.post as any).mockResolvedValue({ data: { access_token: 't', expires_in: 3600 } })
-    ;(axios.get as any).mockResolvedValue({
+    // eslint-disable-next-line no-unexpected-multiline
+    (axios.post as any).mockResolvedValue({ data: { access_token: 't', expires_in: 3600 } })
+    // eslint-disable-next-line no-unexpected-multiline
+    (axios.get as any).mockResolvedValue({
       data: {
         destinationEntities: [
           { theCode: 'J06.9', title: { '@value': 'URI, unspecified' } },
@@ -44,16 +48,21 @@ describe('IcdService', () => {
   })
 
   it('fallback returns cached suggestions when WHO fails', async () => {
-    ;(axios.post as any).mockResolvedValue({ data: { access_token: 't', expires_in: 3600 } })
-    ;(axios.get as any).mockRejectedValue(new Error('network'))
-    ;(cache.search as jest.Mock).mockResolvedValue([{ code: 'B00', title: 'Herpesviral infection' }])
+    // eslint-disable-next-line no-unexpected-multiline
+    (axios.post as any).mockResolvedValue({ data: { access_token: 't', expires_in: 3600 } })
+    // eslint-disable-next-line no-unexpected-multiline
+    (axios.get as any).mockRejectedValue(new Error('network'))
+    // eslint-disable-next-line no-unexpected-multiline
+    (cache.search as jest.Mock).mockResolvedValue([{ code: 'B00', title: 'Herpesviral infection' }])
     const res = await service.search('herp')
     expect(res).toEqual([{ code: 'B00', title: 'Herpesviral infection' }])
   })
 
+  // eslint-disable-next-line no-unexpected-multiline
   it('retries once on 401 then succeeds', async () => {
-    ;(axios.post as any).mockResolvedValue({ data: { access_token: 't', expires_in: 3600 } })
-    ;(axios.get as any)
+    (axios.post as any).mockResolvedValue({ data: { access_token: 't', expires_in: 3600 } })
+    // eslint-disable-next-line no-unexpected-multiline
+    (axios.get as any)
       .mockRejectedValueOnce({ response: { status: 401 } })
       .mockResolvedValueOnce({ data: { destinationEntities: [{ code: 'A00', title: 'Cholera' }] } })
     const res = await service.search('cho')
