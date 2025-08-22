@@ -1,12 +1,19 @@
 <template>
   <div class="data-table">
     <div class="header"><slot name="header" /></div>
-    <table v-if="rows.length">
-      <thead @click="onHeaderClick"><slot name="columns" /></thead>
-      <tbody>
-        <slot name="row" v-for="(r, i) in pagedRows" :row="r" :index="i" :key="i" />
-      </tbody>
-    </table>
+    <div v-if="rows.length && isCardView && hasCard" class="cards" role="list">
+      <div v-for="(r, i) in pagedRows" :key="i" class="card" role="listitem">
+        <slot name="card" :row="r" :index="i" />
+      </div>
+    </div>
+    <div v-else-if="rows.length" class="table-scroll">
+      <table :aria-label="ariaLabel">
+        <thead @click="onHeaderClick"><slot name="columns" /></thead>
+        <tbody>
+          <slot name="row" v-for="(r, i) in pagedRows" :row="r" :index="i" :key="i" />
+        </tbody>
+      </table>
+    </div>
     <div v-else class="empty">
       <slot name="empty">{{ emptyMessage }}</slot>
     </div>
@@ -22,14 +29,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-const props = withDefaults(defineProps<{ rows: any[]; loading?: boolean; emptyMessage?: string; total?: number; page?: number; rowsPerPage?: number; sortBy?: string | null; sortDir?: 'asc' | 'desc' | null }>(), {
+import { computed, onMounted, onUnmounted, ref, useSlots } from 'vue'
+const props = withDefaults(defineProps<{ rows: any[]; loading?: boolean; emptyMessage?: string; total?: number; page?: number; rowsPerPage?: number; sortBy?: string | null; sortDir?: 'asc' | 'desc' | null; ariaLabel?: string; cardBreakpoint?: number }>(), {
   rows: () => [],
   emptyMessage: 'No data',
   page: 1,
   rowsPerPage: 10,
   sortBy: null,
   sortDir: null,
+  cardBreakpoint: 640,
 })
 const emit = defineEmits<{ (e: 'update:page', v: number): void; (e: 'update:rowsPerPage', v: number): void; (e: 'sort', payload: { sortBy: string | null; sortDir: 'asc' | 'desc' | null }): void; (e: 'update:sortBy', v: string | null): void; (e: 'update:sortDir', v: 'asc' | 'desc' | null): void }>()
 
@@ -74,10 +82,20 @@ function onHeaderClick(e: MouseEvent) {
   emit('update:sortDir', nextDir)
   emit('sort', { sortBy: key, sortDir: nextDir })
 }
+
+// Responsive card mode detection
+const width = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+function onResize() { width.value = window.innerWidth }
+onMounted(() => { window.addEventListener('resize', onResize, { passive: true }) })
+onUnmounted(() => { window.removeEventListener('resize', onResize) })
+const isCardView = computed(() => width.value < (props.cardBreakpoint || 0))
+const slots = useSlots()
+const hasCard = computed(() => Boolean(slots.card))
 </script>
 
 <style scoped>
 .data-table { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+.table-scroll { width: 100%; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 thead th { text-align: left; color: var(--color-text-secondary); font-weight: var(--font-weight-medium); padding: 8px 12px; border-bottom: 1px solid var(--color-border); }
 thead [data-sort] { cursor: pointer; }
@@ -87,4 +105,8 @@ tbody td { padding: 10px 12px; border-top: 1px solid var(--color-border); }
 .pagination { display: inline-flex; align-items: center; gap: var(--space-3); }
 .btn { padding: 6px 10px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Cards */
+.cards { display: grid; gap: var(--space-3); padding: var(--space-3); }
+.card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); }
 </style>

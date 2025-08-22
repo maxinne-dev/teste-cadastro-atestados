@@ -168,24 +168,24 @@ Note: Specs prepared in docs/Pages-Plan.md (no code yet).
 ## Accessibility, Responsiveness, and Polish
 
 21. Accessibility (WCAG AA baseline)
-   - [ ] Color contrast checks for theme
-   - [ ] Semantic HTML in components
-   - [ ] Keyboard navigation: focus outlines, trap focus in modals, skip links
-   - [ ] ARIA labels/roles on interactive elements
+   - [x] Color contrast checks for theme
+   - [x] Semantic HTML in components
+   - [x] Keyboard navigation: focus outlines, trap focus in modals, skip links
+   - [x] ARIA labels/roles on interactive elements
 
 22. Responsiveness
-   - [ ] Mobile-first layout for all pages and modals
-   - [ ] Tables collapse to cards at small breakpoints
-   - [ ] Test at common widths (360, 768, 1024, 1280)
+   - [x] Mobile-first layout for all pages and modals
+   - [x] Tables collapse to cards at small breakpoints
+   - [x] Test at common widths (360, 768, 1024, 1280)
 
 23. UX refinements
-   - [ ] Consistent spacing and typography scale
-   - [ ] Hover/active states and subtle transitions
-   - [ ] Toast messages for success/error (local only)
+   - [x] Consistent spacing and typography scale
+   - [x] Hover/active states and subtle transitions
+   - [x] Toast messages for success/error (local only)
 
 - Section test checklist
-  - [ ] Basic a11y assertions: presence of aria-labels/roles on key components
-  - [ ] Responsive behavior sanity: jsdom-based width toggles for sidebar collapse logic
+  - [x] Basic a11y assertions: presence of aria-labels/roles on key components
+  - [x] Responsive behavior sanity: jsdom-based width toggles for sidebar collapse logic
   - [ ] Lint/typecheck pass
 
 ## Validation, Testing, and QA (UI-only)

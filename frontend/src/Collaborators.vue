@@ -10,7 +10,7 @@
       <BaseSelect v-model="status" :options="statusOptions" placeholder="Status" />
     </Toolbar>
     <div class="mt-4">
-      <DataTable :rows="filtered" :rowsPerPage="10" :sortBy="sortBy" :sortDir="sortDir" @update:sortBy="sortBy = $event" @update:sortDir="sortDir = $event">
+      <DataTable :rows="filtered" :rowsPerPage="10" :sortBy="sortBy" :sortDir="sortDir" @update:sortBy="sortBy = $event" @update:sortDir="sortDir = $event" :cardBreakpoint="768">
         <template #columns>
           <tr>
             <th data-sort="fullName">Nome</th><th data-sort="cpf">CPF</th><th data-sort="department">Departamento</th><th data-sort="position">Cargo</th><th data-sort="status">Status</th><th>Ações</th>
@@ -29,6 +29,24 @@
               <button class="btn" @click="confirmToggle(row)">{{ row.status === 'active' ? 'Desativar' : 'Ativar' }}</button>
             </td>
           </tr>
+        </template>
+        <template #card="{ row }">
+          <div class="card-row">
+            <div class="card-header">
+              <strong>{{ row.fullName }}</strong>
+              <span class="status" :data-status="row.status">{{ row.status }}</span>
+            </div>
+            <div class="card-grid">
+              <div><small class="muted">CPF</small><div>{{ displayCpf(row.cpf) }}</div></div>
+              <div><small class="muted">Departamento</small><div>{{ row.department }}</div></div>
+              <div><small class="muted">Cargo</small><div>{{ row.position }}</div></div>
+            </div>
+            <div class="card-actions">
+              <button class="btn" @click="view(row)">Ver</button>
+              <button class="btn" @click="edit(row)">Editar</button>
+              <button class="btn" @click="confirmToggle(row)">{{ row.status === 'active' ? 'Desativar' : 'Ativar' }}</button>
+            </div>
+          </div>
         </template>
         <template #empty>
           <EmptyState icon="pi-user" title="Nenhum colaborador" description="Ajuste os filtros ou cadastre um novo colaborador.">
@@ -162,4 +180,14 @@ function dateBR(date: string) { return formatDateBR(date) }
 <style scoped>
 .btn { padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }
 .primary { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+/* Card styles for responsive table */
+.card-row { display: flex; flex-direction: column; gap: var(--space-2); }
+.card-header { display: flex; align-items: center; justify-content: space-between; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+@media (max-width: 420px) { .card-grid { grid-template-columns: 1fr; } }
+.card-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.muted { color: var(--color-text-secondary); }
+.status { font-size: var(--fs-caption); padding: 2px 8px; border-radius: var(--radius-pill); border: 1px solid var(--color-border); background: var(--color-surface); text-transform: capitalize; }
+.status[data-status="active"] { color: var(--color-success); border-color: var(--color-success); background: color-mix(in srgb, var(--color-success) 12%, transparent); }
+.status[data-status="inactive"] { color: var(--color-text-muted); background: var(--color-surface); }
 </style>

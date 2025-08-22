@@ -13,7 +13,7 @@
       <BaseInput v-model="icd" placeholder="CID (texto)" />
     </Toolbar>
     <div class="mt-4">
-      <DataTable :rows="filtered" :rowsPerPage="rowsPerPage" :page="page" @update:page="page = $event" :sortBy="sortBy" :sortDir="sortDir" @update:sortBy="sortBy = $event" @update:sortDir="sortDir = $event">
+      <DataTable :rows="filtered" :rowsPerPage="rowsPerPage" :page="page" @update:page="page = $event" :sortBy="sortBy" :sortDir="sortDir" @update:sortBy="sortBy = $event" @update:sortDir="sortDir = $event" :cardBreakpoint="768">
         <template #columns>
           <tr>
             <th>Colaborador</th><th data-sort="startDate">Período</th><th data-sort="days">Dias</th><th data-sort="icdCode">CID</th><th data-sort="status">Status</th><th>Ações</th>
@@ -31,6 +31,22 @@
               <button class="btn" @click="confirmCancel(row)" :disabled="row.status !== 'active'">Cancelar</button>
             </td>
           </tr>
+        </template>
+        <template #card="{ row }">
+          <div class="card-row">
+            <div class="card-header">
+              <strong>{{ nameOf(row.collaboratorId) }}</strong>
+              <span class="status" :data-status="row.status">{{ row.status }}</span>
+            </div>
+            <div class="card-grid">
+              <div><small class="muted">Período</small><div>{{ d(row.startDate) }} – {{ d(row.endDate) }} ({{ row.days }}d)</div></div>
+              <div><small class="muted">CID</small><div>{{ row.icdCode }} {{ row.icdTitle ? '– ' + row.icdTitle : '' }}</div></div>
+            </div>
+            <div class="card-actions">
+              <button class="btn" @click="view(row)">Detalhes</button>
+              <button class="btn" @click="confirmCancel(row)" :disabled="row.status !== 'active'">Cancelar</button>
+            </div>
+          </div>
         </template>
         <template #empty>
           <EmptyState icon="pi-calendar" title="Nenhum atestado" description="Ajuste os filtros ou crie um novo.">
@@ -116,4 +132,14 @@ function doCancel() {
 </script>
 <style scoped>
 .btn { padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }
+/* Card styles for responsive table */
+.card-row { display: flex; flex-direction: column; gap: var(--space-2); }
+.card-header { display: flex; align-items: center; justify-content: space-between; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+@media (max-width: 420px) { .card-grid { grid-template-columns: 1fr; } }
+.card-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.muted { color: var(--color-text-secondary); }
+.status { font-size: var(--fs-caption); padding: 2px 8px; border-radius: var(--radius-pill); border: 1px solid var(--color-border); background: var(--color-surface); text-transform: capitalize; }
+.status[data-status="active"] { color: var(--color-success); border-color: var(--color-success); background: color-mix(in srgb, var(--color-success) 12%, transparent); }
+.status[data-status="cancelled"], .status[data-status="expired"] { color: var(--color-error); border-color: var(--color-error); background: color-mix(in srgb, var(--color-error) 10%, transparent); }
 </style>

@@ -3,7 +3,8 @@
   /* Colors */
   --p-primary-color: var(--color-primary);
   --p-text-color: var(--color-text);
-  --p-text-muted-color: var(--color-text-secondary);
+  /* Map PrimeVue's muted text to our true muted token for correct contrast semantics */
+  --p-text-muted-color: var(--color-text-muted);
 
   /* Surfaces */
   --p-surface-ground: var(--color-bg);
@@ -16,4 +17,3 @@
 }
 
 /* Dark mode inherits via token swap on [data-theme="dark"] */
-

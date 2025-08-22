@@ -1,24 +1,59 @@
 <template>
-  <div v-if="visible" class="modal-wrap">
+  <div v-if="visible" class="modal-wrap" aria-hidden="false">
     <div class="backdrop" @click="close" />
-    <div class="modal" ref="panel" tabindex="-1" @keydown.esc.prevent.stop="close">
+    <div
+      class="modal"
+      ref="panel"
+      tabindex="-1"
+      role="dialog"
+      aria-modal="true"
+      :aria-labelledby="titleId"
+      :aria-describedby="bodyId"
+      @keydown.esc.prevent.stop="close"
+      @keydown.tab.prevent="onTab($event)"
+    >
       <header class="modal-header">
-        <slot name="header"><h3 class="title">{{ title }}</h3></slot>
-        <button class="close" @click="close" aria-label="Close"><i class="pi pi-times" /></button>
+        <slot name="header"><h3 class="title" :id="titleId">{{ title }}</h3></slot>
+        <button class="close" @click="close" aria-label="Fechar"><i class="pi pi-times" /></button>
       </header>
-      <div class="modal-body"><slot /></div>
+      <div class="modal-body" :id="bodyId"><slot /></div>
       <footer class="modal-footer"><slot name="footer" /></footer>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 const props = defineProps<{ visible: boolean; title?: string }>()
 const emit = defineEmits<{ (e: 'update:visible', v: boolean): void }>()
 const panel = ref<HTMLDivElement | null>(null)
+const titleId = `modal-title-${Math.random().toString(36).slice(2)}`
+const bodyId = `modal-body-${Math.random().toString(36).slice(2)}`
 function close() { emit('update:visible', false) }
 watch(() => props.visible, (v) => { if (v) setTimeout(() => panel.value?.focus(), 0) })
+
+function getFocusable(): HTMLElement[] {
+  const root = panel.value
+  if (!root) return []
+  const selectors = [
+    'a[href]','button:not([disabled])','textarea:not([disabled])','input:not([disabled])','select:not([disabled])','[tabindex]:not([tabindex="-1"])'
+  ]
+  return Array.from(root.querySelectorAll<HTMLElement>(selectors.join(','))).filter(el => el.offsetParent !== null)
+}
+function onTab(e: KeyboardEvent) {
+  const nodes = getFocusable()
+  if (!nodes.length) return
+  const first = nodes[0]
+  const last = nodes[nodes.length - 1]
+  const active = document.activeElement as HTMLElement | null
+  if (e.shiftKey) {
+    if (!active || active === first) last.focus()
+    else return
+  } else {
+    if (!active || active === last) first.focus()
+    else return
+  }
+}
 </script>
 
 <style scoped>
@@ -30,4 +65,3 @@ watch(() => props.visible, (v) => { if (v) setTimeout(() => panel.value?.focus()
 .modal-body { padding: var(--space-4); max-height: 65vh; overflow: auto; }
 .close { border: none; background: transparent; cursor: pointer; color: var(--color-text); }
 </style>
-

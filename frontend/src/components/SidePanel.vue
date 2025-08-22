@@ -1,10 +1,10 @@
 <template>
   <div v-if="visible" class="panel-wrap" @keyup.esc="close" tabindex="-1">
     <div class="backdrop" @click="close" />
-    <aside class="panel" :class="position">
+    <aside class="panel" :class="position" ref="panel" role="dialog" aria-modal="true" :aria-labelledby="titleId">
       <header class="panel-header">
-        <slot name="header"><h3 class="title">{{ title }}</h3></slot>
-        <button class="close" @click="close" aria-label="Close">
+        <slot name="header"><h3 class="title" :id="titleId">{{ title }}</h3></slot>
+        <button class="close" @click="close" aria-label="Fechar">
           <i class="pi pi-times" />
         </button>
       </header>
@@ -15,12 +15,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 const props = withDefaults(defineProps<{ visible: boolean; title?: string; position?: 'right' | 'left'; width?: string }>(), {
   position: 'right',
   width: '420px',
 })
 const emit = defineEmits<{ (e: 'update:visible', v: boolean): void }>()
 function close() { emit('update:visible', false) }
+const panel = ref<HTMLElement | null>(null)
+const titleId = `panel-title-${Math.random().toString(36).slice(2)}`
+watch(() => props.visible, (v) => { if (v) setTimeout(() => panel.value?.focus?.(), 0) })
 </script>
 
 <style scoped>
@@ -34,4 +38,3 @@ function close() { emit('update:visible', false) }
 .panel-footer { padding: var(--space-3) var(--space-4); border-top: 1px solid var(--color-border); }
 .close { border: none; background: transparent; cursor: pointer; color: var(--color-text); }
 </style>
-

@@ -1,6 +1,6 @@
 <template>
-  <div v-if="visible" class="backdrop" @click.self="onCancel" role="dialog" aria-modal="true">
-    <div class="dialog" :class="severity" ref="dialog" tabindex="-1" @keydown.esc.prevent.stop="onCancel">
+  <div v-if="visible" class="backdrop" @click.self="onCancel">
+    <div class="dialog" :class="severity" ref="dialog" tabindex="-1" role="dialog" aria-modal="true" @keydown.esc.prevent.stop="onCancel">
       <h3 class="title">{{ title }}</h3>
       <p v-if="message" class="message">{{ message }}</p>
       <div class="actions">

@@ -1,19 +1,19 @@
 <template>
-  <header class="app-topbar elev-1">
-    <button class="icon-btn" @click="onMenuClick" aria-label="Open menu" title="Menu">
+  <header class="app-topbar elev-1" role="banner">
+    <button class="icon-btn" @click="onMenuClick" aria-label="Abrir menu" title="Menu">
       <i class="pi pi-bars" />
     </button>
-    <div class="brand" @click="goHome" role="button" tabindex="0">
-      <i class="pi pi-heart" />
+    <RouterLink class="brand" :to="{ name: 'dashboard' }" aria-label="Ir para o Dashboard">
+      <i class="pi pi-heart" aria-hidden="true" />
       <span>Atestados</span>
-    </div>
+    </RouterLink>
     <div class="grow" />
     <Button label="Novo Atestado" icon="pi pi-file-edit" class="p-button" @click="$emit('new-certificate')" />
-    <button class="icon-btn" @click="toggleTheme" :aria-label="`Theme: ${theme}`" :title="`Theme: ${theme}`">
+    <button class="icon-btn" @click="toggleTheme" :aria-label="`Tema: ${theme}`" :title="`Tema: ${theme}`">
       <i class="pi" :class="theme === 'dark' ? 'pi-moon' : 'pi-sun'" />
     </button>
-    <Menu ref="userMenu" :model="userItems" :popup="true" />
-    <button class="user-btn" @click="toggleUserMenu" aria-haspopup="menu" aria-expanded="false">
+    <Menu ref="userMenu" :id="userMenuId" :model="userItems" :popup="true" @show="userMenuOpen = true" @hide="userMenuOpen = false" />
+    <button class="user-btn" @click="toggleUserMenu" aria-haspopup="menu" :aria-controls="userMenuId" :aria-expanded="String(userMenuOpen)">
       <Avatar icon="pi pi-user" shape="circle" />
       <span class="user-name">Usuário</span>
       <i class="pi pi-chevron-down" />
@@ -30,6 +30,8 @@ import Avatar from 'primevue/avatar'
 
 const router = useRouter()
 const userMenu = ref()
+const userMenuOpen = ref(false)
+const userMenuId = `user-menu-${Math.random().toString(36).slice(2)}`
 const theme = ref<'light' | 'dark'>('light')
 
 const userItems = [
@@ -39,8 +41,6 @@ const userItems = [
 ]
 
 const emit = defineEmits<{ (e: 'logout'): void; (e: 'toggle-sidebar'): void; (e: 'open-mobile-sidebar'): void }>()
-
-function goHome() { router.push({ name: 'dashboard' }) }
 
 function toggleUserMenu(event: Event) {
   userMenu.value?.toggle(event)
