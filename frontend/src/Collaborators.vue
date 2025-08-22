@@ -19,7 +19,7 @@
         <template #row="{ row }">
           <tr>
             <td>{{ row.fullName }}</td>
-            <td>{{ row.cpf }}</td>
+            <td>{{ displayCpf(row.cpf) }}</td>
             <td>{{ row.department }}</td>
             <td>{{ row.position }}</td>
             <td>{{ row.status }}</td>
@@ -64,7 +64,7 @@
       <form @submit.prevent="save">
         <Banner v-if="formErrorBanner" severity="warn" title="Preencha os campos obrigatórios" description="Revise os campos destacados abaixo." closable @close="formErrorBanner=false" />
         <FormField label="Nome completo" :error="formErrors.fullName" for="fullName"><BaseInput id="fullName" v-model="editing.fullName" /></FormField>
-        <FormField label="CPF" :error="formErrors.cpf" for="cpf"><BaseInput id="cpf" v-model="editing.cpf" /></FormField>
+        <FormField label="CPF" :error="formErrors.cpf" for="cpf"><BaseInput id="cpf" v-model="editing.cpf" v-mask="'cpf'" /></FormField>
         <FormField label="Nascimento" :error="formErrors.birthDate" for="birth"><BaseDate id="birth" v-model="editing.birthDate" /></FormField>
         <FormField label="Cargo" :error="formErrors.position" for="position"><BaseInput id="position" v-model="editing.position" /></FormField>
         <FormField label="Departamento" :error="formErrors.department" for="department"><BaseInput id="department" v-model="editing.department" /></FormField>
@@ -93,6 +93,7 @@ import BaseInput from './components/base/BaseInput.vue'
 import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
 import { listCollaborators, collaborators as store, addOrUpdateCollaborator, toggleCollaboratorStatus, Collaborator, certificates } from './mocks/data'
+import { formatCpf } from './utils/formatters'
 
 const search = ref('')
 const status = ref<string | null>(null)
@@ -152,6 +153,8 @@ function doToggle() {
   toggleCollaboratorStatus(confirmTarget.value.id)
   rows.value = listCollaborators()
 }
+
+function displayCpf(cpf: string) { return formatCpf(cpf) }
 </script>
 <style scoped>
 .btn { padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }

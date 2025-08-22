@@ -56,7 +56,7 @@ Note: ESLint checks are temporarily deferred to speed up UI scaffolding. We will
 6. Form primitives
    - [x] `BaseInput`, `BasePassword`, `BaseSelect`, `BaseDate`, `BaseTextarea`
    - [x] `FormField` wrapper with label, help, and error slot
-   - [ ] Input masks and formatters (CPF, dates) — client-side only
+   - [x] Input masks and formatters (CPF, dates) — client-side only
    
    Note: Spec prepared in docs/BaseComponents-Plan.md (no code yet).
 
