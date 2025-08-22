@@ -212,12 +212,12 @@ Note: Specs prepared in docs/Pages-Plan.md (no code yet).
 ## Documentation and Handover
 
 27. Developer docs
-   - [ ] Update `frontend/README` section with run instructions and mock data notes
-   - [ ] Document theme tokens and how to extend components
-   - [ ] Explain the no-API scope and where to hook real services later
+   - [x] Update `frontend/README` section with run instructions and mock data notes
+   - [x] Document theme tokens and how to extend components
+   - [x] Explain the no-API scope and where to hook real services later
 
 28. Demo script
-- [ ] Outline steps for a UI-only walkthrough covering all pages, forms, and modals
+- [x] Outline steps for a UI-only walkthrough covering all pages, forms, and modals
 
 - Section test checklist
   - [ ] Run full checks (typecheck/tests; lint deferred) and update README with how to run tests
