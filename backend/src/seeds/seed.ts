@@ -6,6 +6,7 @@
 */
 
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 // no need for __filename/__dirname in tests; avoid name clashes with CJS
 
 // Import mock arrays; keep the .js extension for NodeNext/ESM
@@ -73,8 +74,20 @@ export async function run() {
 
   // Optionally seed domain data if mock arrays are provided.
   await insertIfAny('collaborators', mockCollaborators, 'cpf');
-  await insertIfAny('users', mockUsers, 'email');
-  await insertIfAny('icdcodes', mockIcdCodes, 'code');
+  // Hash user passwords if provided as plaintext or placeholder
+  const users = Array.isArray(mockUsers) ? [...mockUsers] : []
+  for (const u of users) {
+    const val = u.passwordHash
+    const needsHash = typeof val === 'string' && !/^\$2[aby]\$/.test(val)
+    if (needsHash) {
+      u.passwordHash = await bcrypt.hash(val || 'changeme', 10)
+    }
+  }
+  await insertIfAny('users', users, 'email');
+  // Optionally skip ICD cache seeding via env flag (seed never calls WHO API)
+  if (String(process.env.SEED_DISABLE_ICD || '').toLowerCase() !== 'true') {
+    await insertIfAny('icdcodes', mockIcdCodes, 'code');
+  }
   // Link certificates to collaborators and upsert idempotently by a seedKey
   if (Array.isArray(mockCertificates) && mockCertificates.length > 0) {
     const collabCol = mongoose.connection.collection('collaborators');
