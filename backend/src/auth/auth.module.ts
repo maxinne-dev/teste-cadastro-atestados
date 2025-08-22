@@ -6,6 +6,7 @@ import { UsersModule } from '../users/users.module.js'
 import { PasswordService } from './password.service.js'
 import { RedisService } from './redis.service.js'
 import { JwtService } from './jwt.service.js'
+import { RateLimiterService } from '../common/rate-limiter.service.js'
 
 @Module({
   imports: [ConfigModule, UsersModule],
@@ -13,6 +14,7 @@ import { JwtService } from './jwt.service.js'
     AuthService,
     PasswordService,
     RedisService,
+    RateLimiterService,
     {
       provide: JwtService,
       inject: [ConfigService],

@@ -3,6 +3,7 @@ import { NotFoundException } from '@nestjs/common'
 import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
 import { PasswordService } from '../auth/password.service'
+import { AuditService } from '../audit/audit.service'
 
 describe('UsersController', () => {
   let controller: UsersController
@@ -18,7 +19,11 @@ describe('UsersController', () => {
 
     const module = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [PasswordService, { provide: UsersService, useValue: service }],
+      providers: [
+        PasswordService,
+        { provide: UsersService, useValue: service },
+        { provide: AuditService, useValue: { record: jest.fn() } },
+      ],
     }).compile()
 
     controller = module.get(UsersController)

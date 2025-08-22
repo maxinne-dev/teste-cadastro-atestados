@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing'
 import { NotFoundException } from '@nestjs/common'
 import { MedicalCertificatesController } from './medical-certificates.controller'
 import { MedicalCertificatesService } from './medical-certificates.service'
+import { AuditService } from '../audit/audit.service'
 
 describe('MedicalCertificatesController', () => {
   let controller: MedicalCertificatesController
@@ -16,7 +17,10 @@ describe('MedicalCertificatesController', () => {
 
     const module = await Test.createTestingModule({
       controllers: [MedicalCertificatesController],
-      providers: [{ provide: MedicalCertificatesService, useValue: service }],
+      providers: [
+        { provide: MedicalCertificatesService, useValue: service },
+        { provide: AuditService, useValue: { record: jest.fn() } },
+      ],
     }).compile()
 
     controller = module.get(MedicalCertificatesController)
