@@ -3,6 +3,7 @@
     <PageHeader title="Novo Atestado" />
     <Card class="mt-4">
       <form @submit.prevent="onSubmit">
+        <Banner v-if="formError" severity="warn" title="Corrija os campos" description="Algumas informações obrigatórias estão faltando." closable @close="formError=false" />
         <FormField label="Colaborador" :error="errors.collaboratorId" for="c">
           <BaseSelect id="c" v-model="form.collaboratorId" :options="collabOptions" placeholder="Selecione" />
         </FormField>
@@ -35,11 +36,13 @@ import BaseDate from './components/base/BaseDate.vue'
 import BaseInput from './components/base/BaseInput.vue'
 import BaseTextarea from './components/base/BaseTextarea.vue'
 import { addCertificate, icdList, listCollaborators } from './mocks/data'
+import Banner from './components/Banner.vue'
 
 const router = useRouter()
 const collabOptions = listCollaborators().map(c => ({ label: c.fullName, value: c.id }))
 const form = reactive({ collaboratorId: '' as string | null, startDate: '' as string | null, endDate: '' as string | null, days: 0, diagnosis: '' })
 const errors = reactive<{ [k: string]: string | undefined }>({})
+const formError = ref(false)
 const icdTerm = ref('')
 const icdFiltered = computed(() => icdList.filter(i => i.code.toLowerCase().includes(icdTerm.value.toLowerCase()) || i.title.toLowerCase().includes(icdTerm.value.toLowerCase())))
 
@@ -63,7 +66,7 @@ function validate() {
   return !Object.values(errors).some(Boolean)
 }
 function onSubmit() {
-  if (!validate()) return
+  if (!validate()) { formError.value = true; return }
   addCertificate({ collaboratorId: form.collaboratorId!, startDate: form.startDate!, endDate: form.endDate!, days: Number(daysStr.value || 0), diagnosis: form.diagnosis, icdCode: (form as any).icdCode, icdTitle: (form as any).icdTitle })
   router.push({ name: 'certificates' })
 }

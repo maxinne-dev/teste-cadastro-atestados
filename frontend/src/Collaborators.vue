@@ -30,6 +30,13 @@
             </td>
           </tr>
         </template>
+        <template #empty>
+          <EmptyState icon="pi-user" title="Nenhum colaborador" description="Ajuste os filtros ou cadastre um novo colaborador.">
+            <template #actions>
+              <button class="btn primary" @click="openCreate">Novo colaborador</button>
+            </template>
+          </EmptyState>
+        </template>
       </DataTable>
     </div>
 
@@ -55,6 +62,7 @@
     <SidePanel :visible="editor" @update:visible="editor = $event">
       <template #header><h3 style="margin:0">{{ editing?.id ? 'Editar' : 'Novo' }} colaborador</h3></template>
       <form @submit.prevent="save">
+        <Banner v-if="formErrorBanner" severity="warn" title="Preencha os campos obrigatórios" description="Revise os campos destacados abaixo." closable @close="formErrorBanner=false" />
         <FormField label="Nome completo" :error="formErrors.fullName" for="fullName"><BaseInput id="fullName" v-model="editing.fullName" /></FormField>
         <FormField label="CPF" :error="formErrors.cpf" for="cpf"><BaseInput id="cpf" v-model="editing.cpf" /></FormField>
         <FormField label="Nascimento" :error="formErrors.birthDate" for="birth"><BaseDate id="birth" v-model="editing.birthDate" /></FormField>
@@ -78,6 +86,8 @@ import Toolbar from './components/Toolbar.vue'
 import DataTable from './components/DataTable.vue'
 import SidePanel from './components/SidePanel.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
+import EmptyState from './components/EmptyState.vue'
+import Banner from './components/Banner.vue'
 import FormField from './components/base/FormField.vue'
 import BaseInput from './components/base/BaseInput.vue'
 import BaseSelect from './components/base/BaseSelect.vue'
@@ -109,6 +119,7 @@ const tab = ref<'profile' | 'certs'>('profile')
 const certsOfCurrent = computed(() => current.value ? certificates.filter(c => c.collaboratorId === current.value?.id) : [])
 const editing = reactive<Collaborator>({ id: '', fullName: '', cpf: '', birthDate: '', department: '', position: '', status: 'active' })
 const formErrors = reactive<{ [k: string]: string | undefined }>({})
+const formErrorBanner = ref(false)
 const confirm = ref(false)
 const confirmTarget = ref<Collaborator | null>(null)
 const confirmMsg = ref('')
@@ -129,10 +140,11 @@ function validate() {
   return !Object.values(formErrors).some(Boolean)
 }
 function save() {
-  if (!validate()) return
+  if (!validate()) { formErrorBanner.value = true; return }
   addOrUpdateCollaborator(editing)
   rows.value = listCollaborators()
   editor.value = false
+  formErrorBanner.value = false
 }
 function confirmToggle(row: Collaborator) { confirmTarget.value = row; confirmMsg.value = `Confirmar ${row.status === 'active' ? 'desativação' : 'ativação'}?`; confirm.value = true }
 function doToggle() {

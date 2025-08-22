@@ -32,6 +32,13 @@
             </td>
           </tr>
         </template>
+        <template #empty>
+          <EmptyState icon="pi-calendar" title="Nenhum atestado" description="Ajuste os filtros ou crie um novo.">
+            <template #actions>
+              <router-link class="btn primary" :to="{ name: 'new-certificate' }">Novo atestado</router-link>
+            </template>
+          </EmptyState>
+        </template>
       </DataTable>
     </div>
     
@@ -52,6 +59,7 @@ import PageHeader from './components/PageHeader.vue'
 import Toolbar from './components/Toolbar.vue'
 import DataTable from './components/DataTable.vue'
 import Modal from './components/Modal.vue'
+import EmptyState from './components/EmptyState.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
 import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
