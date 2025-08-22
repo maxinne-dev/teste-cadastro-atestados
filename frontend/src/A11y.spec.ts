@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
+import router from './router'
 import App from './App.vue'
 import AppTopbar from './components/AppTopbar.vue'
 import Modal from './components/Modal.vue'
@@ -7,8 +9,11 @@ import SidePanel from './components/SidePanel.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
 
 describe('A11y basics', () => {
-  it('renders skip link in App', () => {
-    const wrap = mount(App)
+  it('renders skip link in App', async () => {
+    localStorage.setItem('token', 'dev')
+    await router.push('/')
+    await router.isReady()
+    const wrap = mount(App, { global: { plugins: [router, createPinia()] } })
     const link = wrap.find('a.skip-link')
     expect(link.exists()).toBe(true)
     expect(link.attributes('href')).toBe('#content')
@@ -47,7 +52,8 @@ describe('A11y basics', () => {
 
   it('Topbar menu emits correct events based on width', async () => {
     const emitSpy = vi.fn()
-    const wrap = mount(AppTopbar, { attrs: { onToggleSidebar: emitSpy, onOpenMobileSidebar: emitSpy } })
+    const wrap = mount(AppTopbar, { attrs: { onToggleSidebar: emitSpy, onOpenMobileSidebar: emitSpy },
+      global: { stubs: { RouterLink: { template: '<a><slot /></a>' } } } })
     // Desktop width
     ;(window as any).innerWidth = 1280
     await wrap.find('button.icon-btn').trigger('click')

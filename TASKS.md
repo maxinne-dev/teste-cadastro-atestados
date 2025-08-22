@@ -195,14 +195,14 @@ Note: Specs prepared in docs/Pages-Plan.md (no code yet).
    - [x] Inline errors + disabled submit until valid
 
 25. Component tests (optional but recommended)
-   - [ ] Configure Vitest + Vue Test Utils for basic render/interaction tests
-   - [ ] Snapshot key components (`BaseInput`, `DataTable` wrapper, `ConfirmDialog`)
+   - [x] Configure Vitest + Vue Test Utils for basic render/interaction tests
+   - [x] Snapshot key components (`BaseInput`, `DataTable` wrapper, `ConfirmDialog`)
 
 26. QA checklist
-   - [ ] All routes reachable via sidebar and direct URL
-   - [ ] All modals/drawers open/close and trap focus correctly
-   - [ ] Forms validate and show feedback; mock data updates visible
-   - [ ] Theme consistent across pages; dark mode (if added) holds state
+   - [x] All routes reachable via sidebar and direct URL
+   - [x] All modals/drawers open/close and trap focus correctly
+   - [x] Forms validate and show feedback; mock data updates visible
+   - [x] Theme consistent across pages; dark mode (if added) holds state
 
 - Section test checklist
   - [ ] Full test suite: `npm run test` with coverage summary
@@ -212,12 +212,12 @@ Note: Specs prepared in docs/Pages-Plan.md (no code yet).
 ## Documentation and Handover
 
 27. Developer docs
-   - [ ] Update `frontend/README` section with run instructions and mock data notes
-   - [ ] Document theme tokens and how to extend components
-   - [ ] Explain the no-API scope and where to hook real services later
+   - [x] Update `frontend/README` section with run instructions and mock data notes
+   - [x] Document theme tokens and how to extend components
+   - [x] Explain the no-API scope and where to hook real services later
 
 28. Demo script
-- [ ] Outline steps for a UI-only walkthrough covering all pages, forms, and modals
+- [x] Outline steps for a UI-only walkthrough covering all pages, forms, and modals
 
 - Section test checklist
   - [ ] Run full checks (typecheck/tests; lint deferred) and update README with how to run tests

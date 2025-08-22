@@ -47,17 +47,29 @@ describe('DataTable', () => {
     const wrapper = mount(DataTable, {
       props: { rows, rowsPerPage: 10, page: 1, sortBy: null, sortDir: null },
       slots: {
-        columns: '<tr><th data-sort="name">Nome</th></tr>',
+        columns: '<tr><th data-sort="name">Nome</th><th>Static</th></tr>',
         row: '<tr><td>{{ row.name }}</td></tr>',
       },
     })
+    const th = wrapper.find('th[data-sort="name"]')
+    // Initially aria-sort should be none
+    expect(th.attributes('aria-sort') || 'none').toBe('none')
+    // Non-sortable header should explicitly be aria-sort="none"
+    const staticTh = wrapper.find('thead th:nth-child(2)')
+    expect(staticTh.attributes('aria-sort')).toBe('none')
+    // Sort icon should exist on sortable th
+    expect(th.find('.sort-icon').exists()).toBe(true)
     // Click header to sort asc
-    await wrapper.find('th[data-sort="name"]').trigger('click')
+    await th.trigger('click')
     await wrapper.setProps({ sortBy: 'name', sortDir: 'asc' })
+    expect(wrapper.find('th[data-sort="name"]').attributes('aria-sort')).toBe('ascending')
+    expect(wrapper.find('th[data-sort="name"]').find('.sort-icon').classes()).toContain('pi-sort-amount-up')
     expect(wrapper.findAll('tbody td')[0].text()).toBe('A')
     // Click again to sort desc
     await wrapper.find('th[data-sort="name"]').trigger('click')
     await wrapper.setProps({ sortBy: 'name', sortDir: 'desc' })
+    expect(wrapper.find('th[data-sort="name"]').attributes('aria-sort')).toBe('descending')
+    expect(wrapper.find('th[data-sort="name"]').find('.sort-icon').classes()).toContain('pi-sort-amount-down')
     expect(wrapper.findAll('tbody td')[0].text()).toBe('B')
   })
 })
