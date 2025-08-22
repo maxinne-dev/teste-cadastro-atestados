@@ -47,9 +47,10 @@
       </div>
       <div v-if="tab==='profile'">
         <p><strong>Nome:</strong> {{ current?.fullName }}</p>
-        <p><strong>CPF:</strong> {{ current?.cpf }}</p>
+        <p><strong>CPF:</strong> {{ displayCpf(current?.cpf || '') }}</p>
         <p><strong>Departamento:</strong> {{ current?.department }}</p>
         <p><strong>Cargo:</strong> {{ current?.position }}</p>
+        <p><strong>Nascimento:</strong> {{ dateBR(current?.birthDate || '') }}</p>
         <p><strong>Status:</strong> {{ current?.status }}</p>
       </div>
       <div v-else>
@@ -93,7 +94,7 @@ import BaseInput from './components/base/BaseInput.vue'
 import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
 import { listCollaborators, collaborators as store, addOrUpdateCollaborator, toggleCollaboratorStatus, Collaborator, certificates } from './mocks/data'
-import { formatCpf } from './utils/formatters'
+import { formatCpf, formatDateBR } from './utils/formatters'
 
 const search = ref('')
 const status = ref<string | null>(null)
@@ -155,6 +156,7 @@ function doToggle() {
 }
 
 function displayCpf(cpf: string) { return formatCpf(cpf) }
+function dateBR(date: string) { return formatDateBR(date) }
 </script>
 <style scoped>
 .btn { padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; }

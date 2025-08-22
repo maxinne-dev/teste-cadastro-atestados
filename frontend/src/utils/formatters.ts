@@ -21,3 +21,22 @@ export function fromIsoDate(date: string): Date | null {
   return isNaN(d.getTime()) ? null : d
 }
 
+export function formatDateBR(date: string | Date | null | undefined): string {
+  if (!date) return ''
+  let d: Date
+  if (typeof date === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      const [y, m, dd] = date.split('-').map(Number)
+      d = new Date(y, m - 1, dd)
+    } else {
+      d = new Date(date)
+    }
+  } else {
+    d = date
+  }
+  if (isNaN(d.getTime())) return ''
+  const dd = String(d.getDate()).padStart(2, '0')
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const yyyy = String(d.getFullYear())
+  return `${dd}/${mm}/${yyyy}`
+}

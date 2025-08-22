@@ -22,7 +22,7 @@
         <template #row="{ row }">
           <tr>
             <td>{{ nameOf(row.collaboratorId) }}</td>
-            <td>{{ row.startDate }} – {{ row.endDate }}</td>
+            <td>{{ d(row.startDate) }} – {{ d(row.endDate) }}</td>
             <td>{{ row.days }}</td>
             <td>{{ row.icdCode }} {{ row.icdTitle ? '– ' + row.icdTitle : '' }}</td>
             <td>{{ row.status }}</td>
@@ -44,7 +44,7 @@
     
     <Modal :visible="drawer" @update:visible="drawer = $event" title="Detalhes do atestado">
       <p><strong>Colaborador:</strong> {{ nameOf(current?.collaboratorId) }}</p>
-      <p><strong>Período:</strong> {{ current?.startDate }} – {{ current?.endDate }} ({{ current?.days }} dias)</p>
+      <p><strong>Período:</strong> {{ d(current?.startDate) }} – {{ d(current?.endDate) }} ({{ current?.days }} dias)</p>
       <p><strong>CID:</strong> {{ current?.icdCode }} — {{ current?.icdTitle }}</p>
       <p><strong>Status:</strong> {{ current?.status }}</p>
       <p><strong>Diagnóstico:</strong> {{ current?.diagnosis }}</p>
@@ -65,6 +65,7 @@ import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
 import BaseInput from './components/base/BaseInput.vue'
 import { listCertificates, certificates as store, listCollaborators, cancelCertificate, Certificate } from './mocks/data'
+import { formatDateBR } from './utils/formatters'
 
 const rows = ref(listCertificates())
 const collabs = listCollaborators()
@@ -95,6 +96,7 @@ const filtered = computed(() => rows.value.filter(r => {
 }))
 
 function nameOf(id?: string) { return collabs.find(c => c.id === id)?.fullName || '' }
+function d(date?: string | null) { return formatDateBR(date || '') }
 
 const drawer = ref(false)
 const current = ref<Certificate | null>(null)

@@ -1,4 +1,4 @@
-import { formatCpf, normalizeCpf, toIsoDate, fromIsoDate } from './formatters'
+import { formatCpf, normalizeCpf, toIsoDate, fromIsoDate, formatDateBR } from './formatters'
 
 describe('formatters', () => {
   it('normalizes and formats CPF', () => {
@@ -11,6 +11,6 @@ describe('formatters', () => {
     expect(iso).toBe('2025-01-02')
     const d = fromIsoDate('2025-01-02')
     expect(d).not.toBeNull()
+    expect(formatDateBR('2025-01-02')).toBe('02/01/2025')
   })
 })
-
