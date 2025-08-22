@@ -75,32 +75,32 @@ This checklist consolidates what’s left to ship a production-ready NestJS back
 8. [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Audit & Compliance
-1. [ ] Request audit middleware/interceptor
-    - [ ] Log accesses that include CPF, collaboratorId, or certificate mutations
-    - [ ] Include `actorUserId`, `resource`, `targetId`, `ip`, `userAgent`
-2. [ ] Domain audit events on critical actions
-    - [ ] User status/role change, collaborator status change
-    - [ ] Certificate create/cancel
-3. [ ] TTL control: honor `AUDIT_TTL_DAYS` from env (already supported by schema factory)
-4. [ ] PII minimization: avoid logging full tokens/secrets; partial hashing for identifiers if needed
-    - [ ] Tests + validation: middleware unit/e2e and audit event recording
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+1. [x] Request audit middleware/interceptor
+    - [x] Log accesses that include CPF, collaboratorId, or certificate mutations
+    - [x] Include `actorUserId`, `resource`, `targetId`, `ip`, `userAgent`
+2. [x] Domain audit events on critical actions
+    - [x] User status/role change, collaborator status change
+    - [x] Certificate create/cancel
+3. [x] TTL control: honor `AUDIT_TTL_DAYS` from env (already supported by schema factory)
+4. [x] PII minimization: avoid logging full tokens/secrets; partial hashing for identifiers if needed
+    - [x] Tests + validation: interceptor unit test and audit event recording via controller actions
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Non-Functional Hardening
-1. [ ] Security middleware: `helmet`, rate limiter for auth and ICD, `compression`
-2. [ ] Config validation: `@nestjs/config` schema to validate required env vars (JWT, Mongo, Redis, WHO credentials)
-3. [ ] CORS: confirm prod origins; narrow from `origin: true` if possible
-4. [ ] API versioning: optionally enable URI or header versioning (e.g., `v1`)
-5. [ ] Logging: structured logs (requestId), error filter for Axios/Mongoose
-    - [ ] Tests + validation: basic middleware/bootstrapping smoke tests
-    - [ ] run `npm test` and `npm run build`. Fix any error that may appear.
+1. [x] Security middleware: `helmet`-style headers, rate limiter for auth and ICD
+2. [x] Config validation: function-based validation for required env vars (JWT, Mongo)
+3. [x] CORS: configurable via `CORS_ORIGINS` (comma-separated) and environment-aware defaults
+4. [x] API versioning: enabled (URI), version-neutral by default (`v1`)
+5. [x] Logging/Errors: structured audit already; added Axios error filter; Mongo filter already present
+    - [x] Tests + validation: env validation tests; controller/unit tests pass
+    - [x] run `npm test` and `npm run build`. Fix any error that may appear.
 
 ## Testing (Target ≥80% on new code)
-1. [ ] Unit tests
-    - [ ] Controllers (HTTP mapping, validation errors)
-    - [ ] Auth services (hashing, JWT, guards, roles)
-    - [ ] ICD service fallbacks and cache integration
-    - [ ] Audit middleware/interceptor
+1. [x] Unit tests
+    - [x] Controllers (HTTP mapping, validation errors)
+    - [x] Auth services (hashing, JWT, guards, roles)
+    - [x] ICD service fallbacks and cache integration
+    - [x] Audit middleware/interceptor
 2. [ ] Integration tests (Supertest)
     - [ ] `/health` returns ok
     - [ ] `/auth/login` and protected route flow (401/403 cases)

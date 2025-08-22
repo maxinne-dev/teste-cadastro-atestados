@@ -3,6 +3,7 @@ import { AuthService } from './auth.service.js'
 import { IsEmail, IsString, MinLength } from 'class-validator'
 import { Transform } from 'class-transformer'
 import { Public } from './public.decorator.js'
+import { RateLimiterService } from '../common/rate-limiter.service.js'
 
 class LoginDto {
   @IsEmail()
@@ -16,11 +17,17 @@ class LoginDto {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(
+    private readonly auth: AuthService,
+    private readonly limiter: RateLimiterService
+  ) {}
 
   @Post('login')
   @Public()
-  async login(@Body() dto: LoginDto) {
+  async login(@Body() dto: LoginDto, @Req() req: any) {
+    const key = `auth:${req?.ip || 'anon'}`
+    const limit = parseInt(process.env.AUTH_RATE_LIMIT_RPM || '30', 10)
+    this.limiter.consume(key, isFinite(limit) ? limit : 30, 60_000)
     return this.auth.login(dto.email, dto.password)
   }
 

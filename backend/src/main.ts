@@ -1,14 +1,30 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { MongoExceptionFilter } from './common/filters/mongo-exception.filter.js';
+import { AxiosExceptionFilter } from './common/filters/axios-exception.filter.js';
+import { SecurityHeadersMiddleware } from './common/middleware/security-headers.middleware.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
-  app.enableCors({ origin: true, credentials: true });
+  // CORS: allow specific origins if provided, else allow all in dev
+  const origins = (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+  const isProd = process.env.NODE_ENV === 'production'
+  app.enableCors({
+    origin: origins.length ? origins : isProd ? false : true,
+    credentials: true,
+  });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new MongoExceptionFilter());
+  app.useGlobalFilters(new AxiosExceptionFilter());
+  // Versioning (URI); routes remain version-neutral unless annotated
+  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
+  // Security headers
+  app.use(new SecurityHeadersMiddleware().use);
 
   const port = process.env.API_PORT || 3000;
   await app.listen(port);

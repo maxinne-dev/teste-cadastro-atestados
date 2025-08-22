@@ -13,14 +13,23 @@ import { CreateCollaboratorDto } from './dto/create-collaborator.dto.js'
 import { CpfParamDto } from './dto/cpf-param.dto.js'
 import { SearchCollaboratorsDto } from './dto/search-collaborators.dto.js'
 import { UpdateStatusDto } from './dto/update-status.dto.js'
+import { AuditService } from '../audit/audit.service.js'
 
 @Controller('collaborators')
 export class CollaboratorsController {
-  constructor(private readonly collaborators: CollaboratorsService) {}
+  constructor(
+    private readonly collaborators: CollaboratorsService,
+    private readonly audit: AuditService
+  ) {}
 
   @Post()
   async create(@Body() dto: CreateCollaboratorDto) {
     const created = await this.collaborators.create(dto)
+    await this.audit.record({
+      action: 'collaborator.create',
+      targetId: created?.cpf,
+      resource: 'POST /collaborators',
+    })
     return created
   }
 
@@ -49,6 +58,12 @@ export class CollaboratorsController {
   async updateStatus(@Param() params: CpfParamDto, @Body() body: UpdateStatusDto) {
     const updated = await this.collaborators.setStatus(params.cpf, body.status)
     if (!updated) throw new NotFoundException('Collaborator not found')
+    await this.audit.record({
+      action: 'collaborator.status.change',
+      targetId: params.cpf,
+      resource: 'PATCH /collaborators/:cpf/status',
+      metadata: { status: body.status },
+    })
     return updated
   }
 }
