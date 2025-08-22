@@ -1,0 +1,19 @@
+/* Bridge our tokens to PrimeVue (Aura) theme tokens */
+:root {
+  /* Colors */
+  --p-primary-color: var(--color-primary);
+  --p-text-color: var(--color-text);
+  --p-text-muted-color: var(--color-text-secondary);
+
+  /* Surfaces */
+  --p-surface-ground: var(--color-bg);
+  --p-surface-card: var(--color-surface);
+  --p-surface-overlay: var(--color-surface-2);
+  --p-surface-border: var(--color-border);
+
+  /* Shape */
+  --p-border-radius: var(--radius-md);
+}
+
+/* Dark mode inherits via token swap on [data-theme="dark"] */
+

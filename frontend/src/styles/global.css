@@ -1,0 +1,52 @@
+/* Minimal Reset */
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #app { height: 100%; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+
+/* Base Typography & Colors */
+body {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); font-weight: var(--font-weight-semibold); margin: 0 0 var(--space-4); }
+h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); font-weight: var(--font-weight-semibold); margin: 0 0 var(--space-3); }
+h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); font-weight: var(--font-weight-semibold); margin: 0 0 var(--space-2); }
+h4 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: var(--font-weight-semibold); margin: 0 0 var(--space-2); }
+p { margin: 0 0 var(--space-3); }
+
+/* Focus visibility */
+:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: 2px; }
+
+/* Containers */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+@media (min-width: 768px) { .container { max-width: 720px; } }
+@media (min-width: 1024px) { .container { max-width: 1024px; } }
+@media (min-width: 1280px) { .container { max-width: 1280px; } }
+@media (min-width: 1440px) { .container { max-width: 1440px; } }
+
+/* Utilities (limited set) */
+.mt-4 { margin-top: var(--space-4); }
+.mb-4 { margin-bottom: var(--space-4); }
+.px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+.py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.radius-md { border-radius: var(--radius-md); }
+.elev-1 { box-shadow: var(--elev-1); }
+.elev-2 { box-shadow: var(--elev-2); }
+.elev-3 { box-shadow: var(--elev-3); }
+
+/* A11y helpers */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }
+
