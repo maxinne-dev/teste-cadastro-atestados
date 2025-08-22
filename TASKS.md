@@ -195,8 +195,8 @@ Note: Specs prepared in docs/Pages-Plan.md (no code yet).
    - [x] Inline errors + disabled submit until valid
 
 25. Component tests (optional but recommended)
-   - [ ] Configure Vitest + Vue Test Utils for basic render/interaction tests
-   - [ ] Snapshot key components (`BaseInput`, `DataTable` wrapper, `ConfirmDialog`)
+   - [x] Configure Vitest + Vue Test Utils for basic render/interaction tests
+   - [x] Snapshot key components (`BaseInput`, `DataTable` wrapper, `ConfirmDialog`)
 
 26. QA checklist
    - [ ] All routes reachable via sidebar and direct URL

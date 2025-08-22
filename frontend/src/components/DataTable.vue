@@ -8,7 +8,7 @@
     </div>
     <div v-else-if="rows.length" class="table-scroll">
       <table :aria-label="ariaLabel">
-        <thead @click="onHeaderClick"><slot name="columns" /></thead>
+        <thead ref="thead" @click="onHeaderClick" @keydown="onHeaderKeydown"><slot name="columns" /></thead>
         <tbody>
           <slot name="row" v-for="(r, i) in pagedRows" :row="r" :index="i" :key="i" />
         </tbody>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, useSlots } from 'vue'
+import { computed, onMounted, onUnmounted, ref, useSlots, watch } from 'vue'
 const props = withDefaults(defineProps<{ rows: any[]; loading?: boolean; emptyMessage?: string; total?: number; page?: number; rowsPerPage?: number; sortBy?: string | null; sortDir?: 'asc' | 'desc' | null; ariaLabel?: string; cardBreakpoint?: number }>(), {
   rows: () => [],
   emptyMessage: 'No data',
@@ -91,6 +91,58 @@ onUnmounted(() => { window.removeEventListener('resize', onResize) })
 const isCardView = computed(() => width.value < (props.cardBreakpoint || 0))
 const slots = useSlots()
 const hasCard = computed(() => Boolean(slots.card))
+
+// A11y: manage aria-sort on sortable headers
+const thead = ref<HTMLElement | null>(null)
+function ensureSortIcon(th: HTMLElement, state: 'none' | 'ascending' | 'descending') {
+  let icon = th.querySelector<HTMLElement>('span.sort-icon')
+  if (!icon) {
+    icon = document.createElement('span')
+    icon.className = 'sort-icon pi'
+    icon.setAttribute('aria-hidden', 'true')
+    th.appendChild(icon)
+  }
+  icon.classList.remove('pi-sort-alt', 'pi-sort-amount-up', 'pi-sort-amount-down')
+  if (state === 'ascending') icon.classList.add('pi-sort-amount-up')
+  else if (state === 'descending') icon.classList.add('pi-sort-amount-down')
+  else icon.classList.add('pi-sort-alt')
+}
+function updateAriaSort() {
+  const root = thead.value
+  if (!root) return
+  const allThs = root.querySelectorAll<HTMLElement>('th')
+  allThs.forEach((th) => {
+    const key = th.getAttribute('data-sort')
+    const isSortable = key != null
+    const val: 'none' | 'ascending' | 'descending' = isSortable && props.sortBy === key ? (props.sortDir === 'asc' ? 'ascending' : props.sortDir === 'desc' ? 'descending' : 'none') : 'none'
+    th.setAttribute('role', 'columnheader')
+    th.setAttribute('aria-sort', val)
+    if (isSortable) {
+      th.setAttribute('tabindex', '0')
+      ensureSortIcon(th, val)
+    } else {
+      th.removeAttribute('tabindex')
+      const existing = th.querySelector('span.sort-icon')
+      if (existing) existing.remove()
+    }
+  })
+}
+function onHeaderKeydown(e: KeyboardEvent) {
+  const keyEl = (e.target as HTMLElement).closest('[data-sort]') as HTMLElement | null
+  if (!keyEl) return
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault()
+    const sortKey = keyEl.getAttribute('data-sort')
+    if (!sortKey) return
+    let nextDir: 'asc' | 'desc' = 'asc'
+    if (props.sortBy === sortKey) nextDir = props.sortDir === 'asc' ? 'desc' : 'asc'
+    emit('update:sortBy', sortKey)
+    emit('update:sortDir', nextDir)
+    emit('sort', { sortBy: sortKey, sortDir: nextDir })
+  }
+}
+onMounted(updateAriaSort)
+watch(() => [props.sortBy, props.sortDir], () => updateAriaSort())
 </script>
 
 <style scoped>
@@ -109,4 +161,10 @@ tbody td { padding: 10px 12px; border-top: 1px solid var(--color-border); }
 /* Cards */
 .cards { display: grid; gap: var(--space-3); padding: var(--space-3); }
 .card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); }
+
+/* Sort icon positioning */
+thead th { position: relative; }
+thead th .sort-icon { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); font-size: 12px; }
+thead th[aria-sort="ascending"] .sort-icon,
+thead th[aria-sort="descending"] .sort-icon { color: var(--color-text-secondary); }
 </style>
