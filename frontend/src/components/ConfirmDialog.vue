@@ -1,6 +1,6 @@
 <template>
   <div v-if="visible" class="backdrop" @click.self="onCancel" role="dialog" aria-modal="true">
-    <div class="dialog" :class="severity">
+    <div class="dialog" :class="severity" ref="dialog" tabindex="-1" @keydown.esc.prevent.stop="onCancel">
       <h3 class="title">{{ title }}</h3>
       <p v-if="message" class="message">{{ message }}</p>
       <div class="actions">
@@ -12,12 +12,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue'
 const props = withDefaults(defineProps<{ visible: boolean; title: string; message?: string; confirmLabel?: string; cancelLabel?: string; severity?: 'neutral' | 'danger' }>(), {
   confirmLabel: 'Confirmar',
   cancelLabel: 'Cancelar',
   severity: 'neutral',
 })
 const emit = defineEmits<{ (e: 'update:visible', v: boolean): void; (e: 'confirm'): void; (e: 'cancel'): void }>()
+const dialog = ref<HTMLDivElement | null>(null)
+watch(() => props.visible, (v) => { if (v) setTimeout(() => dialog.value?.focus(), 0) })
 function onCancel() { emit('update:visible', false); emit('cancel') }
 function onConfirm() { emit('update:visible', false); emit('confirm') }
 </script>
@@ -32,4 +35,3 @@ function onConfirm() { emit('update:visible', false); emit('confirm') }
 .confirm { background: var(--color-primary); color: white; border: 1px solid var(--color-primary); }
 .dialog.danger .confirm { background: var(--color-error); border-color: var(--color-error); }
 </style>
-

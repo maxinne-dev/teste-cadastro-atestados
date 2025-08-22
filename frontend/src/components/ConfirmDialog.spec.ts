@@ -10,5 +10,11 @@ describe('ConfirmDialog', () => {
     await wrapper.find('.btn.cancel').trigger('click')
     expect(wrapper.emitted('cancel')).toBeTruthy()
   })
-})
 
+  it('closes on Escape key', async () => {
+    const wrapper = mount(ConfirmDialog, { props: { visible: true, title: 'Delete item' } })
+    const panel = wrapper.find('.dialog')
+    await panel.trigger('keydown', { key: 'Escape' })
+    expect(wrapper.emitted('cancel')).toBeTruthy()
+  })
+})

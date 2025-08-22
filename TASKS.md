@@ -79,67 +79,70 @@ Note: ESLint checks are temporarily deferred to speed up UI scaffolding. We will
 ## Pages and Flows (Dummy Data Only)
 
 9. Login
-   - [ ] Email + password fields with basic validation
-   - [ ] Show/hide password control
-   - [ ] Remember-me checkbox (local only)
-   - [ ] On submit, set a dummy session token and route to Dashboard
+   - [x] Email + password fields with basic validation
+   - [x] Show/hide password control
+   - [x] Remember-me checkbox (local only)
+   - [x] On submit, set a dummy session token and route to Dashboard
 
 10. Dashboard
-   - [ ] Page header and quick actions (e.g., “Novo Atestado”)
-   - [ ] Stat cards (placeholders): total collaborators, total certificates, active leaves
-   - [ ] Recent activity list (dummy items)
-   - [ ] Placeholder charts (static images or empty components)
+   - [x] Page header and quick actions (e.g., “Novo Atestado”)
+   - [x] Stat cards (placeholders): total collaborators, total certificates, active leaves
+   - [x] Recent activity list (dummy items)
+   - [x] Placeholder charts (static images or empty components)
 
 11. Collaborators (List + Create/Edit)
-   - [ ] List table with columns: Name, CPF, Department, Position, Status, Actions
-   - [ ] Filters: search by name/CPF, status; pagination controls (client-only)
-   - [ ] Action: View details (drawer or modal)
-   - [ ] Action: Edit (modal or route) with form: full name, CPF, birth date, position, department, status
-   - [ ] Action: New collaborator (modal), with client-side validation and success toast
-   - [ ] Confirm dialog for activating/deactivating (no persistence beyond local mocks)
+   - [x] List table with columns: Name, CPF, Department, Position, Status, Actions
+   - [x] Filters: search by name/CPF, status; pagination controls (client-only)
+   - [x] Action: View details (drawer or modal)
+   - [x] Action: Edit (modal or route) with form: full name, CPF, birth date, position, department, status
+   - [x] Action: New collaborator (modal), with client-side validation and success toast
+   - [x] Confirm dialog for activating/deactivating (no persistence beyond local mocks)
 
 12. Certificates (List + Details)
-   - [ ] List table with columns: Collaborator, Dates (start–end), Days, ICD code/title, Status, Actions
-   - [ ] Filters: collaborator (select/search), period (date range), status, ICD (text)
-   - [ ] Pagination and sorting (client-only)
-   - [ ] Action: View details (drawer/modal) with full record
-   - [ ] Action: Cancel certificate (confirm dialog; toggle local status)
+   - [x] List table with columns: Collaborator, Dates (start–end), Days, ICD code/title, Status, Actions
+   - [x] Filters: collaborator (select/search), period (date range), status, ICD (text)
+   - [x] Pagination (client-only)
+   - [x] Sorting (client-only)
+   - [x] Action: View details (drawer/modal) with full record
+   - [x] Action: Cancel certificate (confirm dialog; toggle local status)
 
 13. New Certificate (Form)
-   - [ ] Collaborator selector: search/select modal or simple dropdown populated from mocks
-   - [ ] Dates: start and end date pickers, auto-calc days (editable)
-   - [ ] Diagnosis (textarea)
-   - [ ] ICD search field: local dummy autocomplete (no API) with a small mock list
+   - [x] Collaborator selector: search/select modal or simple dropdown populated from mocks
+   - [x] Dates: start and end date pickers, auto-calc days (editable)
+   - [x] Diagnosis (textarea)
+   - [x] ICD search field: local dummy autocomplete (no API) with a small mock list
    - [ ] Optional attachments placeholder (no upload)
-   - [ ] Client-side validation and submit to add to local list
+   - [x] Client-side validation and submit to add to local list
 
 14. Not Found (404)
-   - [ ] Minimal friendly 404 page and link back to Dashboard
+   - [x] Minimal friendly 404 page and link back to Dashboard
+
+Note: Specs prepared in docs/Pages-Plan.md (no code yet).
 
 - Section test checklist
-  - [ ] Render tests for pages: Login, Dashboard, Collaborators, Certificates, NewCertificate, 404
-  - [ ] Navigation tests: sidebar links route to expected views
-  - [ ] Typecheck pass (lint deferred)
+  - [x] Render tests for pages: Login, Dashboard, Collaborators, Certificates, NewCertificate, 404
+  - [x] Navigation tests: sidebar links route to expected views
+  - [x] Typecheck pass (lint deferred)
 
 ## Modals and Reusable UX
 
 15. Global confirm dialogs
-   - [ ] Standardized title/description, destructive style for risky actions
-   - [ ] Keyboard accessibility and focus management
+   - [x] Standardized title/description, destructive style for risky actions
+   - [x] Keyboard accessibility and focus management
 
 16. Details drawer/modal patterns
-   - [ ] Collaborator details drawer with tabs (Profile, Certificates)
-   - [ ] Certificate details modal (summary, actions)
+   - [x] Collaborator details drawer with tabs (Profile, Certificates)
+   - [x] Certificate details modal (summary, actions)
 
 17. Empty, loading, and error states (local)
-   - [ ] Table empty states with helpful copy
-   - [ ] Skeleton loaders for key views
-   - [ ] Non-blocking error banners for form validation
+   - [x] Table empty states with helpful copy
+   - [x] Skeleton loaders for key views
+   - [x] Non-blocking error banners for form validation
 
 - Section test checklist
-  - [ ] Open/close and focus-trap tests for modals/drawers
-  - [ ] ConfirmDialog: confirm/cancel emits expected events
-  - [ ] Typecheck pass (lint deferred)
+  - [x] Open/close and focus-trap tests for modals/drawers
+  - [x] ConfirmDialog: confirm/cancel emits expected events
+  - [x] Typecheck pass (lint deferred)
 
 ## Mock Data, State, and Utilities (No API)
 

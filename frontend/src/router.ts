@@ -5,6 +5,7 @@ import Certificates from './Certificates.vue'
 import NewCertificate from './NewCertificate.vue'
 import Collaborators from './Collaborators.vue'
 import AppLayout from './layouts/AppLayout.vue'
+import NotFound from './NotFound.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -21,6 +22,7 @@ const router = createRouter({
         { path: 'certificates/new', name: 'new-certificate', component: NewCertificate, meta: { title: 'Novo Atestado', breadcrumb: [{ label: 'Dashboard', to: '/' }, { label: 'Atestados', to: '/certificates' }, { label: 'Novo' }] } },
       ],
     },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
   ],
 })
 
