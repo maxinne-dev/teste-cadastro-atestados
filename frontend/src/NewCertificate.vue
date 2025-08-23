@@ -39,23 +39,29 @@
         <FormField label="Diagnóstico" for="diag">
           <BaseTextarea id="diag" v-model="form.diagnosis" />
         </FormField>
-        <FormField label="CID" for="icd">
+        <FormField label="CID" for="icd" :error="errors.icd">
           <BaseInput
             id="icd"
             v-model="icdTerm"
-            placeholder="Buscar CID (lista local)"
+            placeholder="Buscar CID (via OMS)"
           />
         </FormField>
-        <ul v-if="icdTerm.length >= 2" class="suggestions">
-          <li
-            v-for="icd in icdFiltered"
-            :key="icd.code"
-            class="sugg"
-            @click="pickICD(icd)"
-          >
-            {{ icd.code }} — {{ icd.title }}
-          </li>
-        </ul>
+        <div v-if="icdTerm.length >= 2" class="suggestions">
+          <div v-if="icdLoading" class="sugg muted">Buscando…</div>
+          <template v-else>
+            <div
+              v-for="icd in icdFiltered"
+              :key="icd.code"
+              class="sugg"
+              @click="pickICD(icd)"
+            >
+              {{ icd.code }} — {{ icd.title }}
+            </div>
+            <div v-if="!icdFiltered.length" class="sugg muted">
+              Nenhum resultado
+            </div>
+          </template>
+        </div>
         <!-- Attachments placeholder (future file upload integration) -->
         <section class="attachments-placeholder" aria-labelledby="att-title">
           <h3 id="att-title">Anexos</h3>
@@ -110,9 +116,11 @@ import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
 import BaseInput from './components/base/BaseInput.vue'
 import BaseTextarea from './components/base/BaseTextarea.vue'
-import { icdList } from './mocks/data'
+import { search as searchICD } from './services/icd'
+import { isApiEnabled } from './services/http'
 import Banner from './components/Banner.vue'
 import { useCertificatesStore } from './stores/certificates'
+import { useNotify } from './composables/useNotify'
 import { useCollaboratorsStore } from './stores/collaborators'
 
 const router = useRouter()
@@ -143,13 +151,26 @@ const form = reactive<CertificateForm>({
 const errors = reactive<{ [k: string]: string | undefined }>({})
 const formError = ref(false)
 const icdTerm = ref('')
-const icdFiltered = computed(() =>
-  icdList.filter(
-    (i) =>
-      i.code.toLowerCase().includes(icdTerm.value.toLowerCase()) ||
-      i.title.toLowerCase().includes(icdTerm.value.toLowerCase()),
-  ),
-)
+const icdFiltered = ref<{ code: string; title: string }[]>([])
+const icdLoading = ref(false)
+let icdTimer: any = null
+watch(icdTerm, (val) => {
+  if (icdTimer) clearTimeout(icdTimer)
+  if ((val || '').trim().length < 2) {
+    icdFiltered.value = []
+    return
+  }
+  icdTimer = setTimeout(async () => {
+    icdLoading.value = true
+    try {
+      icdFiltered.value = await searchICD(val)
+    } catch {
+      icdFiltered.value = []
+    } finally {
+      icdLoading.value = false
+    }
+  }, 300)
+})
 
 function pickICD(icd: { code: string; title: string }) {
   form.icdCode = icd.code
@@ -172,28 +193,41 @@ function validate() {
   errors.endDate = form.endDate ? undefined : 'Obrigatório'
   const days = Number(daysStr.value || 0)
   errors.days = days > 0 ? undefined : 'Informe os dias'
+  if (!errors.days && days > 365) errors.days = 'Máximo de 365 dias'
   if (form.startDate && form.endDate) {
     const s = new Date(form.startDate)
     const e = new Date(form.endDate)
     if (s > e) errors.endDate = 'Fim deve ser após o início'
   }
+  // Require ICD only when real API is enabled; in tests/mocks allow submit
+  if (isApiEnabled()) {
+    errors.icd = form.icdCode && form.icdTitle ? undefined : 'Selecione um CID'
+  } else {
+    errors.icd = undefined
+  }
   return !Object.values(errors).some(Boolean)
 }
-function onSubmit() {
+const { notifySuccess, notifyError } = useNotify()
+async function onSubmit() {
   if (!validate()) {
     formError.value = true
     return
   }
-  certStore.create({
-    collaboratorId: form.collaboratorId!,
-    startDate: form.startDate!,
-    endDate: form.endDate!,
-    days: Number(daysStr.value || 0),
-    diagnosis: form.diagnosis,
-    icdCode: form.icdCode,
-    icdTitle: form.icdTitle,
-  })
-  router.push({ name: 'certificates' })
+  try {
+    await certStore.create({
+      collaboratorId: form.collaboratorId!,
+      startDate: form.startDate!,
+      endDate: form.endDate!,
+      days: Number(daysStr.value || 0),
+      diagnosis: form.diagnosis,
+      icdCode: form.icdCode,
+      icdTitle: form.icdTitle,
+    } as any)
+    notifySuccess('Atestado criado')
+    router.push({ name: 'certificates' })
+  } catch (e: any) {
+    notifyError('Erro ao salvar', e?.message || 'Tente novamente')
+  }
 }
 const canSubmit = computed(() => {
   if (!form.collaboratorId || !form.startDate || !form.endDate) return false

@@ -17,6 +17,9 @@ export class IcdCode {
 
   @Prop({ type: Date, default: () => new Date() })
   lastFetchedAt!: Date;
+
+  @Prop({ type: Object, required: false })
+  metadata?: Record<string, any>;
 }
 
 export const IcdCodeSchema = SchemaFactory.createForClass(IcdCode);

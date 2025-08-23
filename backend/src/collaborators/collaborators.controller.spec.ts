@@ -55,7 +55,12 @@ describe('CollaboratorsController', () => {
       limit: 5,
       offset: 10,
     } as any);
-    expect(service.searchByNameWithTotal).toHaveBeenCalledWith('C', 5, 10);
+    expect(service.searchByNameWithTotal).toHaveBeenCalledWith(
+      'C',
+      5,
+      10,
+      undefined,
+    );
     expect(res.results).toHaveLength(5);
     expect(res.total).toBe(42);
     expect(res.limit).toBe(5);

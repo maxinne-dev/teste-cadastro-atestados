@@ -18,92 +18,96 @@ This task list consolidates MAIN.md, SPECS.md, and project READMEs into an actio
 
 ## Security, Auth & Sessions (Backend)
 1. JWT + sessions
-   - [ ] Implement login: `POST /api/auth/login` returning JWT with 4h expiry
-   - [ ] Store session metadata in Redis (`session:<jti>`) with 4h TTL
-   - [ ] Implement logout: `POST /api/auth/logout` invalidating token/session
-   - [ ] Add guards: `JwtAuthGuard`, `@Public()` for health, login, ICD search
+   - [x] Implement login: `POST /api/auth/login` returning JWT with 4h expiry
+   - [x] Store session metadata in Redis (`session:<jti>`) with 4h TTL
+   - [x] Implement logout: `POST /api/auth/logout` invalidating token/session
+   - [x] Add guards: `JwtAuthGuard`, `@Public()` for health, login, ICD search
 2. RBAC
-   - [ ] Implement roles and `@Roles('admin'|'hr')` guard
-   - [ ] Protect admin-only endpoints (e.g., users)
+   - [x] Implement roles and `@Roles('admin'|'hr')` guard
+   - [x] Protect admin-only endpoints (e.g., users)
 3. Rate limiting & security headers
-   - [ ] Apply rate limit for auth (`AUTH_RATE_LIMIT_RPM`) and ICD endpoint (`ICD_RATE_LIMIT_RPM`)
-   - [ ] Configure secure headers (CORS, no sniff, frameguard) and request validation pipeline
+   - [x] Apply rate limit for auth (`AUTH_RATE_LIMIT_RPM`) and ICD endpoint (`ICD_RATE_LIMIT_RPM`)
+   - [x] Configure secure headers (CORS, no sniff, frameguard) and request validation pipeline
 
 ## WHO ICD Integration (Backend)
 1. OAuth2 Client Credentials
-   - [ ] Configure token endpoint `https://icdaccessmanagement.who.int/connect/token`
-   - [ ] Implement token acquisition with client id/secret; reuse until near-expiry
-   - [ ] Handle 401 by refreshing token once and retrying
+   - [x] Configure token endpoint `https://icdaccessmanagement.who.int/connect/token`
+   - [x] Implement token acquisition with client id/secret; reuse until near-expiry
+   - [x] Handle 401 by refreshing token once and retrying
 2. Search endpoint
-   - [ ] Create `GET /api/icd/search?q=term` with query validation and rate limit
-   - [ ] Call WHO API with required headers (`Authorization`, `API-Version: v2`, `Accept-Language`)
-   - [ ] Map WHO responses to `{ code, title/description }` flat structure
+   - [x] Create `GET /api/icd/search?q=term` with query validation and rate limit
+   - [x] Call WHO API with required headers (`Authorization`, `API-Version: v2`, `Accept-Language`)
+   - [x] Map WHO responses to `{ code, title/description }` flat structure
 3. Caching & fallback
-   - [ ] Cache token in memory and/or Redis with expiry
-   - [ ] Upsert successful results into `icdcodes` collection
-   - [ ] Implement fallback: on WHO API failure, query `icdcodes` by code/title
-   - [ ] Log upstream errors with structured context
+   - [x] Cache token in memory and/or Redis with expiry
+   - [x] Upsert successful results into `icdcodes` collection
+   - [x] Implement fallback: on WHO API failure, query `icdcodes` by code/title
+   - [x] Log upstream errors with structured context
 
 ## Data Model & Persistence (Backend)
 1. Collections and schemas
-   - [ ] `users` with email(unique), password hash, roles, status
-   - [ ] `collaborators` with fullName, cpf(unique), birthDate, position, status
-   - [ ] `icdcodes` with code(unique), title/description, metadata
-   - [ ] `medicalcertificates` with collaboratorId, issueDate, startDate, endDate, days, icdCode/icdTitle, notes, status
-   - [ ] `auditlogs` with actor, action, resource, targetId, timestamp (TTL optional)
+   - [x] `users` with email(unique), password hash, roles, status
+   - [x] `collaborators` with fullName, cpf(unique), birthDate, position, status
+   - [x] `icdcodes` with code(unique), title/description, metadata
+   - [x] `medicalcertificates` with collaboratorId, issueDate, startDate, endDate, days, icdCode/icdTitle, notes, status
+   - [x] `auditlogs` with actor, action, resource, targetId, timestamp (TTL optional)
 2. Indexes
-   - [ ] Ensure unique and compound indexes as referenced in README (cpf, email, icdcodes.code, medicalcertificates composite)
-   - [ ] Add text/indexes needed for search and typical queries
+   - [x] Ensure unique and compound indexes as referenced in README (cpf, email, icdcodes.code, medicalcertificates composite)
+   - [x] Add text/indexes needed for search and typical queries
 3. Validation
-   - [ ] Validate CPF (Brazil) on DTOs
-   - [ ] Enforce date ranges and required fields on certificate creation
+   - [x] Validate CPF (Brazil) on DTOs
+   - [x] Enforce date ranges and required fields on certificate creation
 
 ## Business Endpoints (Backend)
 1. Health & meta
-   - [ ] `/api/health` reports Mongo, Redis, and WHO API status
+   - [x] `/api/health` reports Mongo, Redis, and WHO API status
 2. Auth
-   - [ ] `POST /api/auth/login`, `POST /api/auth/logout`
+   - [x] `POST /api/auth/login`, `POST /api/auth/logout`
 3. Collaborators
-   - [ ] `GET /api/collaborators` with search/filter/pagination/sort
-   - [ ] `POST /api/collaborators` create with validation (CPF, required fields)
-   - [ ] `PATCH /api/collaborators/:id` update fields and status (active/inactive)
-   - [ ] Conflict handling (11000) → 409 with structured error payload
+   - [x] `GET /api/collaborators` with search/filter/pagination/sort
+   - [x] `POST /api/collaborators` create with validation (CPF, required fields)
+   - [x] `PATCH /api/collaborators/:id` update fields and status (active/inactive)
+   - [x] Conflict handling (11000) → 409 with structured error payload
 4. Medical Certificates
-   - [ ] `GET /api/medical-certificates` with filters (collaborator, period, CID), pagination, sort
-   - [ ] `POST /api/medical-certificates` create; denormalize `icdCode/icdTitle`
-   - [ ] `PATCH /api/medical-certificates/:id` to cancel/update status
+   - [x] `GET /api/medical-certificates` with filters (collaborator, period, CID), pagination, sort
+   - [x] `POST /api/medical-certificates` create; denormalize `icdCode/icdTitle`
+   - [x] `PATCH /api/medical-certificates/:id` to cancel/update status
 5. ICD Search
-   - [ ] `GET /api/icd/search?q=term` (public, rate limited, fallback to cache)
+   - [x] `GET /api/icd/search?q=term` (public, rate limited, fallback to cache)
 
 ## Frontend Integration (Vue 3)
 1. HTTP client & auth plumbing
-   - [ ] Create `src/services/http.ts` with base URL (`/api` via proxy or `VITE_API_BASE_URL`)
-   - [ ] Add interceptors to attach Bearer token, handle 401 (logout/redirect), and unify errors
-   - [ ] Persist token in `localStorage`; expose helper for auth header
+   - [x] Create `src/services/http.ts` with base URL (`/api` via proxy or `VITE_API_BASE_URL`)
+   - [x] Add interceptors to attach Bearer token, handle 401 (logout/redirect), and unify errors
+   - [x] Persist token in `localStorage`; expose helper for auth header
 2. Replace mocks with real services
-   - [ ] Implement `src/services/auth.ts` → login/logout using API
-   - [ ] Implement `src/services/collaborators.ts` → list/create/update/toggle
-   - [ ] Implement `src/services/certificates.ts` → list/create/cancel
-   - [ ] Implement `src/services/icd.ts` → search with debounce/autocomplete
-   - [ ] Remove/disable mock latency and data once API is wired
+   - [x] Implement `src/services/auth.ts` → login/logout using API
+   - [x] Implement `src/services/collaborators.ts` → list/create/update/toggle
+   - [x] Implement `src/services/certificates.ts` → list/create/cancel
+   - [x] Implement `src/services/icd.ts` → search with debounce/autocomplete
+   - [x] Remove/disable mock latency and data once API is wired
 3. Stores migration (Pinia)
-   - [ ] Update `auth` store to call `auth` service and manage token/session expiry
-   - [ ] Update `collaborators` store to use API; align filters/pagination with backend query params
-   - [ ] Update `certificates` store to use API; ensure sorting and pagination map correctly
+   - [x] Update `auth` store to call `auth` service and manage token/session expiry
+   - [x] Update `collaborators` store to use API; align filters/pagination with backend query params
+   - [x] Update `certificates` store to use API; ensure sorting and pagination map correctly
 4. Routing guards & UX
-   - [ ] Route guard uses token presence and (optionally) role checks
-   - [ ] Protect dashboard/collaborators/certificates routes; keep `/login` public
+   - [x] Route guard uses token presence and (optionally) role checks
+   - [x] Protect dashboard/collaborators/certificates routes; keep `/login` public
 5. UI flows
-   - [ ] Login: validate form, call API, store token, redirect
-   - [ ] Collaborators: list (filters, paging, sort), create/edit, toggle status
-   - [ ] Certificates: list (filters: collaborator, period, CID; paging; sort)
-   - [ ] New Certificate: select collaborator, dates/days, ICD autocomplete via API, optional notes, submit
-   - [ ] ICD Autocomplete: debounce, loading states, empty/error states, selection shows `code - title`
+   - [x] Login: validate form, call API, store token, redirect
+   - [x] Collaborators: list (filters, paging, sort), create/edit, toggle status
+   - [x] Certificates: list (filters: collaborator, period, CID; paging; sort)
+   - [x] New Certificate: select collaborator, dates/days, ICD autocomplete via API, optional notes, submit
+   - [x] ICD Autocomplete: debounce, loading states, empty/error states, selection shows `code - title`
+6. Remote Pagination
+   - [x] Add server-side pagination support in `DataTable` (`remotePaging`)
+   - [x] Wire Certificates view to use backend `total`, `limit`, `offset`
+   - [x] (Optional) Wire Collaborators to use remote pagination end-to-end
 
 ## UX, Validation & Accessibility
 1. Forms and validation
-   - [ ] Client-side validation mirrors backend DTOs (CPF, dates, required fields)
-   - [ ] Show inline errors and disable submit when invalid
+   - [x] Client-side validation mirrors backend DTOs (CPF, dates, required fields)
+   - [x] Show inline errors and disable submit when invalid
 2. Feedback & states
    - [ ] Loading skeletons and progress indicators on list/fetch
    - [ ] Toasts/banners for success, warnings, and error cases (401/403/409/422)

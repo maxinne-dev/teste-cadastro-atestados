@@ -32,13 +32,23 @@
     <div class="footer">
       <slot name="footer" />
       <div v-if="showPagination" class="pagination">
-        <button class="btn" :disabled="page <= 1" @click="prev">
-          Anterior
-        </button>
-        <span>Página {{ page }} de {{ totalPages }}</span>
-        <button class="btn" :disabled="page >= totalPages" @click="next">
-          Próxima
-        </button>
+        <label class="page-size">
+          Itens por página
+          <select :value="props.rowsPerPage" @change="onPageSizeChange">
+            <option v-for="opt in pageSizeOptions" :key="opt" :value="opt">
+              {{ opt }}
+            </option>
+          </select>
+        </label>
+        <div class="pager">
+          <button class="btn" :disabled="page <= 1" @click="prev">
+            Anterior
+          </button>
+          <span>Página {{ page }} de {{ totalPages }}</span>
+          <button class="btn" :disabled="page >= totalPages" @click="next">
+            Próxima
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -58,6 +68,8 @@ const props = withDefaults(
     sortDir?: 'asc' | 'desc' | null
     ariaLabel?: string
     cardBreakpoint?: number
+    remotePaging?: boolean
+    pageSizeOptions?: number[]
   }>(),
   {
     rows: () => [],
@@ -67,6 +79,8 @@ const props = withDefaults(
     sortBy: null,
     sortDir: null,
     cardBreakpoint: 640,
+    remotePaging: false,
+    pageSizeOptions: () => [5, 10, 20, 50],
   },
 )
 const emit = defineEmits<{
@@ -100,6 +114,7 @@ const sortedRows = computed(() => {
 })
 
 const pagedRows = computed(() => {
+  if (props.remotePaging) return sortedRows.value
   const start = (props.page - 1) * props.rowsPerPage
   return sortedRows.value.slice(start, start + props.rowsPerPage)
 })
@@ -114,6 +129,11 @@ function prev() {
 }
 function next() {
   if (page.value < totalPages.value) emit('update:page', page.value + 1)
+}
+const pageSizeOptions = computed(() => props.pageSizeOptions || [])
+function onPageSizeChange(e: Event) {
+  const val = parseInt((e.target as HTMLSelectElement).value, 10)
+  emit('update:rowsPerPage', isNaN(val) ? props.rowsPerPage : val)
 }
 
 function onHeaderClick(e: MouseEvent) {

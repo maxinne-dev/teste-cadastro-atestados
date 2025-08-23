@@ -3,7 +3,13 @@ import { useToast } from 'primevue/usetoast'
 type Severity = 'success' | 'info' | 'warn' | 'error'
 
 export function useNotify() {
-  const toast = useToast()
+  let toast: { add: (args: any) => void }
+  try {
+    toast = useToast() as any
+  } catch {
+    // In unit tests or when ToastService is not installed, provide a no-op
+    toast = { add: () => {} }
+  }
 
   function notify(
     severity: Severity,

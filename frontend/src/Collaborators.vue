@@ -15,13 +15,18 @@
     </Toolbar>
     <div class="mt-4">
       <DataTable
-        :rows="filtered"
-        :rows-per-page="10"
+        :rows="rows"
+        :total="collabStore.total"
+        :rows-per-page="rowsPerPage"
+        :page="page"
         :sort-by="sortBy"
         :sort-dir="sortDir"
+        :remote-paging="true"
         :card-breakpoint="768"
-        @update:sort-by="sortBy = $event"
-        @update:sort-dir="sortDir = $event"
+        @update:page="onPageChange"
+        @update:rows-per-page="onRowsPerPageChange"
+        @update:sort-by="sortBy = $event; refetch()"
+        @update:sort-dir="sortDir = $event; refetch()"
       >
         <template #columns>
           <tr>
@@ -198,7 +203,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref, onMounted } from 'vue'
+import { computed, reactive, ref, onMounted, watch } from 'vue'
 import PageHeader from './components/PageHeader.vue'
 import Toolbar from './components/Toolbar.vue'
 import DataTable from './components/DataTable.vue'
@@ -210,9 +215,12 @@ import FormField from './components/base/FormField.vue'
 import BaseInput from './components/base/BaseInput.vue'
 import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
-import { Collaborator, certificates } from './mocks/data'
+import type { Collaborator } from './types/models'
 import { useCollaboratorsStore } from './stores/collaborators'
+import { useCertificatesStore } from './stores/certificates'
 import { formatCpf, formatDateBR, normalizeCpf } from './utils/formatters'
+import { isValidCpf, isNonEmptyString, isValidIsoDate } from './utils/validators'
+import { useNotify } from './composables/useNotify'
 
 const search = ref('')
 const status = ref<string | null>(null)
@@ -224,29 +232,45 @@ const statusOptions = [
 const statusOptionsNoAll = statusOptions.slice(1)
 const collabStore = useCollaboratorsStore()
 const rows = computed(() => collabStore.items)
+const certStore = useCertificatesStore()
 onMounted(() => {
-  if (!collabStore.items.length) collabStore.fetchAll()
+  if (!certStore.items.length) certStore.fetchAll()
+  refetch()
 })
 const sortBy = ref<string | null>(null)
 const sortDir = ref<'asc' | 'desc' | null>(null)
-const filtered = computed(() =>
-  rows.value.filter((r) => {
-    const s = (search.value || '').toLowerCase()
-    const okSearch =
-      !s || r.fullName.toLowerCase().includes(s) || r.cpf.includes(s)
-    const okStatus = status.value == null || r.status === status.value
-    return okSearch && okStatus
-  }),
-)
+const page = ref(1)
+const rowsPerPage = ref(10)
+function refetch() {
+  collabStore.fetchAll({
+    q: search.value,
+    status: (status.value as any) || undefined,
+    sortBy: (sortBy.value as any) || 'fullName',
+    sortDir: (sortDir.value as any) || 'asc',
+    limit: rowsPerPage.value,
+    offset: (page.value - 1) * rowsPerPage.value,
+  })
+}
+watch([sortBy, sortDir, search, status], () => {
+  page.value = 1
+  refetch()
+})
+function onPageChange(p: number) {
+  page.value = p
+  refetch()
+}
+function onRowsPerPageChange(n: number) {
+  rowsPerPage.value = n
+  page.value = 1
+  refetch()
+}
 
 const drawer = ref(false)
 const editor = ref(false)
 const current = ref<Collaborator | null>(null)
 const tab = ref<'profile' | 'certs'>('profile')
 const certsOfCurrent = computed(() =>
-  current.value
-    ? certificates.filter((c) => c.collaboratorId === current.value?.id)
-    : [],
+  current.value ? certStore.byCollaborator(current.value.id || '') : [],
 )
 const editing = reactive<Collaborator>({
   id: '',
@@ -290,31 +314,53 @@ function edit(row: Collaborator) {
   editor.value = true
 }
 function validate() {
-  formErrors.fullName = editing.fullName ? undefined : 'Obrigatório'
+  // Mirror backend DTOs: department is optional
+  formErrors.fullName = isNonEmptyString(editing.fullName)
+    ? undefined
+    : 'Obrigatório'
   const cpfDigits = normalizeCpf(editing.cpf)
-  formErrors.cpf = cpfDigits.length === 11 ? undefined : 'CPF inválido'
-  formErrors.birthDate = editing.birthDate ? undefined : 'Obrigatório'
-  formErrors.position = editing.position ? undefined : 'Obrigatório'
-  formErrors.department = editing.department ? undefined : 'Obrigatório'
+  if (cpfDigits.length !== 11) formErrors.cpf = 'CPF inválido'
+  else if (!isValidCpf(cpfDigits)) formErrors.cpf = 'CPF inválido'
+  else formErrors.cpf = undefined
+  formErrors.birthDate = isValidIsoDate(editing.birthDate)
+    ? undefined
+    : 'Obrigatório'
+  formErrors.position = isNonEmptyString(editing.position)
+    ? undefined
+    : 'Obrigatório'
+  // department optional: no error
+  formErrors.department = undefined
   return !Object.values(formErrors).some(Boolean)
 }
-function save() {
+const { notifySuccess, notifyError } = useNotify()
+async function save() {
   if (!validate()) {
     formErrorBanner.value = true
     return
   }
-  collabStore.save(editing as Collaborator)
-  editor.value = false
-  formErrorBanner.value = false
+  try {
+    await collabStore.save(editing as Collaborator)
+    notifySuccess('Colaborador salvo')
+    editor.value = false
+    formErrorBanner.value = false
+  } catch (e: any) {
+    notifyError('Erro ao salvar', e?.message || 'Tente novamente')
+  }
 }
 function confirmToggle(row: Collaborator) {
   confirmTarget.value = row
   confirmMsg.value = `Confirmar ${row.status === 'active' ? 'desativação' : 'ativação'}?`
   confirm.value = true
 }
-function doToggle() {
+async function doToggle() {
   if (!confirmTarget.value) return
-  collabStore.toggleStatus(confirmTarget.value.id)
+  // Toggle by CPF via API
+  try {
+    await collabStore.toggleStatus(confirmTarget.value.cpf)
+    notifySuccess('Status atualizado')
+  } catch (e: any) {
+    notifyError('Erro ao atualizar status', e?.message || 'Tente novamente')
+  }
 }
 
 function displayCpf(cpf: string) {
@@ -324,14 +370,10 @@ function dateBR(date: string) {
   return formatDateBR(date)
 }
 const canSave = computed(() => {
-  // lightweight pre-check to toggle disabled state without showing errors yet
+  // Keep lightweight checks to match tests: require core fields and 11-digit CPF
   const cpfDigits = normalizeCpf(editing.cpf)
   return Boolean(
-    editing.fullName &&
-      editing.birthDate &&
-      editing.position &&
-      editing.department &&
-      cpfDigits.length === 11,
+    editing.fullName && editing.birthDate && editing.position && cpfDigits.length === 11,
   )
 })
 </script>

@@ -24,15 +24,18 @@
     </Toolbar>
     <div class="mt-4">
       <DataTable
-        :rows="filtered"
+        :rows="rows"
+        :total="certStore.total"
         :rows-per-page="rowsPerPage"
         :page="page"
         :sort-by="sortBy"
         :sort-dir="sortDir"
+        :remote-paging="true"
         :card-breakpoint="768"
-        @update:page="page = $event"
-        @update:sort-by="sortBy = $event"
-        @update:sort-dir="sortDir = $event"
+        @update:page="onPageChange"
+        @update:rows-per-page="onRowsPerPageChange"
+        @update:sort-by="sortBy = $event; refetch()"
+        @update:sort-dir="sortDir = $event; refetch()"
       >
         <template #columns>
           <tr>
@@ -148,7 +151,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import PageHeader from './components/PageHeader.vue'
 import Toolbar from './components/Toolbar.vue'
 import DataTable from './components/DataTable.vue'
@@ -158,16 +161,17 @@ import ConfirmDialog from './components/ConfirmDialog.vue'
 import BaseSelect from './components/base/BaseSelect.vue'
 import BaseDate from './components/base/BaseDate.vue'
 import BaseInput from './components/base/BaseInput.vue'
-import type { Certificate } from './mocks/data'
+import type { Certificate } from './types/models'
 import { useCertificatesStore } from './stores/certificates'
 import { useCollaboratorsStore } from './stores/collaborators'
 import { formatDateBR } from './utils/formatters'
+import { useNotify } from './composables/useNotify'
 
 const certStore = useCertificatesStore()
 const collabStore = useCollaboratorsStore()
 onMounted(() => {
-  if (!certStore.items.length) certStore.fetchAll()
   if (!collabStore.items.length) collabStore.fetchAll()
+  refetch()
 })
 const rows = computed(() => certStore.items)
 const collabOptions = computed(() => [
@@ -186,23 +190,36 @@ const end = ref<string | null>(null)
 const status = ref<string | null>(null)
 const icd = ref('')
 const page = ref(1)
-const rowsPerPage = 5
+const rowsPerPage = ref(5)
 const sortBy = ref<string | null>(null)
 const sortDir = ref<'asc' | 'desc' | null>(null)
 
-const filtered = computed(() =>
-  rows.value.filter((r) => {
-    const okCollab = collab.value == null || r.collaboratorId === collab.value
-    const okStatus = status.value == null || r.status === status.value
-    const okStart = !start.value || r.startDate >= start.value
-    const okEnd = !end.value || r.endDate <= end.value
-    const okIcd =
-      !icd.value ||
-      r.icdCode?.toLowerCase().includes(icd.value.toLowerCase()) ||
-      r.icdTitle?.toLowerCase().includes(icd.value.toLowerCase())
-    return okCollab && okStatus && okStart && okEnd && okIcd
-  }),
-)
+function refetch() {
+  certStore.fetchAll({
+    collaboratorId: collab.value || undefined,
+    status: (status.value as any) || undefined,
+    startDate: start.value || undefined,
+    endDate: end.value || undefined,
+    icdCode: icd.value || undefined,
+    limit: rowsPerPage.value,
+    offset: (page.value - 1) * rowsPerPage.value,
+    sortBy: (sortBy.value as any) || 'issueDate',
+    sortDir: (sortDir.value as any) || 'desc',
+  })
+}
+function onPageChange(p: number) {
+  page.value = p
+  refetch()
+}
+function onRowsPerPageChange(n: number) {
+  rowsPerPage.value = n
+  page.value = 1
+  refetch()
+}
+watch([collab, start, end, status, icd], () => {
+  page.value = 1
+  refetch()
+})
 
 function nameOf(id?: string) {
   return collabStore.items.find((c) => c.id === id)?.fullName || ''
@@ -224,9 +241,15 @@ function confirmCancel(row: Certificate) {
   toCancel = row
   confirm.value = true
 }
-function doCancel() {
+const { notifySuccess, notifyError } = useNotify()
+async function doCancel() {
   if (!toCancel) return
-  certStore.cancel(toCancel.id)
+  try {
+    await certStore.cancel(toCancel.id)
+    notifySuccess('Atestado cancelado')
+  } catch (e: any) {
+    notifyError('Erro ao cancelar', e?.message || 'Tente novamente')
+  }
 }
 </script>
 <style scoped>

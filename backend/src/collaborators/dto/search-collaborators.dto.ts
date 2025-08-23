@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SearchCollaboratorsDto {
@@ -7,6 +7,11 @@ export class SearchCollaboratorsDto {
   @IsOptional()
   @IsString()
   q?: string;
+
+  @ApiPropertyOptional({ enum: ['active', 'inactive'], description: 'Status do colaborador' })
+  @IsOptional()
+  @IsEnum(['active', 'inactive'])
+  status?: 'active' | 'inactive';
 
   @ApiPropertyOptional({ minimum: 0, default: 0 })
   @IsOptional()
@@ -22,4 +27,14 @@ export class SearchCollaboratorsDto {
   @Min(1)
   @Max(100)
   limit?: number = 20;
+
+  @ApiPropertyOptional({ enum: ['fullName', 'createdAt', 'status'] })
+  @IsOptional()
+  @IsEnum(['fullName', 'createdAt', 'status'])
+  sortBy?: 'fullName' | 'createdAt' | 'status';
+
+  @ApiPropertyOptional({ enum: ['asc', 'desc'] })
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  sortDir?: 'asc' | 'desc';
 }

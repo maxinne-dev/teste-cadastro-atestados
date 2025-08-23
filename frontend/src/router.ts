@@ -80,9 +80,9 @@ const router = createRouter({
   ],
 })
 
-// mock auth guard (substituir por integração real ao backend)
+// auth guard using token presence
 router.beforeEach((to, _from, next) => {
-  const authed = !!localStorage.getItem('token')
+  const authed = !!(localStorage.getItem('auth_token') || localStorage.getItem('token'))
   if (to.meta.requiresAuth && !authed) next({ name: 'login' })
   else next()
 })

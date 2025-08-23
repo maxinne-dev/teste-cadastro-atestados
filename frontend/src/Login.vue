@@ -46,13 +46,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from './stores/auth'
 import Card from './components/Card.vue'
 import FormField from './components/base/FormField.vue'
 import BaseInput from './components/base/BaseInput.vue'
 import BasePassword from './components/base/BasePassword.vue'
 import Banner from './components/Banner.vue'
 
-const router = useRouter()
 const email = ref('')
 const password = ref('')
 const remember = ref(false)
@@ -63,7 +63,9 @@ const canSubmit = computed(
   () => /.+@.+\..+/.test(email.value) && password.value.length > 0,
 )
 
-function onSubmit() {
+async function onSubmit() {
+  const auth = useAuthStore()
+  const router = useRouter()
   errors.value = {}
   if (!/.+@.+\..+/.test(email.value))
     errors.value.email = 'Informe um email válido'
@@ -72,9 +74,13 @@ function onSubmit() {
     formError.value = true
     return
   }
-  localStorage.setItem('token', 'dev')
-  if (remember.value) localStorage.setItem('remember', '1')
-  router.push('/')
+  try {
+    await auth.login(email.value, password.value)
+    if (remember.value) localStorage.setItem('remember', '1')
+    router.push('/')
+  } catch (e) {
+    formError.value = true
+  }
 }
 </script>
 <style scoped>

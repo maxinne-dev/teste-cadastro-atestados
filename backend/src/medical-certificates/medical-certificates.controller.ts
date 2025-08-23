@@ -45,11 +45,16 @@ export class MedicalCertificatesController {
       filter.range = { start: q.startDate, end: q.endDate };
 
     const all = await this.certs.filter(filter);
-    // Sort by issueDate desc (fallback to startDate when missing)
+    // Sort by requested field and direction; default issueDate desc
+    const sortBy = q.sortBy || 'issueDate';
+    const dir = (q.sortDir || 'desc') === 'desc' ? -1 : 1;
     const sorted = all.sort((a: any, b: any) => {
-      const da = new Date(a.issueDate || a.startDate).getTime();
-      const db = new Date(b.issueDate || b.startDate).getTime();
-      return db - da;
+      const av = a[sortBy] ?? a.startDate; // fallback for issueDate
+      const bv = b[sortBy] ?? b.startDate;
+      const da = new Date(av).getTime();
+      const db = new Date(bv).getTime();
+      if (!isFinite(da) || !isFinite(db)) return 0;
+      return (da - db) * dir;
     });
     const limit = q.limit ?? 20;
     const offset = q.offset ?? 0;

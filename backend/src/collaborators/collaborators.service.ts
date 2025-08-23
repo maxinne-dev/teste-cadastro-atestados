@@ -39,21 +39,63 @@ export class CollaboratorsService {
     return this.model.find(q).limit(limit).exec();
   }
 
-  async searchByNameWithTotal(term: string, limit = 20, offset = 0) {
+  async searchByNameWithTotal(
+    term: string,
+    limit = 20,
+    offset = 0,
+    status?: 'active' | 'inactive',
+  ) {
     const q: FilterQuery<CollaboratorDocument> = {};
     const trimmed = (term || '').trim();
     if (trimmed) {
       q.fullName = { $regex: trimmed, $options: 'i' };
     }
+    if (status) {
+      q.status = status;
+    }
+    const [results, total] = await Promise.all([
+      this.model.find(q).skip(Math.max(0, offset)).limit(Math.max(0, limit)).exec(),
+      this.model.countDocuments(q).exec(),
+    ]);
+    return { results, total };
+  }
+
+  async searchByNameWithTotalSorted(
+    term: string,
+    limit = 20,
+    offset = 0,
+    sortBy: 'fullName' | 'createdAt' | 'status' = 'fullName',
+    sortDir: 'asc' | 'desc' = 'asc',
+    status?: 'active' | 'inactive',
+  ) {
+    const q: FilterQuery<CollaboratorDocument> = {};
+    const trimmed = (term || '').trim();
+    if (trimmed) {
+      q.fullName = { $regex: trimmed, $options: 'i' };
+    }
+    if (status) {
+      q.status = status;
+    }
+    const dir = sortDir === 'desc' ? -1 : 1;
     const [results, total] = await Promise.all([
       this.model
         .find(q)
+        .sort({ [sortBy]: dir })
         .skip(Math.max(0, offset))
         .limit(Math.max(0, limit))
         .exec(),
       this.model.countDocuments(q).exec(),
     ]);
     return { results, total };
+  }
+
+  async updateFields(
+    cpf: string,
+    updates: Partial<Pick<Collaborator, 'fullName' | 'birthDate' | 'position' | 'department'>>,
+  ) {
+    const normalized = normalizeCpf(cpf);
+    await this.model.updateOne({ cpf: normalized }, { $set: updates }).exec();
+    return this.findByCpf(normalized);
   }
 
   async setStatus(cpf: string, status: 'active' | 'inactive') {

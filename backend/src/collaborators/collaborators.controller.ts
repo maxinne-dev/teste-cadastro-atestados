@@ -49,12 +49,47 @@ export class CollaboratorsController {
     const limit = q.limit ?? 20;
     const offset = q.offset ?? 0;
 
-    const { results, total } = await this.collaborators.searchByNameWithTotal(
-      term,
-      limit,
-      offset,
-    );
+    let data: { results: any[]; total: number };
+    if (q.sortBy || q.sortDir) {
+      data = await this.collaborators.searchByNameWithTotalSorted(
+        term,
+        limit,
+        offset,
+        q.sortBy || 'fullName',
+        q.sortDir || 'asc',
+        q.status,
+      );
+    } else {
+      data = await this.collaborators.searchByNameWithTotal(
+        term,
+        limit,
+        offset,
+        q.status,
+      );
+    }
+    const { results, total } = data;
     return { results, limit, offset, total };
+  }
+
+  @Patch(':cpf')
+  async update(
+    @Param() params: CpfParamDto,
+    @Body()
+    body: Partial<{
+      fullName: string;
+      birthDate: Date;
+      position: string;
+      department?: string;
+    }>,
+  ) {
+    const updated = await this.collaborators.updateFields(params.cpf, body);
+    if (!updated) throw new NotFoundException('Collaborator not found');
+    await this.audit.record({
+      action: 'collaborator.update',
+      targetId: params.cpf,
+      resource: 'PATCH /collaborators/:cpf',
+    });
+    return updated;
   }
 
   @Patch(':cpf/status')
