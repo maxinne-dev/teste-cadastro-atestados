@@ -26,6 +26,7 @@
       <DataTable
         :rows="rows"
         :total="certStore.total"
+        :loading="certStore.loading"
         :rows-per-page="rowsPerPage"
         :page="page"
         :sort-by="sortBy"
@@ -241,14 +242,17 @@ function confirmCancel(row: Certificate) {
   toCancel = row
   confirm.value = true
 }
-const { notifySuccess, notifyError } = useNotify()
+const { notifySuccess, notifyError, notifyInfo } = useNotify()
 async function doCancel() {
   if (!toCancel) return
   try {
     await certStore.cancel(toCancel.id)
     notifySuccess('Atestado cancelado')
   } catch (e: any) {
-    notifyError('Erro ao cancelar', e?.message || 'Tente novamente')
+    const status = e?.status
+    if (status === 403) notifyError('Sem permissão', 'Ação não autorizada')
+    else if (status === 401) notifyInfo('Sessão expirada', 'Faça login novamente')
+    else notifyError('Erro ao cancelar', e?.message || 'Tente novamente')
   }
 }
 </script>

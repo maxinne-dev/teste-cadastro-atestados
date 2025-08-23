@@ -17,6 +17,7 @@
       <DataTable
         :rows="rows"
         :total="collabStore.total"
+        :loading="collabStore.loading"
         :rows-per-page="rowsPerPage"
         :page="page"
         :sort-by="sortBy"
@@ -332,7 +333,7 @@ function validate() {
   formErrors.department = undefined
   return !Object.values(formErrors).some(Boolean)
 }
-const { notifySuccess, notifyError } = useNotify()
+const { notifySuccess, notifyError, notifyInfo, notifyWarn } = useNotify()
 async function save() {
   if (!validate()) {
     formErrorBanner.value = true
@@ -344,7 +345,18 @@ async function save() {
     editor.value = false
     formErrorBanner.value = false
   } catch (e: any) {
-    notifyError('Erro ao salvar', e?.message || 'Tente novamente')
+    const status = e?.status
+    if (status === 409) {
+      notifyError('CPF já cadastrado', 'Revise o CPF informado')
+    } else if (status === 422 || status === 400) {
+      notifyWarn('Dados inválidos', e?.message || 'Revise os campos')
+    } else if (status === 403) {
+      notifyError('Sem permissão', 'Ação não autorizada')
+    } else if (status === 401) {
+      notifyInfo('Sessão expirada', 'Faça login novamente')
+    } else {
+      notifyError('Erro ao salvar', e?.message || 'Tente novamente')
+    }
   }
 }
 function confirmToggle(row: Collaborator) {

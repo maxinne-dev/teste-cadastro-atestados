@@ -109,12 +109,12 @@ This task list consolidates MAIN.md, SPECS.md, and project READMEs into an actio
    - [x] Client-side validation mirrors backend DTOs (CPF, dates, required fields)
    - [x] Show inline errors and disable submit when invalid
 2. Feedback & states
-   - [ ] Loading skeletons and progress indicators on list/fetch
-   - [ ] Toasts/banners for success, warnings, and error cases (401/403/409/422)
-   - [ ] Show ICD integration status and fallback indicator when WHO API is down
+   - [x] Loading skeletons and progress indicators on list/fetch
+   - [x] Toasts/banners for success, warnings, and error cases (401/403/409/422)
+   - [x] Show ICD integration status and fallback indicator when WHO API is down
 3. Responsiveness & a11y
-   - [ ] Ensure pages are responsive (DataTable → cards on small screens)
-   - [ ] Maintain skip link, focus trapping in dialogs, ARIA roles/labels
+   - [x] Ensure pages are responsive (DataTable → cards on small screens)
+   - [x] Maintain skip link, focus trapping in dialogs, ARIA roles/labels
 
 ## Testing (Backend & Frontend)
 1. Backend unit/integration (Jest + Supertest)

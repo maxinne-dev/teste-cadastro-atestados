@@ -60,6 +60,9 @@
             <div v-if="!icdFiltered.length" class="sugg muted">
               Nenhum resultado
             </div>
+            <div v-if="icdError" class="sugg warn" role="status">
+              {{ icdError }}
+            </div>
           </template>
         </div>
         <!-- Attachments placeholder (future file upload integration) -->
@@ -153,6 +156,7 @@ const formError = ref(false)
 const icdTerm = ref('')
 const icdFiltered = ref<{ code: string; title: string }[]>([])
 const icdLoading = ref(false)
+const icdError = ref<string | null>(null)
 let icdTimer: any = null
 watch(icdTerm, (val) => {
   if (icdTimer) clearTimeout(icdTimer)
@@ -162,10 +166,12 @@ watch(icdTerm, (val) => {
   }
   icdTimer = setTimeout(async () => {
     icdLoading.value = true
+    icdError.value = null
     try {
       icdFiltered.value = await searchICD(val)
     } catch {
       icdFiltered.value = []
+      icdError.value = 'Busca de CID indisponível. Tente novamente mais tarde.'
     } finally {
       icdLoading.value = false
     }
@@ -278,6 +284,14 @@ function formatSize(size: number) {
   padding: 8px 12px;
   cursor: pointer;
   background: var(--color-surface-2);
+}
+.sugg.muted {
+  color: var(--color-text-secondary);
+  cursor: default;
+}
+.sugg.warn {
+  background: color-mix(in srgb, var(--color-warn, #f59e0b) 10%, transparent);
+  border-top: 1px solid var(--color-border);
 }
 .sugg:hover {
   background: var(--color-surface);

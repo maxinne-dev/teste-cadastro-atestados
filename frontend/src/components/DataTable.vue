@@ -8,19 +8,28 @@
         <slot name="card" :row="r" :index="i" />
       </div>
     </div>
-    <div v-else-if="rows.length" class="table-scroll">
+    <div v-else-if="rows.length || loading" class="table-scroll">
       <table :aria-label="ariaLabel">
         <thead ref="thead" @click="onHeaderClick" @keydown="onHeaderKeydown">
           <slot name="columns" />
         </thead>
         <tbody>
-          <slot
-            v-for="(r, i) in pagedRows"
-            :key="i"
-            name="row"
-            :row="r"
-            :index="i"
-          />
+          <template v-if="!loading">
+            <slot
+              v-for="(r, i) in pagedRows"
+              :key="i"
+              name="row"
+              :row="r"
+              :index="i"
+            />
+          </template>
+          <template v-else>
+            <tr v-for="i in Math.max(3, rowsPerPage)" :key="i">
+              <td :colspan="999">
+                <SkeletonLoader :lines="1" height="14px" />
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -41,11 +50,11 @@
           </select>
         </label>
         <div class="pager">
-          <button class="btn" :disabled="page <= 1" @click="prev">
+          <button class="btn" :disabled="page <= 1 || loading" @click="prev">
             Anterior
           </button>
           <span>Página {{ page }} de {{ totalPages }}</span>
-          <button class="btn" :disabled="page >= totalPages" @click="next">
+          <button class="btn" :disabled="page >= totalPages || loading" @click="next">
             Próxima
           </button>
         </div>
@@ -56,6 +65,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useSlots, watch } from 'vue'
+import SkeletonLoader from './SkeletonLoader.vue'
 const props = withDefaults(
   defineProps<{
     rows: any[]
