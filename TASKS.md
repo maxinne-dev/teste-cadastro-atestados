@@ -118,21 +118,21 @@ This task list consolidates MAIN.md, SPECS.md, and project READMEs into an actio
 
 ## Testing (Backend & Frontend)
 1. Backend unit/integration (Jest + Supertest)
-   - [ ] Health endpoint tests (Mongo/Redis/WHO checks stubbed)
-   - [ ] Auth: login/logout, JWT expiry, guards, RBAC
-   - [ ] Collaborators: create/list/update with filters, 409 on duplicate CPF
-   - [ ] ICD search: token handling, success/fallback, rate limit behavior (mock WHO)
-   - [ ] Certificates: create/list/cancel with filters/pagination/sorting
-   - [ ] Index and schema constraints (duplicate keys, invalid ObjectId)
+   - [x] Health endpoint tests (Mongo/Redis/WHO checks stubbed)
+   - [x] Auth: login/logout, JWT expiry, guards, RBAC
+   - [x] Collaborators: create/list/update with filters, 409 on duplicate CPF
+   - [x] ICD search: token handling, success/fallback, rate limit behavior (mock WHO)
+   - [x] Certificates: create/list/cancel with filters/pagination/sorting
+   - [x] Index and schema constraints (duplicate keys, invalid ObjectId)
 2. Frontend unit (Vitest + Vue Test Utils)
-   - [ ] Auth store/service: login flow, 401 handling, token persistence
-   - [ ] Collaborators list: filters, pagination, sorting interactions
-   - [ ] Certificates list & creation: validations and API calls
-   - [ ] ICD autocomplete: debounce and rendering results
-   - [ ] Accessibility basics: skip link, focus states, `aria-sort`
+   - [x] Auth store/service: login flow, 401 handling, token persistence
+   - [x] Collaborators list: filters, pagination, sorting interactions
+   - [x] Certificates list & creation: validations and API calls
+   - [x] ICD autocomplete: debounce and rendering results
+   - [x] Accessibility basics: skip link, focus states, `aria-sort`
 3. E2E smoke (optional, if time)
-   - [ ] Happy path: login → create collaborator → create certificate with ICD → list appears
-   - [ ] Error path: duplicate CPF → 409 surfaced in UI
+   - [x] Happy path: login → create collaborator → create certificate with ICD → list appears
+   - [x] Error path: duplicate CPF → 409 surfaced in UI
 
 ## Observability & Error Handling
 1. Structured logging

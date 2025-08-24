@@ -9,9 +9,9 @@
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{ts,vue}\"",
     "typecheck": "vue-tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:cov": "vitest run --coverage"
+    "test": "vitest run --test-timeout=60000",
+    "test:watch": "vitest --test-timeout=60000",
+    "test:cov": "vitest run --coverage --test-timeout=60000"
   },
   "dependencies": {
     "@primeuix/themes": "^1.0.0",

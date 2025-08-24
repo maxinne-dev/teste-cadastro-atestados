@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import Modal from './components/Modal.vue'
 
 describe('Modal focus trap', () => {
-  it.skip('cycles focus within modal on Tab/Shift+Tab', async () => {
+  it('cycles focus within modal on Tab/Shift+Tab', async () => {
     const wrap = mount(Modal, {
       props: { visible: true, title: 'Trap' },
       slots: {

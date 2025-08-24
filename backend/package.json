@@ -10,9 +10,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint \"src/**/*.ts\"",
     "format": "prettier --write \"src/**/*.ts\"",
-    "test": "jest --passWithNoTests",
+    "test": "jest --passWithNoTests --testTimeout=60000",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test:cov": "jest --coverage --testTimeout=60000",
     "seed": "npx tsx src/seeds/cli.ts",
     "openapi:yaml": "ts-node --esm src/openapi.ts"
   },

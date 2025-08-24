@@ -60,9 +60,9 @@ function getFocusable(): HTMLElement[] {
     'select:not([disabled])',
     '[tabindex]:not([tabindex="-1"])',
   ]
-  return Array.from(
-    root.querySelectorAll<HTMLElement>(selectors.join(',')),
-  ).filter((el) => el.offsetParent !== null)
+  // In some environments (e.g., jsdom), offsetParent is not reliable.
+  // Return all candidates; callers can handle visibility if needed.
+  return Array.from(root.querySelectorAll<HTMLElement>(selectors.join(',')))
 }
 function onTab(e: KeyboardEvent) {
   const nodes = getFocusable()

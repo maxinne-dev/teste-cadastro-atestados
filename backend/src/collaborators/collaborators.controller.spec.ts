@@ -13,6 +13,7 @@ describe('CollaboratorsController', () => {
       create: jest.fn(async (dto: any) => ({ _id: '1', ...dto })),
       findByCpf: jest.fn(async () => null),
       searchByNameWithTotal: jest.fn(async () => ({ results: [], total: 0 })),
+      searchByNameWithTotalSorted: jest.fn(async () => ({ results: [], total: 0 })),
       setStatus: jest.fn(async () => null),
     };
 
@@ -65,6 +66,43 @@ describe('CollaboratorsController', () => {
     expect(res.total).toBe(42);
     expect(res.limit).toBe(5);
     expect(res.offset).toBe(10);
+  });
+
+  it('search forwards status filter to unsorted search', async () => {
+    (service.searchByNameWithTotal as jest.Mock).mockResolvedValue({
+      results: [],
+      total: 0,
+    });
+    await controller.search({ q: '', limit: 10, offset: 0, status: 'active' } as any);
+    expect(service.searchByNameWithTotal).toHaveBeenCalledWith(
+      '',
+      10,
+      0,
+      'active',
+    );
+  });
+
+  it('search uses sorted path and includes status', async () => {
+    (service.searchByNameWithTotalSorted as jest.Mock).mockResolvedValue({
+      results: [],
+      total: 0,
+    });
+    await controller.search({
+      q: 'M',
+      limit: 15,
+      offset: 5,
+      sortBy: 'fullName',
+      sortDir: 'desc',
+      status: 'inactive',
+    } as any);
+    expect(service.searchByNameWithTotalSorted).toHaveBeenCalledWith(
+      'M',
+      15,
+      5,
+      'fullName',
+      'desc',
+      'inactive',
+    );
   });
 
   it('updateStatus throws 404 when not found', async () => {
