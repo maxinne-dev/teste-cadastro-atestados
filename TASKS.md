@@ -136,25 +136,25 @@ This task list consolidates MAIN.md, SPECS.md, and project READMEs into an actio
 
 ## Observability & Error Handling
 1. Structured logging
-   - [ ] Add structured logs for auth, ICD calls, CRUD operations, and errors
-   - [ ] Correlate requests where possible; include WHO upstream error codes
+   - [x] Add structured logs for auth, ICD calls, CRUD operations, and errors
+   - [x] Correlate requests where possible; include WHO upstream error codes
 2. Healthchecks & readiness
-   - [ ] Health endpoint aggregates Mongo, Redis, WHO ICD status
-   - [ ] Docker healthchecks for API container
+   - [x] Health endpoint aggregates Mongo, Redis, WHO ICD status
+   - [x] Docker healthchecks for API container
 3. Error mapping
-   - [ ] Backend exception filters for Mongo 11000, validation errors, upstream (map to 4xx/5xx)
-   - [ ] Frontend maps API errors to user-friendly messages and actions
+   - [x] Backend exception filters for Mongo 11000, validation errors, upstream (map to 4xx/5xx)
+   - [x] Frontend maps API errors to user-friendly messages and actions
 
 ## DevOps & Delivery
 1. Docker & compose
-   - [ ] Confirm `docker-compose.yml` builds API/Web with proper env wiring
-   - [ ] Ensure `/api` proxy in frontend (dev/prod) targets correct host/container
+   - [x] Confirm `docker-compose.yml` builds API/Web with proper env wiring
+   - [x] Ensure `/api` proxy in frontend (dev/prod) targets correct host/container
 2. CI basics (optional now, recommended)
-   - [ ] Lint, typecheck, test, and build steps for backend and frontend
-   - [ ] Publish `openapi.yaml` artifact from backend
+   - [x] Lint, typecheck, test, and build steps for backend and frontend
+   - [x] Publish `openapi.yaml` artifact from backend
 3. OpenAPI
-   - [ ] Generate/refresh `openapi.yaml` (`npm run openapi:yaml` in backend)
-   - [ ] (Optional) Generate frontend API types from OpenAPI and refactor services to use them
+   - [x] Generate/refresh `openapi.yaml` (`npm run openapi:yaml` in backend)
+   - [x] (Optional) Generate frontend API types from OpenAPI and refactor services to use them
 
 ## Documentation & Handover
 1. Environment & credentials

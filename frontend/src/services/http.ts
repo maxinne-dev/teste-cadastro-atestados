@@ -1,7 +1,8 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
 
 // Environment helpers (Vite only exposes variables prefixed with VITE_)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string | undefined
+const API_BASE_URL =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) || '/api'
 const USE_API = (import.meta.env.VITE_USE_API as string | undefined) === 'true'
 const TIMEOUT = Number(import.meta.env.VITE_HTTP_TIMEOUT_MS ?? 10000)
 const RETRY_ATTEMPTS = Number(import.meta.env.VITE_HTTP_RETRY_ATTEMPTS ?? 0)

@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { MongoExceptionFilter } from './common/filters/mongo-exception.filter.js';
 import { AxiosExceptionFilter } from './common/filters/axios-exception.filter.js';
 import { SecurityHeadersMiddleware } from './common/middleware/security-headers.middleware.js';
+import { RequestContextMiddleware } from './common/middleware/request-context.middleware.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +23,8 @@ async function bootstrap() {
   app.useGlobalFilters(new MongoExceptionFilter());
   app.useGlobalFilters(new AxiosExceptionFilter());
   // Note: URI versioning removed to keep routes at /api/* without /v1
+  // Request context (correlation id)
+  app.use(new RequestContextMiddleware().use);
   // Security headers
   app.use(new SecurityHeadersMiddleware().use);
 
