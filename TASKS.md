@@ -158,13 +158,13 @@ This task list consolidates MAIN.md, SPECS.md, and project READMEs into an actio
 
 ## Documentation & Handover
 1. Environment & credentials
-   - [ ] Document how to obtain WHO credentials and configure `.env`
-   - [ ] Note rate limits, language/release parameters (`WHO_ICD_RELEASE`, `WHO_ICD_LANGUAGE`)
+   - [x] Document how to obtain WHO credentials and configure `.env`
+   - [x] Note rate limits, language/release parameters (`WHO_ICD_RELEASE`, `WHO_ICD_LANGUAGE`)
 2. Running locally
-   - [ ] Update root `README.md` with exact run/seed instructions and troubleshooting
-   - [ ] Add usage examples for all API endpoints
+   - [x] Update root `README.md` with exact run/seed instructions and troubleshooting
+   - [x] Add usage examples for all API endpoints
 3. User flows
-   - [ ] Add short guide with screenshots for: login, collaborators, certificates, ICD search
+   - [x] Add short guide with screenshots for: login, collaborators, certificates, ICD search
 
 ## Acceptance Checklist (End-to-End)
 1. Core features
