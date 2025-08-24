@@ -73,7 +73,7 @@ function onConfirm() {
   background: rgba(0, 0, 0, 0.4);
   display: grid;
   place-items: center;
-  z-index: 50;
+  z-index: 9996;
 }
 .dialog {
   width: min(480px, 90vw);

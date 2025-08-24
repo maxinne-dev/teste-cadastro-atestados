@@ -77,8 +77,14 @@ async function onSubmit() {
   try {
     await auth.login(email.value, password.value)
     if (remember.value) localStorage.setItem('remember', '1')
-    router.push('/')
+    
+    // Ensure token is properly set before navigation
+    await new Promise(resolve => setTimeout(resolve, 10))
+    
+    // Use replace instead of push to avoid back button going to login
+    await router.replace('/')
   } catch (e) {
+    console.error('Login error:', e)
     formError.value = true
   }
 }

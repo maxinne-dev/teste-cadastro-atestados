@@ -83,8 +83,17 @@ const router = createRouter({
 // auth guard using token presence
 router.beforeEach((to, _from, next) => {
   const authed = !!(localStorage.getItem('auth_token') || localStorage.getItem('token'))
-  if (to.meta.requiresAuth && !authed) next({ name: 'login' })
-  else next()
+  console.log('Router guard:', { to: to.path, authed, token: localStorage.getItem('token') })
+  
+  if (to.meta.requiresAuth && !authed) {
+    console.log('Redirecting to login - not authenticated')
+    next({ name: 'login' })
+  } else if (to.name === 'login' && authed) {
+    console.log('Already authenticated, redirecting to dashboard')
+    next({ name: 'dashboard' })
+  } else {
+    next()
+  }
 })
 
 export default router

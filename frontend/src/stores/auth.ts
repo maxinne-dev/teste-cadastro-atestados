@@ -23,6 +23,8 @@ export const useAuthStore = defineStore('auth', {
       if (isApiEnabled()) {
         const { accessToken } = await authApi.login({ email, password })
         this.token = accessToken
+        if (typeof localStorage !== 'undefined')
+          localStorage.setItem('token', this.token)
         this.user = { email, roles: [] }
       } else {
         await new Promise((r) => setTimeout(r, 50))

@@ -311,7 +311,7 @@ function view(row: Collaborator) {
   drawer.value = true
 }
 function edit(row: Collaborator) {
-  Object.assign(editing, row)
+  Object.assign(editing, { ...row, department: row.department || '' })
   editor.value = true
 }
 function validate() {

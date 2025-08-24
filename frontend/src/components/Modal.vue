@@ -99,7 +99,7 @@ onUnmounted(() => {
 .modal-wrap {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: 9997;
 }
 .backdrop {
   position: absolute;

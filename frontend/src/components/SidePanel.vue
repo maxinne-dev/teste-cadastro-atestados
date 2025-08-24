@@ -61,12 +61,13 @@ watch(
 .panel-wrap {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 9998;
 }
 .backdrop {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
 }
 .panel {
   position: absolute;
@@ -79,6 +80,7 @@ watch(
   box-shadow: var(--elev-3);
   display: flex;
   flex-direction: column;
+  z-index: 2;
 }
 .panel.right {
   right: 0;

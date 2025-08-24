@@ -133,7 +133,7 @@ onMounted(() => {
   if (!collabStore.items.length) collabStore.fetchAll()
 })
 const collabOptions = computed(() =>
-  collabStore.items.map((c) => ({ label: c.fullName, value: c.id })),
+  collabStore.items.map((c) => ({ label: c.fullName, value: c.id || '' })),
 )
 interface CertificateForm {
   collaboratorId: string | null
