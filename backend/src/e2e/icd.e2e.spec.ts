@@ -77,10 +77,10 @@ describe('E2E: ICD search', () => {
   });
 
   it('GET /api/icd/search falls back to cache when WHO fails', async () => {
-    // eslint-disable-next-line no-unexpected-multiline
     (axios.post as jest.Mock).mockResolvedValue({
       data: { access_token: 't', expires_in: 3600 },
-    })(axios.get as jest.Mock).mockRejectedValue(new Error('network'));
+    });
+    (axios.get as jest.Mock).mockRejectedValue(new Error('network'));
 
     const res = await request(app.getHttpServer())
       .get('/api/icd/search?q=herp')
