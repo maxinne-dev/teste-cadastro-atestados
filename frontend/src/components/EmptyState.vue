@@ -1,10 +1,17 @@
 <template>
   <div class="empty-state">
-    <i v-if="icon" class="pi" :class="icon" />
+    <i
+      v-if="icon"
+      class="pi"
+      :class="icon"
+    />
     <h3 class="title">
       {{ title }}
     </h3>
-    <p v-if="description" class="desc">
+    <p
+      v-if="description"
+      class="desc"
+    >
       {{ description }}
     </p>
     <div class="actions">

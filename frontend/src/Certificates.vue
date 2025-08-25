@@ -2,7 +2,10 @@
   <div class="container py-4">
     <PageHeader title="Atestados">
       <template #actions>
-        <router-link class="btn" :to="{ name: 'new-certificate' }">
+        <router-link
+          class="btn"
+          :to="{ name: 'new-certificate' }"
+        >
           Novo
         </router-link>
       </template>
@@ -20,7 +23,10 @@
         :options="statusOptions"
         placeholder="Status"
       />
-      <BaseInput v-model="icd" placeholder="CID (texto)" />
+      <BaseInput
+        v-model="icd"
+        placeholder="CID (texto)"
+      />
     </Toolbar>
     <div class="mt-4">
       <DataTable
@@ -41,10 +47,18 @@
         <template #columns>
           <tr>
             <th>Colaborador</th>
-            <th data-sort="startDate">Período</th>
-            <th data-sort="days">Dias</th>
-            <th data-sort="icdCode">CID</th>
-            <th data-sort="status">Status</th>
+            <th data-sort="startDate">
+              Período
+            </th>
+            <th data-sort="days">
+              Dias
+            </th>
+            <th data-sort="icdCode">
+              CID
+            </th>
+            <th data-sort="status">
+              Status
+            </th>
             <th>Ações</th>
           </tr>
         </template>
@@ -58,7 +72,12 @@
             </td>
             <td>{{ row.status }}</td>
             <td>
-              <button class="btn" @click="view(row)">Detalhes</button>
+              <button
+                class="btn"
+                @click="view(row)"
+              >
+                Detalhes
+              </button>
               <button
                 class="btn"
                 :disabled="row.status !== 'active'"
@@ -73,7 +92,10 @@
           <div class="card-row">
             <div class="card-header">
               <strong>{{ nameOf(row.collaboratorId) }}</strong>
-              <span class="status" :data-status="row.status">{{
+              <span
+                class="status"
+                :data-status="row.status"
+              >{{
                 row.status
               }}</span>
             </div>
@@ -95,7 +117,12 @@
               </div>
             </div>
             <div class="card-actions">
-              <button class="btn" @click="view(row)">Detalhes</button>
+              <button
+                class="btn"
+                @click="view(row)"
+              >
+                Detalhes
+              </button>
               <button
                 class="btn"
                 :disabled="row.status !== 'active'"

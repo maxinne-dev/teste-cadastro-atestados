@@ -1,7 +1,13 @@
 <template>
   <div class="stat-card">
-    <div v-if="icon" class="icon">
-      <i class="pi" :class="icon" />
+    <div
+      v-if="icon"
+      class="icon"
+    >
+      <i
+        class="pi"
+        :class="icon"
+      />
     </div>
     <div class="content">
       <div class="title">
@@ -10,7 +16,11 @@
       <div class="value">
         {{ value }}
       </div>
-      <div v-if="delta" class="delta" :class="severity">
+      <div
+        v-if="delta"
+        class="delta"
+        :class="severity"
+      >
         {{ delta }}
       </div>
     </div>

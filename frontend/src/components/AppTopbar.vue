@@ -1,5 +1,8 @@
 <template>
-  <header class="app-topbar elev-1" role="banner">
+  <header
+    class="app-topbar elev-1"
+    role="banner"
+  >
     <button
       class="icon-btn"
       aria-label="Abrir menu"
@@ -13,7 +16,10 @@
       :to="{ name: 'dashboard' }"
       aria-label="Ir para o Dashboard"
     >
-      <i class="pi pi-heart" aria-hidden="true" />
+      <i
+        class="pi pi-heart"
+        aria-hidden="true"
+      />
       <span>Atestados</span>
     </RouterLink>
     <div class="grow" />
@@ -29,7 +35,10 @@
       :title="`Tema: ${theme}`"
       @click="toggleTheme"
     >
-      <i class="pi" :class="theme === 'dark' ? 'pi-moon' : 'pi-sun'" />
+      <i
+        class="pi"
+        :class="theme === 'dark' ? 'pi-moon' : 'pi-sun'"
+      />
     </button>
     <Menu
       :id="userMenuId"
@@ -46,7 +55,10 @@
       :aria-expanded="String(userMenuOpen)"
       @click="toggleUserMenu"
     >
-      <Avatar icon="pi pi-user" shape="circle" />
+      <Avatar
+        icon="pi pi-user"
+        shape="circle"
+      />
       <span class="user-name">Usuário</span>
       <i class="pi pi-chevron-down" />
     </button>

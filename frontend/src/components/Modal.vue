@@ -1,6 +1,13 @@
 <template>
-  <div v-if="visible" class="modal-wrap" aria-hidden="false">
-    <div class="backdrop" @click="close" />
+  <div
+    v-if="visible"
+    class="modal-wrap"
+    aria-hidden="false"
+  >
+    <div
+      class="backdrop"
+      @click="close"
+    />
     <div
       ref="panel"
       class="modal"
@@ -14,15 +21,25 @@
     >
       <header class="modal-header">
         <slot name="header">
-          <h3 :id="titleId" class="title">
+          <h3
+            :id="titleId"
+            class="title"
+          >
             {{ title }}
           </h3>
         </slot>
-        <button class="close" aria-label="Fechar" @click="close">
+        <button
+          class="close"
+          aria-label="Fechar"
+          @click="close"
+        >
           <i class="pi pi-times" />
         </button>
       </header>
-      <div :id="bodyId" class="modal-body">
+      <div
+        :id="bodyId"
+        class="modal-body"
+      >
         <slot />
       </div>
       <footer class="modal-footer">

@@ -1,6 +1,12 @@
 <template>
-  <div class="banner" :class="severity">
-    <i class="pi" :class="iconFor(severity)" />
+  <div
+    class="banner"
+    :class="severity"
+  >
+    <i
+      class="pi"
+      :class="iconFor(severity)"
+    />
     <div class="content">
       <div class="title">
         {{ title }}

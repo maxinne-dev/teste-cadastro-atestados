@@ -1,5 +1,9 @@
 <template>
-  <div v-if="visible" class="backdrop" @click.self="onCancel">
+  <div
+    v-if="visible"
+    class="backdrop"
+    @click.self="onCancel"
+  >
     <div
       ref="dialog"
       class="dialog"
@@ -12,14 +16,23 @@
       <h3 class="title">
         {{ title }}
       </h3>
-      <p v-if="message" class="message">
+      <p
+        v-if="message"
+        class="message"
+      >
         {{ message }}
       </p>
       <div class="actions">
-        <button class="btn cancel" @click="onCancel">
+        <button
+          class="btn cancel"
+          @click="onCancel"
+        >
           {{ cancelLabel }}
         </button>
-        <button class="btn confirm" @click="onConfirm">
+        <button
+          class="btn confirm"
+          @click="onConfirm"
+        >
           {{ confirmLabel }}
         </button>
       </div>

@@ -1,5 +1,8 @@
 <template>
-  <div class="app-shell" :class="{ 'sidebar-collapsed': collapsed }">
+  <div
+    class="app-shell"
+    :class="{ 'sidebar-collapsed': collapsed }"
+  >
     <AppTopbar
       :collapsed="collapsed"
       @toggle-sidebar="toggleCollapse"
@@ -9,8 +12,14 @@
     />
 
     <!-- Desktop sidebar -->
-    <aside class="app-sidebar" aria-label="Main Navigation">
-      <AppSidebar :collapsed="collapsed" @navigate="onNavigate" />
+    <aside
+      class="app-sidebar"
+      aria-label="Main Navigation"
+    >
+      <AppSidebar
+        :collapsed="collapsed"
+        @navigate="onNavigate"
+      />
     </aside>
 
     <!-- Mobile sidebar overlay -->
@@ -28,13 +37,19 @@
       />
     </Drawer>
 
-    <main id="content" class="app-content">
+    <main
+      id="content"
+      class="app-content"
+    >
       <header class="page-header container">
         <div>
           <h1 class="page-title">
             {{ pageTitle }}
           </h1>
-          <p v-if="pageSubtitle" class="page-subtitle">
+          <p
+            v-if="pageSubtitle"
+            class="page-subtitle"
+          >
             {{ pageSubtitle }}
           </p>
         </div>

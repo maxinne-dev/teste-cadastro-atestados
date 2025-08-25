@@ -1,7 +1,14 @@
 <template>
   <ol class="breadcrumbs">
-    <li v-for="(item, idx) in items" :key="idx" class="crumb">
-      <RouterLink v-if="item.to && idx < items.length - 1" :to="item.to">
+    <li
+      v-for="(item, idx) in items"
+      :key="idx"
+      class="crumb"
+    >
+      <RouterLink
+        v-if="item.to && idx < items.length - 1"
+        :to="item.to"
+      >
         {{ item.label }}
       </RouterLink>
       <span v-else>{{ item.label }}</span>

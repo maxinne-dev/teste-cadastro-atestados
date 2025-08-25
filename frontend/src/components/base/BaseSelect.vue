@@ -5,10 +5,18 @@
     :value="modelValue ?? ''"
     @change="onChange"
   >
-    <option v-if="placeholder" disabled value="">
+    <option
+      v-if="placeholder"
+      disabled
+      value=""
+    >
       {{ placeholder }}
     </option>
-    <option v-for="opt in options" :key="String(opt.value)" :value="opt.value">
+    <option
+      v-for="opt in options"
+      :key="String(opt.value)"
+      :value="opt.value"
+    >
       {{ opt.label }}
     </option>
   </select>

@@ -1,4 +1,4 @@
-import { httpGet, isApiEnabled } from './http'
+import { httpGet } from './http'
 import type { ICD } from '../types/models'
 
 export async function search(term: string): Promise<ICD[]> {

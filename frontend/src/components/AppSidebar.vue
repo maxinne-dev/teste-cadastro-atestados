@@ -1,5 +1,9 @@
 <template>
-  <nav class="nav" role="navigation" aria-label="Main">
+  <nav
+    class="nav"
+    role="navigation"
+    aria-label="Main"
+  >
     <ul class="nav-list">
       <li>
         <RouterLink
