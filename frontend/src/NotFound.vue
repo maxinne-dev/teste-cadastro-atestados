@@ -1,12 +1,18 @@
 <template>
-  <div class="container" style="padding: 64px 0; text-align: center">
+  <div
+    class="container"
+    style="padding: 64px 0; text-align: center"
+  >
     <i
       class="pi pi-exclamation-triangle"
       style="font-size: 48px; color: var(--color-warning)"
     />
     <h2>Página não encontrada</h2>
     <p>A rota acessada não existe.</p>
-    <router-link class="btn" :to="{ name: 'dashboard' }">
+    <router-link
+      class="btn"
+      :to="{ name: 'dashboard' }"
+    >
       Voltar ao início
     </router-link>
   </div>

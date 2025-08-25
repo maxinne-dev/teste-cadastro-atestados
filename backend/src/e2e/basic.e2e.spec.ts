@@ -56,7 +56,7 @@ describe('E2E: Health and Auth flow', () => {
           if (email.toLowerCase() === hrUser.email) return hrUser;
           return null;
         },
-      } satisfies Partial<UsersService>)
+      } as any)
       .compile();
 
     app = moduleRef.createNestApplication();

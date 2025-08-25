@@ -2,11 +2,19 @@
   <div class="container py-4">
     <PageHeader title="Colaboradores">
       <template #actions>
-        <button class="btn primary" @click="openCreate">Novo</button>
+        <button
+          class="btn primary"
+          @click="openCreate"
+        >
+          Novo
+        </button>
       </template>
     </PageHeader>
     <Toolbar class="mt-4">
-      <BaseInput v-model="search" placeholder="Buscar nome ou CPF" />
+      <BaseInput
+        v-model="search"
+        placeholder="Buscar nome ou CPF"
+      />
       <BaseSelect
         v-model="status"
         :options="statusOptions"
@@ -31,11 +39,21 @@
       >
         <template #columns>
           <tr>
-            <th data-sort="fullName">Nome</th>
-            <th data-sort="cpf">CPF</th>
-            <th data-sort="department">Departamento</th>
-            <th data-sort="position">Cargo</th>
-            <th data-sort="status">Status</th>
+            <th data-sort="fullName">
+              Nome
+            </th>
+            <th data-sort="cpf">
+              CPF
+            </th>
+            <th data-sort="department">
+              Departamento
+            </th>
+            <th data-sort="position">
+              Cargo
+            </th>
+            <th data-sort="status">
+              Status
+            </th>
             <th>Ações</th>
           </tr>
         </template>
@@ -47,9 +65,22 @@
             <td>{{ row.position }}</td>
             <td>{{ row.status }}</td>
             <td>
-              <button class="btn" @click="view(row)">Ver</button>
-              <button class="btn" @click="edit(row)">Editar</button>
-              <button class="btn" @click="confirmToggle(row)">
+              <button
+                class="btn"
+                @click="view(row)"
+              >
+                Ver
+              </button>
+              <button
+                class="btn"
+                @click="edit(row)"
+              >
+                Editar
+              </button>
+              <button
+                class="btn"
+                @click="confirmToggle(row)"
+              >
                 {{ row.status === 'active' ? 'Desativar' : 'Ativar' }}
               </button>
             </td>
@@ -59,7 +90,10 @@
           <div class="card-row">
             <div class="card-header">
               <strong>{{ row.fullName }}</strong>
-              <span class="status" :data-status="row.status">{{
+              <span
+                class="status"
+                :data-status="row.status"
+              >{{
                 row.status
               }}</span>
             </div>
@@ -78,9 +112,22 @@
               </div>
             </div>
             <div class="card-actions">
-              <button class="btn" @click="view(row)">Ver</button>
-              <button class="btn" @click="edit(row)">Editar</button>
-              <button class="btn" @click="confirmToggle(row)">
+              <button
+                class="btn"
+                @click="view(row)"
+              >
+                Ver
+              </button>
+              <button
+                class="btn"
+                @click="edit(row)"
+              >
+                Editar
+              </button>
+              <button
+                class="btn"
+                @click="confirmToggle(row)"
+              >
                 {{ row.status === 'active' ? 'Desativar' : 'Ativar' }}
               </button>
             </div>
@@ -93,7 +140,10 @@
             description="Ajuste os filtros ou cadastre um novo colaborador."
           >
             <template #actions>
-              <button class="btn primary" @click="openCreate">
+              <button
+                class="btn primary"
+                @click="openCreate"
+              >
                 Novo colaborador
               </button>
             </template>
@@ -102,7 +152,10 @@
       </DataTable>
     </div>
 
-    <SidePanel :visible="drawer" @update:visible="drawer = $event">
+    <SidePanel
+      :visible="drawer"
+      @update:visible="drawer = $event"
+    >
       <div class="tabs">
         <button
           class="tab"
@@ -131,14 +184,20 @@
       </div>
       <div v-else>
         <ul>
-          <li v-for="m in certsOfCurrent" :key="m.id">
+          <li
+            v-for="m in certsOfCurrent"
+            :key="m.id"
+          >
             {{ m.startDate }} – {{ m.endDate }} ({{ m.days }}d) — {{ m.status }}
           </li>
         </ul>
       </div>
     </SidePanel>
 
-    <SidePanel :visible="editor" @update:visible="editor = $event">
+    <SidePanel
+      :visible="editor"
+      @update:visible="editor = $event"
+    >
       <template #header>
         <h3 style="margin: 0">
           {{ editing?.id ? 'Editar' : 'Novo' }} colaborador
@@ -158,25 +217,56 @@
           :error="formErrors.fullName"
           for="fullName"
         >
-          <BaseInput id="fullName" v-model="editing.fullName" />
+          <BaseInput
+            id="fullName"
+            v-model="editing.fullName"
+          />
         </FormField>
-        <FormField label="CPF" :error="formErrors.cpf" for="cpf">
-          <BaseInput id="cpf" v-model="editing.cpf" v-mask="'cpf'" />
+        <FormField
+          label="CPF"
+          :error="formErrors.cpf"
+          for="cpf"
+        >
+          <BaseInput
+            id="cpf"
+            v-model="editing.cpf"
+            v-mask="'cpf'"
+          />
         </FormField>
-        <FormField label="Nascimento" :error="formErrors.birthDate" for="birth">
-          <BaseDate id="birth" v-model="editing.birthDate" />
+        <FormField
+          label="Nascimento"
+          :error="formErrors.birthDate"
+          for="birth"
+        >
+          <BaseDate
+            id="birth"
+            v-model="editing.birthDate"
+          />
         </FormField>
-        <FormField label="Cargo" :error="formErrors.position" for="position">
-          <BaseInput id="position" v-model="editing.position" />
+        <FormField
+          label="Cargo"
+          :error="formErrors.position"
+          for="position"
+        >
+          <BaseInput
+            id="position"
+            v-model="editing.position"
+          />
         </FormField>
         <FormField
           label="Departamento"
           :error="formErrors.department"
           for="department"
         >
-          <BaseInput id="department" v-model="editing.department" />
+          <BaseInput
+            id="department"
+            v-model="editing.department"
+          />
         </FormField>
-        <FormField label="Status" for="status">
+        <FormField
+          label="Status"
+          for="status"
+        >
           <BaseSelect
             id="status"
             v-model="editing.status"
@@ -184,10 +274,18 @@
           />
         </FormField>
         <div style="display: flex; gap: 8px; justify-content: flex-end">
-          <button class="btn" type="button" @click="editor = false">
+          <button
+            class="btn"
+            type="button"
+            @click="editor = false"
+          >
             Cancelar
           </button>
-          <button class="btn primary" type="submit" :disabled="!canSave">
+          <button
+            class="btn primary"
+            type="submit"
+            :disabled="!canSave"
+          >
             Salvar
           </button>
         </div>
@@ -273,7 +371,7 @@ const tab = ref<'profile' | 'certs'>('profile')
 const certsOfCurrent = computed(() =>
   current.value ? certStore.byCollaborator(current.value.id || '') : [],
 )
-const editing = reactive<Collaborator>({
+const editing = reactive<Collaborator & { department: string }>({
   id: '',
   fullName: '',
   cpf: '',
@@ -311,7 +409,10 @@ function view(row: Collaborator) {
   drawer.value = true
 }
 function edit(row: Collaborator) {
-  Object.assign(editing, { ...row, department: row.department || '' })
+  Object.assign(editing, { 
+    ...row, 
+    department: row.department ?? '' 
+  })
   editor.value = true
 }
 function validate() {

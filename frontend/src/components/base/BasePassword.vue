@@ -7,14 +7,17 @@
       :placeholder="placeholder"
       :value="modelValue"
       @input="onInput"
-    />
+    >
     <button
       type="button"
       class="toggle"
       :aria-label="visible ? 'Hide password' : 'Show password'"
       @click="visible = !visible"
     >
-      <i class="pi" :class="visible ? 'pi-eye-slash' : 'pi-eye'" />
+      <i
+        class="pi"
+        :class="visible ? 'pi-eye-slash' : 'pi-eye'"
+      />
     </button>
   </div>
 </template>

@@ -3,14 +3,34 @@
     <div class="header">
       <slot name="header" />
     </div>
-    <div v-if="rows.length && isCardView && hasCard" class="cards" role="list">
-      <div v-for="(r, i) in pagedRows" :key="i" class="card" role="listitem">
-        <slot name="card" :row="r" :index="i" />
+    <div
+      v-if="rows.length && isCardView && hasCard"
+      class="cards"
+      role="list"
+    >
+      <div
+        v-for="(r, i) in pagedRows"
+        :key="i"
+        class="card"
+        role="listitem"
+      >
+        <slot
+          name="card"
+          :row="r"
+          :index="i"
+        />
       </div>
     </div>
-    <div v-else-if="rows.length || loading" class="table-scroll">
+    <div
+      v-else-if="rows.length || loading"
+      class="table-scroll"
+    >
       <table :aria-label="ariaLabel">
-        <thead ref="thead" @click="onHeaderClick" @keydown="onHeaderKeydown">
+        <thead
+          ref="thead"
+          @click="onHeaderClick"
+          @keydown="onHeaderKeydown"
+        >
           <slot name="columns" />
         </thead>
         <tbody>
@@ -24,37 +44,64 @@
             />
           </template>
           <template v-else>
-            <tr v-for="i in Math.max(3, rowsPerPage)" :key="i">
+            <tr
+              v-for="i in Math.max(3, rowsPerPage)"
+              :key="i"
+            >
               <td :colspan="999">
-                <SkeletonLoader :lines="1" height="14px" />
+                <SkeletonLoader
+                  :lines="1"
+                  height="14px"
+                />
               </td>
             </tr>
           </template>
         </tbody>
       </table>
     </div>
-    <div v-else class="empty">
+    <div
+      v-else
+      class="empty"
+    >
       <slot name="empty">
         {{ emptyMessage }}
       </slot>
     </div>
     <div class="footer">
       <slot name="footer" />
-      <div v-if="showPagination" class="pagination">
+      <div
+        v-if="showPagination"
+        class="pagination"
+      >
         <label class="page-size">
           Itens por página
-          <select :value="props.rowsPerPage" @change="onPageSizeChange">
-            <option v-for="opt in pageSizeOptions" :key="opt" :value="opt">
+          <select
+            :value="props.rowsPerPage"
+            @change="onPageSizeChange"
+          >
+            <option
+              v-for="opt in pageSizeOptions"
+              :key="opt"
+              :value="opt"
+            >
               {{ opt }}
             </option>
           </select>
         </label>
         <div class="pager">
-          <button class="btn" :disabled="page <= 1 || loading" @click="prev">
+          <button
+            class="btn"
+            :disabled="page <= 1 || loading"
+            @click="prev"
+          >
             Anterior
           </button>
           <span>Página {{ page }} de {{ totalPages }}</span>
-          <button class="btn" :disabled="page >= totalPages || loading" @click="next">
+          <button
+            class="btn"
+            :disabled="page >= totalPages || loading"
+            @click="next"
+          >
             Próxima
           </button>
         </div>

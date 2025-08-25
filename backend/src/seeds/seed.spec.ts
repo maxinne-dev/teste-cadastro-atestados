@@ -1,7 +1,7 @@
 jest.mock('mongoose', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const mockData = require('./mock-data');
-  const calls = { updateOne: [], insertOne: [], find: [] as any[] };
+  const calls = { updateOne: [] as any[], insertOne: [] as any[], find: [] as any[] };
   const collections: Record<string, any> = {};
   const makeCollection = (name: string) => {
     const state: any = {

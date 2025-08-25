@@ -11,7 +11,11 @@
           closable
           @close="formError = false"
         />
-        <FormField label="Colaborador" :error="errors.collaboratorId" for="c">
+        <FormField
+          label="Colaborador"
+          :error="errors.collaboratorId"
+          for="c"
+        >
           <BaseSelect
             id="c"
             v-model="form.collaboratorId"
@@ -26,28 +30,68 @@
             gap: 16px;
           "
         >
-          <FormField label="Início" :error="errors.startDate" for="start">
-            <BaseDate id="start" v-model="form.startDate" />
+          <FormField
+            label="Início"
+            :error="errors.startDate"
+            for="start"
+          >
+            <BaseDate
+              id="start"
+              v-model="form.startDate"
+            />
           </FormField>
-          <FormField label="Fim" :error="errors.endDate" for="end">
-            <BaseDate id="end" v-model="form.endDate" />
+          <FormField
+            label="Fim"
+            :error="errors.endDate"
+            for="end"
+          >
+            <BaseDate
+              id="end"
+              v-model="form.endDate"
+            />
           </FormField>
-          <FormField label="Dias" :error="errors.days" for="days">
-            <BaseInput id="days" v-model="daysStr" type="number" />
+          <FormField
+            label="Dias"
+            :error="errors.days"
+            for="days"
+          >
+            <BaseInput
+              id="days"
+              v-model="daysStr"
+              type="number"
+            />
           </FormField>
         </div>
-        <FormField label="Diagnóstico" for="diag">
-          <BaseTextarea id="diag" v-model="form.diagnosis" />
+        <FormField
+          label="Diagnóstico"
+          for="diag"
+        >
+          <BaseTextarea
+            id="diag"
+            v-model="form.diagnosis"
+          />
         </FormField>
-        <FormField label="CID" for="icd" :error="errors.icd">
+        <FormField
+          label="CID"
+          for="icd"
+          :error="errors.icd"
+        >
           <BaseInput
             id="icd"
             v-model="icdTerm"
             placeholder="Buscar CID (via OMS)"
           />
         </FormField>
-        <div v-if="icdTerm.length >= 2" class="suggestions">
-          <div v-if="icdLoading" class="sugg muted">Buscando…</div>
+        <div
+          v-if="icdTerm.length >= 2"
+          class="suggestions"
+        >
+          <div
+            v-if="icdLoading"
+            class="sugg muted"
+          >
+            Buscando…
+          </div>
           <template v-else>
             <div
               v-for="icd in icdFiltered"
@@ -57,17 +101,29 @@
             >
               {{ icd.code }} — {{ icd.title }}
             </div>
-            <div v-if="!icdFiltered.length" class="sugg muted">
+            <div
+              v-if="!icdFiltered.length"
+              class="sugg muted"
+            >
               Nenhum resultado
             </div>
-            <div v-if="icdError" class="sugg warn" role="status">
+            <div
+              v-if="icdError"
+              class="sugg warn"
+              role="status"
+            >
               {{ icdError }}
             </div>
           </template>
         </div>
         <!-- Attachments placeholder (future file upload integration) -->
-        <section class="attachments-placeholder" aria-labelledby="att-title">
-          <h3 id="att-title">Anexos</h3>
+        <section
+          class="attachments-placeholder"
+          aria-labelledby="att-title"
+        >
+          <h3 id="att-title">
+            Anexos
+          </h3>
           <p class="att-hint">
             (Futuro) Área para anexar arquivos do atestado (PDF, imagens). Não
             envia ainda.
@@ -78,11 +134,20 @@
             tabindex="0"
             aria-label="Área de anexos (placeholder)"
           >
-            <span class="att-icon" aria-hidden="true">📎</span>
+            <span
+              class="att-icon"
+              aria-hidden="true"
+            >📎</span>
             <span>Arraste e solte arquivos aqui ou clique para selecionar</span>
           </div>
-          <ul v-if="pendingFiles.length" class="att-list">
-            <li v-for="f in pendingFiles" :key="f.name">
+          <ul
+            v-if="pendingFiles.length"
+            class="att-list"
+          >
+            <li
+              v-for="f in pendingFiles"
+              :key="f.name"
+            >
               {{ f.name }} <small>({{ formatSize(f.size) }})</small>
             </li>
           </ul>
@@ -95,7 +160,13 @@
             margin-top: 16px;
           "
         >
-          <button class="btn" type="button" @click="reset">Limpar</button>
+          <button
+            class="btn"
+            type="button"
+            @click="reset"
+          >
+            Limpar
+          </button>
           <button
             class="btn primary"
             type="submit"

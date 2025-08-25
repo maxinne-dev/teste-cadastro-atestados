@@ -12,6 +12,7 @@ describe('Modal focus trap', () => {
       attachTo: document.body,
     })
     await wrap.vm.$nextTick()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const panel = wrap.find('.modal')
     const first = wrap.find('button.close').element as HTMLElement
     const last = wrap.find('button.b').element as HTMLElement

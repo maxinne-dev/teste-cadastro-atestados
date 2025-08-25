@@ -1,6 +1,14 @@
 <template>
-  <div v-if="visible" class="panel-wrap" tabindex="-1" @keyup.esc="close">
-    <div class="backdrop" @click="close" />
+  <div
+    v-if="visible"
+    class="panel-wrap"
+    tabindex="-1"
+    @keyup.esc="close"
+  >
+    <div
+      class="backdrop"
+      @click="close"
+    />
     <aside
       ref="panel"
       class="panel"
@@ -11,11 +19,18 @@
     >
       <header class="panel-header">
         <slot name="header">
-          <h3 :id="titleId" class="title">
+          <h3
+            :id="titleId"
+            class="title"
+          >
             {{ title }}
           </h3>
         </slot>
-        <button class="close" aria-label="Fechar" @click="close">
+        <button
+          class="close"
+          aria-label="Fechar"
+          @click="close"
+        >
           <i class="pi pi-times" />
         </button>
       </header>

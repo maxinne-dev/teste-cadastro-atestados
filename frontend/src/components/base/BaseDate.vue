@@ -7,7 +7,7 @@
     :max="maxStr"
     :value="valueStr"
     @input="onInput"
-  />
+  >
 </template>
 
 <script setup lang="ts">

@@ -1,7 +1,14 @@
 <template>
   <div class="form-field">
-    <label v-if="label" class="label" :for="forId">
-      {{ label }}<span v-if="required" aria-hidden="true"> *</span>
+    <label
+      v-if="label"
+      class="label"
+      :for="forId"
+    >
+      {{ label }}<span
+        v-if="required"
+        aria-hidden="true"
+      > *</span>
     </label>
     <div class="control">
       <slot />
@@ -9,11 +16,21 @@
         <slot name="extra" />
       </div>
     </div>
-    <p v-if="hint" class="hint">
+    <p
+      v-if="hint"
+      class="hint"
+    >
       {{ hint }}
     </p>
-    <ul v-if="errorList.length" class="error" role="alert">
-      <li v-for="(err, i) in errorList" :key="i">
+    <ul
+      v-if="errorList.length"
+      class="error"
+      role="alert"
+    >
+      <li
+        v-for="(err, i) in errorList"
+        :key="i"
+      >
         {{ err }}
       </li>
     </ul>

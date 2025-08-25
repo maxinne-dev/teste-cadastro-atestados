@@ -1,4 +1,4 @@
-import { httpGet, httpPatch, httpPost, isApiEnabled } from './http'
+import { httpGet, httpPatch, httpPost } from './http'
 import type { Collaborator } from '../types/models'
 
 export type ListParams = {

@@ -12,7 +12,7 @@
     @input="onInput"
     @blur="$emit('blur', $event)"
     @focus="$emit('focus', $event)"
-  />
+  >
 </template>
 
 <script setup lang="ts">

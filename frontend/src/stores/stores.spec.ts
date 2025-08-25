@@ -5,11 +5,13 @@ import { useAuthStore } from './auth'
 import { daysBetweenInclusive, clampDateRange } from '../utils/date-range'
 
 describe('Pinia stores', () => {
-  beforeEach(() => setActivePinia(createPinia()))
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
 
   it('auth login/logout toggles token and user', async () => {
     const auth = useAuthStore()
-    await auth.loginDummy('user@example.com', 'x')
+    await auth.loginDummy('user@example.com')
     expect(auth.isAuthed).toBe(true)
     await auth.logout()
     expect(auth.isAuthed).toBe(false)
@@ -22,7 +24,7 @@ describe('Pinia stores', () => {
     expect(initial).toBeGreaterThan(0)
     const first = collabs.items[0]
     const prevStatus = first.status
-    await collabs.toggleStatus(first.id)
+    await collabs.toggleStatus(first.id!)
     const now = collabs.items.find((c) => c.id === first.id)!
     expect(now.status).not.toBe(prevStatus)
   })
