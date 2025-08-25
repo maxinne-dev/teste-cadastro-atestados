@@ -9,7 +9,9 @@ function applyCpf(el: HTMLInputElement) {
   // place caret at end for simplicity
   try {
     el.setSelectionRange(formatted.length, formatted.length)
-  } catch {}
+  } catch {
+    /* noop: selection might not be supported */
+  }
   // Do not dispatch another input event to avoid recursion
 }
 

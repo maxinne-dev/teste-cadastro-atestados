@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common'
-import { MongooseModule } from '@nestjs/mongoose'
-import { Collaborator, CollaboratorSchema } from './collaborator.schema.js'
-import { CollaboratorsService } from './collaborators.service.js'
-import { CollaboratorsController } from './collaborators.controller.js'
-import { AuditModule } from '../audit/audit.module.js'
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Collaborator, CollaboratorSchema } from './collaborator.schema.js';
+import { CollaboratorsService } from './collaborators.service.js';
+import { CollaboratorsController } from './collaborators.controller.js';
+import { AuditModule } from '../audit/audit.module.js';
 
 @Module({
   imports: [

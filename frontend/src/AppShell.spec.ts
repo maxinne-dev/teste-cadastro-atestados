@@ -12,9 +12,13 @@ import './styles/global.css'
 
 describe('App Shell & Layout', () => {
   beforeEach(async () => {
-    localStorage.setItem('token', 'dev')
+    const { getConfiguredTokenKey } = await import('./services/token')
+    localStorage.setItem(getConfiguredTokenKey(), 'test')
     // Ensure desktop width for sidebar toggle
-    Object.defineProperty(window, 'innerWidth', { value: 1200, configurable: true })
+    Object.defineProperty(window, 'innerWidth', {
+      value: 1200,
+      configurable: true,
+    })
     if (!router.hasRoute('dashboard')) {
       // router imported from src/router already has routes
     }
@@ -25,7 +29,11 @@ describe('App Shell & Layout', () => {
   it('renders AppLayout with Dashboard title via route meta', async () => {
     const wrapper = mount(App, {
       global: {
-        plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()],
+        plugins: [
+          [PrimeVue, { theme: { preset: Aura } }],
+          router,
+          createPinia(),
+        ],
       },
     })
 
@@ -38,7 +46,11 @@ describe('App Shell & Layout', () => {
     const wrapper = mount(App, {
       attachTo: document.body,
       global: {
-        plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()],
+        plugins: [
+          [PrimeVue, { theme: { preset: Aura } }],
+          router,
+          createPinia(),
+        ],
       },
     })
 

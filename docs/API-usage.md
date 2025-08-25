@@ -24,12 +24,26 @@ All endpoints are prefixed with `/api` (see `backend/src/main.ts`).
 curl -sS http://localhost:3000/api/health
 ```
 
+Response example
+```json
+{
+  "status": "ok",
+  "mongo": { "status": "up" },
+  "redis": { "status": "up" },
+  "icd": { "status": "up" }
+}
+```
+
 ## ICD Search (public)
 
 ```bash
 curl -sS 'http://localhost:3000/api/icd/search?q=fever'
 # => { "results": [ { "code":"..", "title":".." }, ... ] }
 ```
+
+Notes
+- Rate limited by the backend via `ICD_RATE_LIMIT_RPM`.
+- Falls back to local cache when WHO API is unavailable.
 
 ## Collaborators (protected)
 

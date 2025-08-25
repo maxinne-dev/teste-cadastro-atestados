@@ -7,10 +7,21 @@ import App from '../App.vue'
 
 describe('Pages render and navigation', () => {
   async function mountApp(path: string) {
-    if (path !== '/login') localStorage.setItem('token', 'dev')
+    if (path !== '/login') {
+      const { getConfiguredTokenKey } = await import('../services/token')
+      localStorage.setItem(getConfiguredTokenKey(), 'test')
+    }
     await router.push(path)
     await router.isReady()
-    return mount(App, { global: { plugins: [[PrimeVue, { theme: { preset: Aura } }], router, createPinia()] } })
+    return mount(App, {
+      global: {
+        plugins: [
+          [PrimeVue, { theme: { preset: Aura } }],
+          router,
+          createPinia(),
+        ],
+      },
+    })
   }
 
   it('renders Login', async () => {

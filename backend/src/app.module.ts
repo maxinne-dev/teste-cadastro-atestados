@@ -23,7 +23,9 @@ import { validateEnv } from './config/validate.js';
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (cfg: ConfigService) => ({
-        uri: cfg.get<string>('MONGODB_URI') || 'mongodb://localhost:27017/atestados',
+        uri:
+          cfg.get<string>('MONGODB_URI') ||
+          'mongodb://localhost:27017/atestados',
       }),
     }),
     IcdModule,

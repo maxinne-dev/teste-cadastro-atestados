@@ -1,4 +1,10 @@
-import { formatCpf, normalizeCpf, toIsoDate, fromIsoDate, formatDateBR } from './formatters'
+import {
+  formatCpf,
+  normalizeCpf,
+  toIsoDate,
+  fromIsoDate,
+  formatDateBR,
+} from './formatters'
 
 describe('formatters', () => {
   it('normalizes and formats CPF', () => {

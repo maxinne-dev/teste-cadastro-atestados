@@ -14,21 +14,39 @@
     </aside>
 
     <!-- Mobile sidebar overlay -->
-    <Sidebar v-model:visible="mobileSidebarVisible" position="left" :modal="true" :showCloseIcon="true" :dismissable="true" :blockScroll="true">
-      <AppSidebar :collapsed="false" @navigate="() => (mobileSidebarVisible = false)" />
-    </Sidebar>
+    <Drawer
+      v-model:visible="mobileSidebarVisible"
+      position="left"
+      :modal="true"
+      :show-close-icon="true"
+      :dismissable="true"
+      :block-scroll="true"
+    >
+      <AppSidebar
+        :collapsed="false"
+        @navigate="() => (mobileSidebarVisible = false)"
+      />
+    </Drawer>
 
     <main id="content" class="app-content">
       <header class="page-header container">
         <div>
-          <h1 class="page-title">{{ pageTitle }}</h1>
-          <p v-if="pageSubtitle" class="page-subtitle">{{ pageSubtitle }}</p>
+          <h1 class="page-title">
+            {{ pageTitle }}
+          </h1>
+          <p v-if="pageSubtitle" class="page-subtitle">
+            {{ pageSubtitle }}
+          </p>
         </div>
         <div class="page-actions">
           <slot name="page-actions" />
         </div>
       </header>
-      <nav v-if="breadcrumbItems.length" aria-label="Breadcrumb" class="container mt-4">
+      <nav
+        v-if="breadcrumbItems.length"
+        aria-label="Breadcrumb"
+        class="container mt-4"
+      >
         <AppBreadcrumbs :items="breadcrumbItems" />
       </nav>
       <section class="container mt-4">
@@ -42,13 +60,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Sidebar from 'primevue/sidebar'
+import { useAuthStore } from '../stores/auth'
+import Drawer from 'primevue/drawer'
 import AppTopbar from '../components/AppTopbar.vue'
 import AppSidebar from '../components/AppSidebar.vue'
 import AppBreadcrumbs from '../components/AppBreadcrumbs.vue'
 import AppFooter from '../components/AppFooter.vue'
 
 const router = useRouter()
+const auth = useAuthStore()
 const route = useRoute()
 
 const mobileSidebarVisible = ref(false)
@@ -68,8 +88,8 @@ function onNavigate(to?: string) {
   if (to) router.push(to)
 }
 
-function logout() {
-  localStorage.removeItem('token')
+async function logout() {
+  await auth.logout()
   router.push({ name: 'login' })
 }
 
@@ -79,7 +99,9 @@ function goNewCertificate() {
 
 const pageTitle = computed(() => (route.meta?.title as string) || '')
 const pageSubtitle = computed(() => (route.meta?.subtitle as string) || '')
-const breadcrumbItems = computed(() => (route.meta?.breadcrumb as Array<{ label: string; to?: string }>) || [])
+const breadcrumbItems = computed(
+  () => (route.meta?.breadcrumb as Array<{ label: string; to?: string }>) || [],
+)
 </script>
 
 <style scoped>
@@ -120,13 +142,23 @@ const breadcrumbItems = computed(() => (route.meta?.breadcrumb as Array<{ label:
   gap: var(--space-4);
   padding-top: var(--space-4);
 }
-.page-title { margin: 0; }
-.page-subtitle { color: var(--color-text-secondary); margin: 0; }
-.page-actions { display: flex; align-items: center; gap: var(--space-3); }
+.page-title {
+  margin: 0;
+}
+.page-subtitle {
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
 
 /* Responsive */
 @media (max-width: 1023px) {
-  .app-shell, .app-shell.sidebar-collapsed {
+  .app-shell,
+  .app-shell.sidebar-collapsed {
     grid-template-columns: 1fr;
     grid-template-rows: 56px auto 1fr;
     grid-template-areas:
@@ -134,6 +166,8 @@ const breadcrumbItems = computed(() => (route.meta?.breadcrumb as Array<{ label:
       'content'
       'content';
   }
-  .app-sidebar { display: none; }
+  .app-sidebar {
+    display: none;
+  }
 }
 </style>

@@ -3,7 +3,9 @@ import SidePanel from './SidePanel.vue'
 
 describe('SidePanel', () => {
   it('shows and hides via v-model', async () => {
-    const wrapper = mount(SidePanel, { props: { visible: false, title: 'Panel' } })
+    const wrapper = mount(SidePanel, {
+      props: { visible: false, title: 'Panel' },
+    })
     expect(wrapper.find('.panel').exists()).toBe(false)
     await wrapper.setProps({ visible: true })
     expect(wrapper.find('.panel').exists()).toBe(true)
@@ -11,4 +13,3 @@ describe('SidePanel', () => {
     expect(wrapper.emitted('update:visible')?.[0]?.[0]).toBe(false)
   })
 })
-

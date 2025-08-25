@@ -1,10 +1,10 @@
-import mongoose from 'mongoose'
-import { run } from './seed.js'
+import mongoose from 'mongoose';
+import { run } from './seed.js';
 
 async function main() {
-  await run()
+  await run();
   // eslint-disable-next-line no-console
-  console.log('[seed] Completed successfully')
+  console.log('[seed] Completed successfully');
 }
 
 main()
@@ -12,10 +12,11 @@ main()
   .then(() => process.exit(0))
   .catch(async (err) => {
     // eslint-disable-next-line no-console
-    console.error('[seed] Failed:', err)
+    console.error('[seed] Failed:', err);
     try {
-      await mongoose.disconnect()
-    } catch {}
-    process.exit(1)
-  })
-
+      await mongoose.disconnect();
+    } catch {
+      // ignore
+    }
+    process.exit(1);
+  });

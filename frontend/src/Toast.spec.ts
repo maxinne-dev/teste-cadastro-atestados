@@ -18,11 +18,12 @@ describe('Toast notifications', () => {
   it('shows a success toast via useNotify', async () => {
     const wrapper = mount(TestHost, {
       attachTo: document.body,
-      global: { plugins: [[PrimeVue, { theme: { preset: Aura } }], ToastService] },
+      global: {
+        plugins: [[PrimeVue, { theme: { preset: Aura } }], ToastService],
+      },
     })
     await wrapper.find('#go').trigger('click')
     // Toast is teleported to body; check for content
     expect(document.body.textContent).toContain('Saved')
   })
 })
-

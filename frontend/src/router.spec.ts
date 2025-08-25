@@ -1,7 +1,8 @@
 import router from './router'
 
 async function resetAuth() {
-  localStorage.removeItem('token')
+  const { getConfiguredTokenKey } = await import('./services/token')
+  localStorage.removeItem(getConfiguredTokenKey())
 }
 
 describe('router', () => {
@@ -17,7 +18,8 @@ describe('router', () => {
   })
 
   it('allows navigation when authenticated', async () => {
-    localStorage.setItem('token', 'dev')
+    const { getConfiguredTokenKey } = await import('./services/token')
+    localStorage.setItem(getConfiguredTokenKey(), 'test')
     await router.push('/certificates')
     await router.isReady()
     expect(router.currentRoute.value.name).toBe('certificates')

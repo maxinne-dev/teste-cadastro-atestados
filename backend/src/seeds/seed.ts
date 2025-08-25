@@ -39,11 +39,15 @@ async function ensureMeta() {
       },
       $setOnInsert: { createdAt: new Date() },
     },
-    { upsert: true }
+    { upsert: true },
   );
 }
 
-async function insertIfAny(collectionName: string, docs: any[], uniqueKey?: string) {
+async function insertIfAny(
+  collectionName: string,
+  docs: any[],
+  uniqueKey?: string,
+) {
   if (!Array.isArray(docs) || docs.length === 0) return { inserted: 0 };
   const col = mongoose.connection.collection(collectionName);
 
@@ -52,11 +56,21 @@ async function insertIfAny(collectionName: string, docs: any[], uniqueKey?: stri
     if (uniqueKey && doc[uniqueKey] != null) {
       await col.updateOne(
         { [uniqueKey]: doc[uniqueKey] },
-        { $setOnInsert: { ...doc, createdAt: new Date(), updatedAt: new Date() } },
-        { upsert: true }
+        {
+          $setOnInsert: {
+            ...doc,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        },
+        { upsert: true },
       );
     } else {
-      await col.insertOne({ ...doc, createdAt: new Date(), updatedAt: new Date() });
+      await col.insertOne({
+        ...doc,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
       inserted += 1;
     }
   }
@@ -75,12 +89,12 @@ export async function run() {
   // Optionally seed domain data if mock arrays are provided.
   await insertIfAny('collaborators', mockCollaborators, 'cpf');
   // Hash user passwords if provided as plaintext or placeholder
-  const users = Array.isArray(mockUsers) ? [...mockUsers] : []
+  const users = Array.isArray(mockUsers) ? [...mockUsers] : [];
   for (const u of users) {
-    const val = u.passwordHash
-    const needsHash = typeof val === 'string' && !/^\$2[aby]\$/.test(val)
+    const val = u.passwordHash;
+    const needsHash = typeof val === 'string' && !/^\$2[aby]\$/.test(val);
     if (needsHash) {
-      u.passwordHash = await bcrypt.hash(val || 'changeme', 10)
+      u.passwordHash = await bcrypt.hash(val || 'changeme', 10);
     }
   }
   await insertIfAny('users', users, 'email');
@@ -91,7 +105,9 @@ export async function run() {
   // Link certificates to collaborators and upsert idempotently by a seedKey
   if (Array.isArray(mockCertificates) && mockCertificates.length > 0) {
     const collabCol = mongoose.connection.collection('collaborators');
-    const cpfs = mockCertificates.map((c: any) => c.collaboratorCpf).filter(Boolean);
+    const cpfs = mockCertificates
+      .map((c: any) => c.collaboratorCpf)
+      .filter(Boolean);
     let cpfMap: Record<string, any> = {};
     if (cpfs.length) {
       const found = await collabCol
@@ -109,15 +125,26 @@ export async function run() {
       }
       doc.metadata = doc.metadata || {};
       if (!doc.metadata.seedKey) {
-        const s = [doc.icdCode, doc.startDate?.toString(), doc.endDate?.toString(), String(doc.collaboratorId || '')]
+        const s = [
+          doc.icdCode,
+          doc.startDate?.toString(),
+          doc.endDate?.toString(),
+          String(doc.collaboratorId || ''),
+        ]
           .filter(Boolean)
           .join('|');
         doc.metadata.seedKey = `seed:auto:${Buffer.from(s).toString('base64').slice(0, 16)}`;
       }
       await certCol.updateOne(
         { 'metadata.seedKey': doc.metadata.seedKey },
-        { $setOnInsert: { ...doc, createdAt: new Date(), updatedAt: new Date() } },
-        { upsert: true }
+        {
+          $setOnInsert: {
+            ...doc,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        },
+        { upsert: true },
       );
     }
   }

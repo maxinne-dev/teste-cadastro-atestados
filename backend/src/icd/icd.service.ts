@@ -6,7 +6,9 @@ import { IcdCacheService } from '../icd-cache/icd-cache.service.js';
 export class IcdService {
   private readonly logger = new Logger(IcdService.name);
   private token: { value: string; expiresAt: number } | null = null;
-  private baseRoot = (process.env.WHO_ICD_BASE_URL || 'https://id.who.int').replace(/\/$/, '');
+  private baseRoot = (
+    process.env.WHO_ICD_BASE_URL || 'https://id.who.int'
+  ).replace(/\/$/, '');
   private release = process.env.WHO_ICD_RELEASE || '2024-01';
   private language = process.env.WHO_ICD_LANGUAGE || 'en';
 
@@ -31,7 +33,8 @@ export class IcdService {
     form.set('grant_type', 'client_credentials');
     form.set('scope', 'icdapi_access');
 
-    const authHeader = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    const authHeader =
+      'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
     const res = await axios.post(tokenEndpoint, form, {
       headers: {
@@ -50,7 +53,7 @@ export class IcdService {
   async search(term: string) {
     if (!term || term.length < 2) return [];
     const searchUrl = `${this.baseRoot}/icd/release/11/${this.release}/mms/search?flatResults=true&useFlexisearch=true&q=${encodeURIComponent(
-      term
+      term,
     )}`;
     const tryFetch = async () => {
       const token = await this.getToken();
@@ -94,7 +97,9 @@ export class IcdService {
       const dest = res.data?.destinationEntities ?? [];
       const mapped = mapResults(dest).filter((r) => r.code && r.title);
       // Upsert in cache (best-effort)
-      await Promise.all(mapped.map((r) => this.cache.upsert(r.code, r.title, this.release)));
+      await Promise.all(
+        mapped.map((r) => this.cache.upsert(r.code, r.title, this.release)),
+      );
       return mapped;
     } catch (err) {
       this.logger.error('ICD search failed', err as any);

@@ -1,7 +1,7 @@
-import { ValidateBy, buildMessage, ValidationOptions } from 'class-validator'
-import { isValidCpf, normalizeCpf } from './br.js'
+import { ValidateBy, buildMessage, ValidationOptions } from 'class-validator';
+import { isValidCpf, normalizeCpf } from './br.js';
 
-export const IS_CPF = 'isCpf'
+export const IS_CPF = 'isCpf';
 
 export function IsCpf(validationOptions?: ValidationOptions) {
   return ValidateBy(
@@ -11,15 +11,14 @@ export function IsCpf(validationOptions?: ValidationOptions) {
         validate: (value: any) => isValidCpf(value),
         defaultMessage: buildMessage(
           (eachPrefix) => `${eachPrefix}must be a valid CPF`,
-          validationOptions
+          validationOptions,
         ),
       },
     },
-    validationOptions
-  )
+    validationOptions,
+  );
 }
 
 export function normalizeCpfTransform(value: any) {
-  return normalizeCpf(value)
+  return normalizeCpf(value);
 }
-

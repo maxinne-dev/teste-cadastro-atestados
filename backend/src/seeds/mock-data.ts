@@ -21,12 +21,26 @@ export const mockCollaborators: any[] = [
 ];
 
 export const mockUsers: any[] = [
-  { email: 'admin@example.com', passwordHash: 'dev-hash', fullName: 'Admin', roles: ['admin'] },
-  { email: 'hr@example.com', passwordHash: 'dev-hash', fullName: 'HR User', roles: ['hr'] },
+  {
+    email: 'admin@example.com',
+    passwordHash: 'dev-hash',
+    fullName: 'Admin',
+    roles: ['admin'],
+  },
+  {
+    email: 'hr@example.com',
+    passwordHash: 'dev-hash',
+    fullName: 'HR User',
+    roles: ['hr'],
+  },
 ];
 
 export const mockIcdCodes: any[] = [
-  { code: 'J06.9', title: 'Acute upper respiratory infection, unspecified', release: '2024-01' },
+  {
+    code: 'J06.9',
+    title: 'Acute upper respiratory infection, unspecified',
+    release: '2024-01',
+  },
 ];
 
 export const mockCertificates: any[] = [

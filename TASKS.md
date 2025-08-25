@@ -1,228 +1,302 @@
-# Frontend GUI Tasks — Dummy UI Only (No API Integration)
+# Sistema de Atestados Médicos - Lista de Tarefas para Integração
 
-This plan covers building a complete, modern, and sober GUI in `frontend/` using Vue 3 + PrimeVue, with navigable pages, modals, and forms backed by local mock data only. No API integration should be implemented at this stage.
+## 📋 Visão Geral do Estado Atual
 
-Important: Do NOT call or depend on any backend API. Use local fixtures/mocks so the whole UI runs and can be validated visually and functionally (routing, navigation, validation) without a server.
+**Backend (NestJS):** ✅ Completamente implementado
+- Autenticação JWT com Redis (sessões de 4h)
+- CRUD de colaboradores com validação de CPF
+- Sistema de atestados médicos
+- Integração com API da OMS (ICD) com fallback
+- Auditoria e rate limiting
+- Testes implementados
 
-Note: ESLint checks are temporarily deferred to speed up UI scaffolding. We will re-enable and fix lint findings later. For now, use typecheck + tests as the primary gates.
+**Frontend (Vue 3):** ⚠️ Parcialmente implementado (GUI-only)
+- Interface completa com PrimeVue
+- Componentes e páginas funcionais
+- Stores Pinia configuradas
+- **PROBLEMA:** Usando apenas dados mockados, sem integração real com API
 
-## Foundations and Theme
+**Integração:** ❌ Não implementada
+- Frontend configurado com `VITE_USE_API=false`
+- Serviços HTTP implementados mas não ativados
+- Necessário ativar e validar integração completa
 
-1. Design tokens and theme setup
-   - [x] Define neutral color palette (primary/secondary, success/warn/error, surface, text, dark mode)
-   - [x] Establish spacing scale, radius, shadows, typography (font family/size/line-height)
-   - [x] Create CSS variables and PrimeVue mapping plan (spec only; no code yet)
-   - [x] Configure dark mode strategy (spec only; no code yet)
-   
-   Note: See docs/Theme-Foundation.md for the full specification.
+## 1. ⚡ Ativação da Integração Frontend-Backend
 
-- Section test checklist
-  - [ ] Typecheck pass (lint deferred): `cd frontend && npm run typecheck`
-  - [ ] Basic render smoke test: mount root app with theme imports and assert it renders without errors
-  - [ ] Document any token adjustments if contrast issues are found
+### 1.1 Configuração de Ambiente
+- [x] **Verificar arquivo `.env`** no root do projeto
+  - [x] Confirmar se `VITE_USE_API=true` está configurado
+  - [x] Validar `VITE_API_BASE_URL=/api`
+  - [x] Verificar `JWT_SECRET` está definido
+  - [x] Confirmar `MONGODB_URI` e `REDIS_URL`
 
-2. PrimeVue configuration and global styles
-   - [x] Select a sober base theme (start from Aura) and override tokens for our palette
-   - [x] Add global reset/normalization and base typography
-   - [x] Set global container widths, grid helpers, and utility classes for layout spacing
+### 1.2 Validação da Infraestrutura
+- [x] **Testar containers Docker**
+  - [x] Executar `docker compose up -d --build`
+  - [x] Verificar saúde da API: `http://localhost:3000/health`
+  - [x] Verificar MongoDB está acessível
+  - [x] Verificar Redis está acessível
 
-3. App shell and layout
-   - [x] Create `AppLayout` with header, collapsible sidebar, content area, and footer
-   - [x] Add responsive behavior (mobile: overlay sidebar; desktop: fixed)
-   - [x] Add breadcrumb and dynamic page title region
-   - [x] Add user menu (avatar, name placeholder, logout action) and theme toggle
-   
-   Note: Spec prepared in docs/AppLayout-Plan.md (no code yet).
+### 1.3 Validação dos Endpoints da API
+- [x] **Testar autenticação**
+  - [x] `POST /api/auth/login` com credenciais do seed
+  - [x] `POST /api/auth/logout` com Bearer token
+  - [x] Verificar retorno de JWT válido
 
-## Routing and Navigation
+- [x] **Testar endpoints de colaboradores**
+  - [x] `GET /api/collaborators` (listagem)
+  - [x] `POST /api/collaborators` (criação)
+  - [x] `PATCH /api/collaborators/:cpf` (atualização)
+  - [x] `PATCH /api/collaborators/:cpf/status` (status)
 
-4. Router and guards (dummy only)
-   - [x] Define routes: `/login`, `/` (Dashboard), `/collaborators`, `/certificates`, `/certificates/new`, and 404
-   - [x] Keep a simple dummy auth guard using in-memory flag/localStorage (no API)
-   - [x] Configure basic role meta placeholders for future use (no enforcement yet)
+- [x] **Testar endpoints de atestados**
+  - [x] `GET /api/medical-certificates` (listagem)
+  - [x] `POST /api/medical-certificates` (criação)
+  - [x] `PATCH /api/medical-certificates/:id/cancel` (cancelamento)
 
-5. Navigation components
-   - [x] Sidebar menu with active route highlighting
-   - [x] Topbar quick actions (e.g., “New Certificate”)
-   - [x] Breadcrumbs tied to route meta
+- [x] **Testar endpoint ICD**
+  - [x] `GET /api/icd/search?q=termo` (busca CID)
 
-- Section test checklist
-  - [x] Router unit tests: routes exist, guards redirect unauthenticated to login, nested routes render
-  - [x] Update/extend `src/router.spec.ts` with added cases
-  - [x] Typecheck pass (lint deferred)
+## 2. 🔧 Correções e Ajustes de Integração
 
-## Base Components
+### 2.1 Ajustes no Frontend
+- [x] **Revisar stores Pinia**
+  - [x] Verificar se `auth.ts` usa corretamente `isApiEnabled()`
+  - [x] Validar `collaborators.ts` remove simulação de delay quando API ativa
+  - [x] Validar `certificates.ts` remove simulação de delay quando API ativa
 
-6. Form primitives
-   - [x] `BaseInput`, `BasePassword`, `BaseSelect`, `BaseDate`, `BaseTextarea`
-   - [x] `FormField` wrapper with label, help, and error slot
-   - [x] Input masks and formatters (CPF, dates) — client-side only
-   
-   Note: Spec prepared in docs/BaseComponents-Plan.md (no code yet).
+- [x] **Validar serviços HTTP**
+  - [x] Confirmar interceptors de autenticação estão corretos
+  - [x] Verificar tratamento de erros 401 (token expirado)
+  - [x] Validar headers Authorization Bearer
 
-7. Display and layout
-   - [x] `PageHeader` (title, subtitle, actions)
-   - [x] `StatCard` (icon, title, value, trend placeholder)
-   - [x] `DataTable` wrapper for PrimeVue table with empty/ loading states
-   - [x] `Toolbar` and `Card` wrappers
+### 2.2 Compatibilidade de Modelos
+- [x] **Verificar tipos TypeScript**
+  - [x] Comparar `frontend/src/types/models.ts` com schemas do backend
+  - [x] Ajustar diferenças de nomenclatura (ex: `id` vs `_id`)
+  - [x] Validar campos opcionais e obrigatórios
 
-8. Feedback and overlays
-   - [x] `ConfirmDialog` (reusable)
-   - [x] `SidePanel`/Drawer for details
-   - [x] Toast/notification service (PrimeVue Toast)
+- [x] **Verificar DTOs de requisição**
+  - [x] Comparar payloads frontend com DTOs backend
+  - [x] Ajustar diferenças de formato de data
+  - [x] Validar estrutura de filtros e paginação
 
-- Section test checklist
- - [x] Render tests for form primitives and `FormField` error display
-  - [x] Snapshot/basic interaction tests for `DataTable` wrapper, `ConfirmDialog`, `SidePanel`, toast
-  - [x] Typecheck pass (lint deferred)
+### 2.3 Tratamento de Erros
+- [x] **Implementar tratamento consistente**
+  - [x] Mapear códigos de erro do backend
+  - [x] Implementar notificações toast para erros
+  - [x] Tratar casos especiais (401, 403, 429, 500)
 
-## Pages and Flows (Dummy Data Only)
+## 3. 🔐 Funcionalidades de Autenticação
 
-9. Login
-   - [x] Email + password fields with basic validation
-   - [x] Show/hide password control
-   - [x] Remember-me checkbox (local only)
-   - [x] On submit, set a dummy session token and route to Dashboard
+### 3.1 Fluxo de Login
+- [x] **Implementar login real**
+  - [x] Testar com credenciais do seed: `admin@example.com` / `hr@example.com`
+  - [x] Verificar armazenamento correto do JWT no localStorage
+  - [x] Validar redirecionamento após login bem-sucedido
 
-10. Dashboard
-   - [x] Page header and quick actions (e.g., “Novo Atestado”)
-   - [x] Stat cards (placeholders): total collaborators, total certificates, active leaves
-   - [x] Recent activity list (dummy items)
-   - [x] Placeholder charts (static images or empty components)
+### 3.2 Proteção de Rotas
+- [x] **Validar guards do router**
+  - [x] Testar redirecionamento para login quando não autenticado
+  - [x] Verificar persistência de sessão após refresh da página
+  - [x] Testar expiração de token (4 horas)
 
-11. Collaborators (List + Create/Edit)
-   - [x] List table with columns: Name, CPF, Department, Position, Status, Actions
-   - [x] Filters: search by name/CPF, status; pagination controls (client-only)
-   - [x] Action: View details (drawer or modal)
-   - [x] Action: Edit (modal or route) with form: full name, CPF, birth date, position, department, status
-   - [x] Action: New collaborator (modal), with client-side validation and success toast
-   - [x] Confirm dialog for activating/deactivating (no persistence beyond local mocks)
+### 3.3 Logout e Sessões
+- [x] **Implementar logout completo**
+  - [x] Chamar endpoint de logout no backend
+  - [x] Limpar token do localStorage
+  - [x] Redirecionar para página de login
 
-12. Certificates (List + Details)
-   - [x] List table with columns: Collaborator, Dates (start–end), Days, ICD code/title, Status, Actions
-   - [x] Filters: collaborator (select/search), period (date range), status, ICD (text)
-   - [x] Pagination (client-only)
-   - [x] Sorting (client-only)
-   - [x] Action: View details (drawer/modal) with full record
-   - [x] Action: Cancel certificate (confirm dialog; toggle local status)
+## 4. 👥 Gestão de Colaboradores
 
-13. New Certificate (Form)
-   - [x] Collaborator selector: search/select modal or simple dropdown populated from mocks
-   - [x] Dates: start and end date pickers, auto-calc days (editable)
-   - [x] Diagnosis (textarea)
-   - [x] ICD search field: local dummy autocomplete (no API) with a small mock list
-   - [ ] Optional attachments placeholder (no upload)
-   - [x] Client-side validation and submit to add to local list
+### 4.1 Listagem de Colaboradores
+- [x] **Implementar busca com filtros**
+  - [x] Busca por nome (campo de texto)
+  - [x] Filtro por status (ativo/inativo)
+  - [x] Ordenação por campos (nome, data criação)
+  - [x] Paginação funcional
 
-14. Not Found (404)
-   - [x] Minimal friendly 404 page and link back to Dashboard
+### 4.2 Cadastro de Colaboradores
+- [x] **Formulário de criação**
+  - [x] Validação de CPF brasileiro
+  - [x] Formatação automática de CPF
+  - [x] Campos obrigatórios: nome, CPF, data nascimento, cargo
+  - [x] Campo opcional: departamento
 
-Note: Specs prepared in docs/Pages-Plan.md (no code yet).
+### 4.3 Edição de Colaboradores
+- [x] **Formulário de edição**
+  - [x] Busca por CPF para edição
+  - [x] Atualização de dados pessoais
+  - [x] Alteração de status (ativo/inativo)
 
-- Section test checklist
-  - [x] Render tests for pages: Login, Dashboard, Collaborators, Certificates, NewCertificate, 404
-  - [x] Navigation tests: sidebar links route to expected views
-  - [x] Typecheck pass (lint deferred)
+## 5. 📋 Sistema de Atestados Médicos
 
-## Modals and Reusable UX
+### 5.1 Listagem de Atestados
+- [x] **Implementar filtros avançados**
+  - [x] Filtro por colaborador (dropdown/autocomplete)
+  - [x] Filtro por período (data início/fim)
+  - [x] Filtro por código CID
+  - [x] Filtro por status do atestado
+  - [x] Ordenação por data, colaborador, CID
 
-15. Global confirm dialogs
-   - [x] Standardized title/description, destructive style for risky actions
-   - [x] Keyboard accessibility and focus management
+### 5.2 Criação de Atestados
+- [x] **Formulário de novo atestado**
+  - [x] Seleção de colaborador (autocomplete)
+  - [x] Campos de data (início e fim do atestado)
+  - [x] Cálculo automático de dias de afastamento
+  - [x] Integração com busca de CID (API OMS)
+  - [x] Campo opcional para observações
 
-16. Details drawer/modal patterns
-   - [x] Collaborator details drawer with tabs (Profile, Certificates)
-   - [x] Certificate details modal (summary, actions)
+### 5.3 Busca de CID (Integração OMS)
+- [x] **Implementar autocomplete de CID**
+  - [x] Busca em tempo real na API da OMS
+  - [x] Debounce para evitar muitas requisições
+  - [x] Fallback para cache local quando API indisponível
+  - [x] Exibição de código e descrição do CID
 
-17. Empty, loading, and error states (local)
-   - [x] Table empty states with helpful copy
-   - [x] Skeleton loaders for key views
-   - [x] Non-blocking error banners for form validation
+### 5.4 Gestão de Atestados
+- [x] **Operações sobre atestados**
+  - [x] Visualização detalhada de atestado
+  - [x] Cancelamento de atestado
+  - [x] Histórico de alterações (auditoria)
 
-- Section test checklist
-  - [x] Open/close and focus-trap tests for modals/drawers
-  - [x] ConfirmDialog: confirm/cancel emits expected events
-  - [x] Typecheck pass (lint deferred)
+## 6. 🔧 Configuração da API OMS (ICD)
 
-## Mock Data, State, and Utilities (No API)
+### 6.1 Credenciais da OMS
+- [x] **Configurar acesso à API oficial**
+  - [x] Registrar conta em https://icd.who.int/icdapi
+  - [x] Obter `WHO_ICD_CLIENT_ID` e `WHO_ICD_CLIENT_SECRET`
+  - [x] Configurar no arquivo `.env`
+  - [x] Testar autenticação OAuth2
 
-18. Local mock data
-   - [x] Define fixtures in `src/mocks/` (users, collaborators, certificates, ICD list)
-   - [x] Utility functions for basic CRUD against in-memory arrays
-   - [ ] Seed mocks on app start (dev only)
+### 6.2 Integração e Fallback
+- [x] **Validar funcionamento**
+  - [x] Testar busca de CID em tempo real
+  - [x] Verificar cache local de resultados
+  - [x] Testar fallback quando API indisponível
+  - [x] Validar rate limiting (60 req/min)
 
-19. State management (Pinia)
-   - [x] Stores: `auth`, `collaborators`, `certificates`, `ui`
-   - [x] Actions work on local fixtures only; simulate latency with `setTimeout` where needed
-   - [x] Derivations: active certificates, filters, counts
+## 7. 🎨 Melhorias de Interface
 
-20. Helpers and formatting
-   - [x] CPF/Date/Number formatters
-   - [x] Date range helpers (calculate days, clamp ranges)
+### 7.1 Estados de Loading e Erro
+- [ ] **Implementar feedback visual**
+  - [ ] Spinners de loading durante requisições
+  - [ ] Estados vazios para listas sem dados
+  - [ ] Mensagens de erro user-friendly
+  - [ ] Retry automático em caso de falha
 
-- Section test checklist
-  - [x] Store tests for local CRUD and derived getters (Pinia stores)
-  - [x] Utility tests for CPF/date formatting and range helpers
-  - [x] Typecheck pass (lint deferred)
+### 7.2 Notificações
+- [ ] **Sistema de toast/notificações**
+  - [ ] Sucesso após operações (criar, editar, deletar)
+  - [ ] Erros de validação e servidor
+  - [ ] Avisos de sistema (sessão expirada)
 
-## Accessibility, Responsiveness, and Polish
+### 7.3 Responsividade
+- [ ] **Otimizar para mobile**
+  - [ ] Tabelas responsivas (cards em mobile)
+  - [ ] Formulários adaptáveis
+  - [ ] Menu lateral colapsável
+  - [ ] Touch-friendly nos componentes
 
-21. Accessibility (WCAG AA baseline)
-   - [x] Color contrast checks for theme
-   - [x] Semantic HTML in components
-   - [x] Keyboard navigation: focus outlines, trap focus in modals, skip links
-   - [x] ARIA labels/roles on interactive elements
+## 8. 🧪 Testes e Validação
 
-22. Responsiveness
-   - [x] Mobile-first layout for all pages and modals
-   - [x] Tables collapse to cards at small breakpoints
-   - [x] Test at common widths (360, 768, 1024, 1280)
+### 8.1 Testes de Integração Frontend
+- [ ] **Atualizar testes existentes**
+  - [ ] Modificar testes para usar API real quando `VITE_USE_API=true`
+  - [ ] Mockar apenas requisições HTTP nos testes
+  - [ ] Testar fluxos end-to-end críticos
 
-23. UX refinements
-   - [x] Consistent spacing and typography scale
-   - [x] Hover/active states and subtle transitions
-   - [x] Toast messages for success/error (local only)
+### 8.2 Testes de Funcionalidade
+- [ ] **Cenários principais**
+  - [ ] Login → Dashboard → Logout
+  - [ ] Criar colaborador → Listar → Editar
+  - [ ] Criar atestado com busca CID → Listar → Cancelar
+  - [ ] Filtros e busca funcionais
+  - [ ] Paginação e ordenação
 
-- Section test checklist
-  - [x] Basic a11y assertions: presence of aria-labels/roles on key components
-  - [x] Responsive behavior sanity: jsdom-based width toggles for sidebar collapse logic
-  - [ ] Lint/typecheck pass
+### 8.3 Testes de Erro
+- [ ] **Cenários de falha**
+  - [ ] API indisponível (backend offline)
+  - [ ] Token expirado durante uso
+  - [ ] Falhas de validação
+  - [ ] Limites de rate limiting
+  - [ ] Perda de conexão de rede
 
-## Validation, Testing, and QA (UI-only)
+## 9. 📊 Dashboard e Relatórios
 
-24. Form validation (client-only)
-   - [x] Required fields, formats (email, CPF), date ranges
-   - [x] Inline errors + disabled submit until valid
+### 9.1 Dashboard Principal
+- [ ] **Métricas básicas**
+  - [ ] Total de colaboradores ativos
+  - [ ] Atestados em vigor hoje
+  - [ ] Atestados emitidos no mês
+  - [ ] Gráfico de afastamentos por período
 
-25. Component tests (optional but recommended)
-   - [x] Configure Vitest + Vue Test Utils for basic render/interaction tests
-   - [x] Snapshot key components (`BaseInput`, `DataTable` wrapper, `ConfirmDialog`)
+### 9.2 Relatórios
+- [ ] **Exportação de dados**
+  - [ ] Lista de colaboradores (CSV/Excel)
+  - [ ] Relatório de atestados por período
+  - [ ] Estatísticas por CID mais comum
+  - [ ] Relatório de absenteísmo
 
-26. QA checklist
-   - [x] All routes reachable via sidebar and direct URL
-   - [x] All modals/drawers open/close and trap focus correctly
-   - [x] Forms validate and show feedback; mock data updates visible
-   - [x] Theme consistent across pages; dark mode (if added) holds state
+## 10. 🚀 Deploy e Produção
 
-- Section test checklist
-  - [ ] Full test suite: `npm run test` with coverage summary
-  - [ ] Typecheck pass (lint deferred)
-  - [ ] Address flaky tests and document gaps
+### 10.1 Configuração de Produção
+- [ ] **Ajustar configurações**
+  - [ ] Configurar `docker-compose.prod.yml`
+  - [ ] Definir variáveis de ambiente de produção
+  - [ ] Configurar HTTPS e domínio
+  - [ ] Ajustar CORS para domínio de produção
 
-## Documentation and Handover
+### 10.2 Segurança
+- [ ] **Hardening de segurança**
+  - [ ] Headers de segurança HTTP
+  - [ ] Rate limiting adequado
+  - [ ] Logs de auditoria funcionais
+  - [ ] Backup automático do MongoDB
 
-27. Developer docs
-   - [x] Update `frontend/README` section with run instructions and mock data notes
-   - [x] Document theme tokens and how to extend components
-   - [x] Explain the no-API scope and where to hook real services later
+### 10.3 Monitoramento
+- [ ] **Observabilidade**
+  - [ ] Health checks funcionais
+  - [ ] Logs estruturados
+  - [ ] Métricas de performance
+  - [ ] Alertas para falhas críticas
 
-28. Demo script
-- [x] Outline steps for a UI-only walkthrough covering all pages, forms, and modals
+## ⏱️ Prioridades de Execução
 
-- Section test checklist
-  - [ ] Run full checks (typecheck/tests; lint deferred) and update README with how to run tests
-  - [ ] Capture a short checklist of what to verify during the demo
+### 🔥 **CRÍTICO - Semana 1**
+1. Ativação da integração (Seção 1)
+2. Correções básicas (Seção 2.1 e 2.2)
+3. Autenticação funcionando (Seção 3)
+
+### 🚨 **ALTA - Semana 2**
+4. CRUD de colaboradores (Seção 4)
+5. Sistema de atestados básico (Seção 5.1, 5.2)
+6. Integração CID/OMS (Seção 6)
+
+### ⚡ **MÉDIA - Semana 3**
+7. Funcionalidades avançadas de atestados (Seção 5.3, 5.4)
+8. Melhorias de UX (Seção 7)
+9. Testes de integração (Seção 8.1, 8.2)
+
+### 📈 **BAIXA - Semana 4**
+10. Dashboard e relatórios (Seção 9)
+11. Testes de erro (Seção 8.3)
+12. Preparação para produção (Seção 10)
 
 ---
 
-Out of scope for this phase: Any backend communication, token handling beyond a local dummy, real ICD API calls, persistence beyond in-memory mocks, and server-driven authorization. API integration will be implemented in a later phase after GUI validation.
+## 📝 Notas de Implementação
+
+**Estado Atual Detectado:**
+- Backend: Totalmente funcional com todos os endpoints implementados
+- Frontend: Interface completa mas usando apenas mocks locais
+- **Gap Principal**: Ativação da integração via `VITE_USE_API=true` e validação
+
+**Riscos Identificados:**
+- Diferenças entre modelos frontend/backend (campo `id` vs `_id`)
+- Possíveis incompatibilidades de formato de data
+- Tratamento inadequado de erros HTTP
+- Falta de configuração das credenciais da OMS
+
+**Primeira Tarefa Crítica:**
+Configurar `.env` com `VITE_USE_API=true` e testar o endpoint `/api/health` para validar se a integração básica funciona.

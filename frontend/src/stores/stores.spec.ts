@@ -23,7 +23,7 @@ describe('Pinia stores', () => {
     const first = collabs.items[0]
     const prevStatus = first.status
     await collabs.toggleStatus(first.id)
-    const now = collabs.items.find(c => c.id === first.id)!
+    const now = collabs.items.find((c) => c.id === first.id)!
     expect(now.status).not.toBe(prevStatus)
   })
 
@@ -31,20 +31,31 @@ describe('Pinia stores', () => {
     const certs = useCertificatesStore()
     await certs.fetchAll()
     const before = certs.count
-    await certs.create({ collaboratorId: 'c1', startDate: '2025-01-10', endDate: '2025-01-12', days: 3, diagnosis: 'Test' })
+    await certs.create({
+      collaboratorId: 'c1',
+      startDate: '2025-01-10',
+      endDate: '2025-01-12',
+      days: 3,
+      diagnosis: 'Test',
+    })
     expect(certs.count).toBe(before + 1)
     const created = certs.items[certs.items.length - 1]
     await certs.cancel(created.id)
-    expect(certs.items.find(c => c.id === created.id)?.status).toBe('cancelled')
+    expect(certs.items.find((c) => c.id === created.id)?.status).toBe(
+      'cancelled',
+    )
   })
 })
 
 describe('date-range helpers', () => {
   it('calculates inclusive day spans and clamps', () => {
     expect(daysBetweenInclusive('2025-01-01', '2025-01-05')).toBe(5)
-    const [s, e] = clampDateRange(new Date('2025-01-01'), new Date('2025-01-05'), new Date('2025-01-03'))
-    expect(s.toISOString().slice(0,10)).toBe('2025-01-03')
-    expect(e.toISOString().slice(0,10)).toBe('2025-01-05')
+    const [s, e] = clampDateRange(
+      new Date('2025-01-01'),
+      new Date('2025-01-05'),
+      new Date('2025-01-03'),
+    )
+    expect(s.toISOString().slice(0, 10)).toBe('2025-01-03')
+    expect(e.toISOString().slice(0, 10)).toBe('2025-01-05')
   })
 })
-

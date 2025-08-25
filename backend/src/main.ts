@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { MongoExceptionFilter } from './common/filters/mongo-exception.filter.js';
 import { AxiosExceptionFilter } from './common/filters/axios-exception.filter.js';
 import { SecurityHeadersMiddleware } from './common/middleware/security-headers.middleware.js';
+import { RequestContextMiddleware } from './common/middleware/request-context.middleware.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,8 +13,8 @@ async function bootstrap() {
   const origins = (process.env.CORS_ORIGINS || '')
     .split(',')
     .map((s) => s.trim())
-    .filter(Boolean)
-  const isProd = process.env.NODE_ENV === 'production'
+    .filter(Boolean);
+  const isProd = process.env.NODE_ENV === 'production';
   app.enableCors({
     origin: origins.length ? origins : isProd ? false : true,
     credentials: true,
@@ -22,21 +23,27 @@ async function bootstrap() {
   app.useGlobalFilters(new MongoExceptionFilter());
   app.useGlobalFilters(new AxiosExceptionFilter());
   // Note: URI versioning removed to keep routes at /api/* without /v1
+  // Request context (correlation id)
+  app.use(new RequestContextMiddleware().use);
   // Security headers
   app.use(new SecurityHeadersMiddleware().use);
 
   // Swagger (dev only)
-  const enableSwagger = process.env.NODE_ENV !== 'production' || process.env.SWAGGER === 'true'
+  const enableSwagger =
+    process.env.NODE_ENV !== 'production' || process.env.SWAGGER === 'true';
   if (enableSwagger) {
-    const { SwaggerModule, DocumentBuilder } = await import('@nestjs/swagger')
+    const { SwaggerModule, DocumentBuilder } = await import('@nestjs/swagger');
     const config = new DocumentBuilder()
       .setTitle('Atestados API')
       .setDescription('API de atestados médicos')
       .setVersion('1.0.0')
-      .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'bearer')
-      .build()
-    const doc = SwaggerModule.createDocument(app, config)
-    SwaggerModule.setup('api/docs', app, doc)
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'bearer',
+      )
+      .build();
+    const doc = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, doc);
   }
 
   const port = process.env.API_PORT || 3000;

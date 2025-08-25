@@ -26,11 +26,15 @@ Este repositório inicializa um monorepo simples com **NestJS + TypeScript (API)
    - Senha padrão (seed): `dev-hash` — o script transforma em hash bcrypt automaticamente.
 
 ## Credenciais da OMS (ICD API)
-- Registre-se em: https://icd.who.int/icdapi
-- Documentação de autenticação: https://icd.who.int/docs/icd-api/API-Authentication/
-- Token endpoint: https://icdaccessmanagement.who.int/connect/token
-
-Preencha as variáveis `WHO_ICD_CLIENT_ID` e `WHO_ICD_CLIENT_SECRET` no `.env`.
+- Passo a passo detalhado: `docs/WHO-ICD-Setup.md`
+- Resumo rápido:
+  - Registre-se em: https://icd.who.int/icdapi
+  - Leia a autenticação: https://icd.who.int/docs/icd-api/API-Authentication/
+  - Token endpoint: https://icdaccessmanagement.who.int/connect/token
+  - Preencha no `.env`:
+    - `WHO_ICD_CLIENT_ID`, `WHO_ICD_CLIENT_SECRET`
+    - (opcional) `WHO_ICD_RELEASE`, `WHO_ICD_LANGUAGE`
+  - Respeite limites: `ICD_RATE_LIMIT_RPM` (por IP) evita estouro de cota.
 
 ## Scripts úteis
 - Subir containers: `docker compose up -d --build`
@@ -52,10 +56,25 @@ Preencha as variáveis `WHO_ICD_CLIENT_ID` e `WHO_ICD_CLIENT_SECRET` no `.env`.
 - Rotas protegidas exigem Bearer; rotas de admin usam role `admin`.
 - Rate limit (por IP): login `AUTH_RATE_LIMIT_RPM` (padrão 30 rpm).
 
+## Executando em produção (compose)
+- Suba com nginx servindo o frontend e proxy `/api`:
+  ```bash
+  docker compose -f docker-compose.prod.yml up -d --build
+  ```
+  - Web: http://localhost:8080
+  - API: http://localhost:3000/api/health
+
+## Troubleshooting
+- API não sobe: verifique `MONGODB_URI`, `REDIS_URL`, e logs `docker compose logs -f api`.
+- CORS em dev: confirme `CORS_ORIGINS` no `.env` inclui `http://localhost:5173`.
+- WHO 401/429: revalide credenciais e reduza chamadas; o app faz fallback ao cache local.
+- Proxy em dev: `VITE_DEV_PROXY_TARGET` deve apontar a `http://localhost:3000`.
+
 ## Docs adicionais
 - Guia do backend: `backend/README.md`
 - Exemplos de uso de API: `docs/API-usage.md`
 - Códigos de erro e payloads: `docs/Errors.md`
+- Fluxos do usuário (com screenshots): `docs/User-Flows.md`
 
 ## Estrutura
 ```

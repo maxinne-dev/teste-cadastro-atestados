@@ -13,4 +13,3 @@ describe('mask directive', () => {
     expect((input.element as HTMLInputElement).value).toBe('529.982.247-25')
   })
 })
-
