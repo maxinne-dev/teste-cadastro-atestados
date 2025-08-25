@@ -10,7 +10,8 @@ import App from './App.vue'
 
 describe('New Certificate attachments placeholder', () => {
   it('renders attachments placeholder section', async () => {
-    localStorage.setItem('token', 'dev')
+    const { getConfiguredTokenKey } = await import('./services/token')
+    localStorage.setItem(getConfiguredTokenKey(), 'test')
     await router.push('/certificates/new')
     await router.isReady()
     const wrapper = mount(App, {

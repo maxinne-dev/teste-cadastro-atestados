@@ -12,7 +12,8 @@ import './styles/global.css'
 
 describe('App Shell & Layout', () => {
   beforeEach(async () => {
-    localStorage.setItem('token', 'dev')
+    const { getConfiguredTokenKey } = await import('./services/token')
+    localStorage.setItem(getConfiguredTokenKey(), 'test')
     // Ensure desktop width for sidebar toggle
     Object.defineProperty(window, 'innerWidth', {
       value: 1200,

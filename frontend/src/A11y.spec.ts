@@ -10,7 +10,8 @@ import ConfirmDialog from './components/ConfirmDialog.vue'
 
 describe('A11y basics', () => {
   it('renders skip link in App', async () => {
-    localStorage.setItem('token', 'dev')
+    const { getConfiguredTokenKey } = await import('./services/token')
+    localStorage.setItem(getConfiguredTokenKey(), 'test')
     await router.push('/')
     await router.isReady()
     const wrap = mount(App, { global: { plugins: [router, createPinia()] } })

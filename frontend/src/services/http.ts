@@ -1,13 +1,14 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
+import { clearAllTokens, getToken } from './token'
 
 // Environment helpers (Vite only exposes variables prefixed with VITE_)
 const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) || '/api'
-const USE_API = (import.meta.env.VITE_USE_API as string | undefined) === 'true'
+// Force API usage always in runtime
+const USE_API = true
 const TIMEOUT = Number(import.meta.env.VITE_HTTP_TIMEOUT_MS ?? 10000)
 const RETRY_ATTEMPTS = Number(import.meta.env.VITE_HTTP_RETRY_ATTEMPTS ?? 0)
 const RETRY_DELAY_MS = Number(import.meta.env.VITE_HTTP_RETRY_DELAY_MS ?? 300)
-const TOKEN_KEY = import.meta.env.VITE_AUTH_TOKEN_KEY || 'auth_token'
 
 // Normalized error shape used across the app
 export interface HttpError {
@@ -94,10 +95,12 @@ function createHttpClient(): AxiosInstance {
 
   // Request interceptor: attach auth token if present
   instance.interceptors.request.use((config) => {
-    const token = localStorage.getItem(TOKEN_KEY)
+    const token = getToken()
     if (token) {
       config.headers = config.headers || {}
       config.headers['Authorization'] = `Bearer ${token}`
+    } else {
+      console.warn('No auth token found in localStorage')
     }
     return config
   })
@@ -109,8 +112,11 @@ function createHttpClient(): AxiosInstance {
       const normalized = normalizeError(error)
       // Automatic handling for 401 -> session invalid
       if (normalized.status === 401) {
-        // Clear token so router guard can redirect to login
-        localStorage.removeItem(TOKEN_KEY)
+        // Clear all auth tokens using the centralized function
+        clearAllTokens()
+        
+        // Clear auth store and redirect to login
+        handleSessionExpiry()
       }
       return Promise.reject(normalized)
     },
@@ -164,9 +170,8 @@ export async function httpDelete<T = unknown>(
   return http.delete<T>(url, config).then((r) => r.data)
 }
 
-// Helper to determine whether real API should be used.
 export function isApiEnabled(): boolean {
-  return USE_API === true
+  return true
 }
 
 // Type augmentation for import.meta.env so TS knows about our keys
@@ -179,6 +184,49 @@ declare global {
     readonly VITE_HTTP_TIMEOUT_MS?: string
     readonly VITE_HTTP_RETRY_ATTEMPTS?: string
     readonly VITE_HTTP_RETRY_DELAY_MS?: string
+  }
+}
+
+// Global session expiry handler
+// Uses dynamic imports to avoid circular dependencies
+async function handleSessionExpiry() {
+  try {
+    console.log('Session expired (401), clearing auth state and redirecting to login')
+    
+    // Show user-friendly notification about session expiry
+    try {
+      const { useNotify } = await import('../composables/useNotify')
+      const { notifyInfo } = useNotify()
+      notifyInfo('Sessão expirada', 'Por favor, faça login novamente')
+    } catch {
+      // Notification failed, but continue with cleanup
+    }
+    
+    // Dynamic import to avoid circular dependency issues
+    const { useAuthStore } = await import('../stores/auth')
+    const authStore = useAuthStore()
+    
+    // Clear auth store state
+    authStore.token = null
+    authStore.user = null
+    
+    // Get current router instance and redirect
+    // We use window.location instead of router to avoid dependency issues
+    if (typeof window !== 'undefined') {
+      // Only redirect if we're not already on the login page
+      if (!window.location.pathname.includes('/login')) {
+        // Add a small delay to allow the toast notification to show
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 1500)
+      }
+    }
+  } catch (error) {
+    console.error('Error handling session expiry:', error)
+    // Fallback: force page reload to login
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login'
+    }
   }
 }
 

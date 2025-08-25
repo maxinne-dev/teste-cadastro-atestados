@@ -8,7 +8,8 @@ import App from '../App.vue'
 
 describe('Polished UX', () => {
   it('shows EmptyState on Collaborators when no matches', async () => {
-    localStorage.setItem('token', 'dev')
+    const { getConfiguredTokenKey } = await import('../services/token')
+    localStorage.setItem(getConfiguredTokenKey(), 'test')
     await router.push('/collaborators')
     await router.isReady()
     const wrapper = mount(App, {
@@ -27,7 +28,8 @@ describe('Polished UX', () => {
   })
 
   it('shows Banner on New Certificate when invalid submit', async () => {
-    localStorage.setItem('token', 'dev')
+    const { getConfiguredTokenKey } = await import('../services/token')
+    localStorage.setItem(getConfiguredTokenKey(), 'test')
     await router.push('/certificates/new')
     await router.isReady()
     const wrapper = mount(App, {

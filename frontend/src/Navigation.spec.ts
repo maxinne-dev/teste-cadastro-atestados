@@ -8,7 +8,8 @@ import Aura from '@primeuix/themes/aura'
 
 describe('Navigation via sidebar and direct URLs', () => {
   beforeEach(async () => {
-    localStorage.setItem('token', 'dev')
+    const { getConfiguredTokenKey } = await import('./services/token')
+    localStorage.setItem(getConfiguredTokenKey(), 'test')
     await router.push('/')
     await router.isReady()
   })

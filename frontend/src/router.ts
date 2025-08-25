@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, createMemoryHistory } from 'vue-router'
+import { getToken } from './services/token'
 import Login from './Login.vue'
 import Dashboard from './Dashboard.vue'
 import Certificates from './Certificates.vue'
@@ -82,8 +83,9 @@ const router = createRouter({
 
 // auth guard using token presence
 router.beforeEach((to, _from, next) => {
-  const authed = !!(localStorage.getItem('auth_token') || localStorage.getItem('token'))
-  console.log('Router guard:', { to: to.path, authed, token: localStorage.getItem('token') })
+  const token = getToken()
+  const authed = !!token
+  console.log('Router guard:', { to: to.path, authed })
   
   if (to.meta.requiresAuth && !authed) {
     console.log('Redirecting to login - not authenticated')

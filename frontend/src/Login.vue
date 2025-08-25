@@ -59,13 +59,14 @@ const remember = ref(false)
 const errors = ref<{ email?: string; password?: string }>({})
 const formError = ref(false)
 
+const auth = useAuthStore()
+const router = useRouter()
+
 const canSubmit = computed(
   () => /.+@.+\..+/.test(email.value) && password.value.length > 0,
 )
 
 async function onSubmit() {
-  const auth = useAuthStore()
-  const router = useRouter()
   errors.value = {}
   if (!/.+@.+\..+/.test(email.value))
     errors.value.email = 'Informe um email válido'
@@ -75,16 +76,24 @@ async function onSubmit() {
     return
   }
   try {
+    console.log('Attempting login with:', email.value)
     await auth.login(email.value, password.value)
+    // Optionally inspect configured token for debug
+    try {
+      const { getConfiguredTokenKey } = await import('./services/token')
+      console.log('Login successful, token set under key:', getConfiguredTokenKey())
+    } catch {}
+    
     if (remember.value) localStorage.setItem('remember', '1')
     
     // Ensure token is properly set before navigation
     await new Promise(resolve => setTimeout(resolve, 10))
     
     // Use replace instead of push to avoid back button going to login
+    console.log('Navigating to dashboard...')
     await router.replace('/')
   } catch (e) {
-    console.error('Login error:', e)
+    console.error('Login failed:', e)
     formError.value = true
   }
 }

@@ -60,6 +60,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import Drawer from 'primevue/drawer'
 import AppTopbar from '../components/AppTopbar.vue'
 import AppSidebar from '../components/AppSidebar.vue'
@@ -67,6 +68,7 @@ import AppBreadcrumbs from '../components/AppBreadcrumbs.vue'
 import AppFooter from '../components/AppFooter.vue'
 
 const router = useRouter()
+const auth = useAuthStore()
 const route = useRoute()
 
 const mobileSidebarVisible = ref(false)
@@ -86,8 +88,8 @@ function onNavigate(to?: string) {
   if (to) router.push(to)
 }
 
-function logout() {
-  localStorage.removeItem('token')
+async function logout() {
+  await auth.logout()
   router.push({ name: 'login' })
 }
 
