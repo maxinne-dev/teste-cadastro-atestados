@@ -36,7 +36,7 @@ describe('MedicalCertificatesService', () => {
   it('create converts collaboratorId to ObjectId', async () => {
     const id = new Types.ObjectId().toString();
     await service.create({
-      collaboratorId: id,
+      collaboratorId: id as any,
       startDate: new Date('2025-01-01'),
       endDate: new Date('2025-01-02'),
       days: 2,

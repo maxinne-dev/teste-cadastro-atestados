@@ -52,7 +52,7 @@
       class="user-btn"
       aria-haspopup="menu"
       :aria-controls="userMenuId"
-      :aria-expanded="String(userMenuOpen)"
+      :aria-expanded="userMenuOpen"
       @click="toggleUserMenu"
     >
       <Avatar
@@ -92,6 +92,7 @@ const emit = defineEmits<{
   (e: 'logout'): void
   (e: 'toggle-sidebar'): void
   (e: 'open-mobile-sidebar'): void
+  (e: 'new-certificate'): void
 }>()
 
 function toggleUserMenu(event: Event) {

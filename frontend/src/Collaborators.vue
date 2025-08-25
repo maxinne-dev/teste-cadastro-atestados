@@ -371,7 +371,7 @@ const tab = ref<'profile' | 'certs'>('profile')
 const certsOfCurrent = computed(() =>
   current.value ? certStore.byCollaborator(current.value.id || '') : [],
 )
-const editing = reactive<Collaborator>({
+const editing = reactive<Collaborator & { department: string }>({
   id: '',
   fullName: '',
   cpf: '',
@@ -409,7 +409,10 @@ function view(row: Collaborator) {
   drawer.value = true
 }
 function edit(row: Collaborator) {
-  Object.assign(editing, { ...row, department: row.department || '' })
+  Object.assign(editing, { 
+    ...row, 
+    department: row.department ?? '' 
+  })
   editor.value = true
 }
 function validate() {
