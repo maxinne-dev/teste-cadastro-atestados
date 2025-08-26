@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { ValidationPipe } from '@nestjs/common';
