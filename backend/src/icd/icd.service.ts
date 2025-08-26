@@ -96,13 +96,37 @@ export class IcdService {
       }
       const dest = res.data?.destinationEntities ?? [];
       const mapped = mapResults(dest).filter((r) => r.code && r.title);
+      // Deduplicate by code to avoid race conditions during parallel upserts
+      const uniqueCodes = new Map<string, { code: string; title: string }>();
+      mapped.forEach((r) => {
+        uniqueCodes.set(r.code, r);
+      });
+      const deduplicated = Array.from(uniqueCodes.values());
+
       // Upsert in cache (best-effort)
-      await Promise.all(
-        mapped.map((r) => this.cache.upsert(r.code, r.title, this.release)),
-      );
+      const upsertPromises = deduplicated.map(async (r) => {
+        try {
+          return await this.cache.upsert(r.code, r.title, this.release);
+        } catch (err: any) {
+          // Log duplicate key errors at debug level since they're expected in concurrent scenarios
+          if (err?.code === 11000 || err?.message?.includes('E11000')) {
+            this.logger.debug(`Duplicate key ignored for ICD code ${r.code}`);
+          } else {
+            this.logger.warn(
+              `Failed to cache ICD code ${r.code}:`,
+              err.message || err,
+            );
+          }
+          return null;
+        }
+      });
+      await Promise.allSettled(upsertPromises);
       return mapped;
     } catch (err) {
-      this.logger.error('ICD search failed', err as any);
+      this.logger.error(
+        `ICD search failed for release ${this.release}`,
+        err as any,
+      );
       // Fallback to local cache
       const cached = await this.cache.search(term, 10);
       return cached.map((c: any) => ({ code: c.code, title: c.title }));

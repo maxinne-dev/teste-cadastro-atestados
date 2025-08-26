@@ -29,8 +29,12 @@ export class AxiosExceptionFilter implements ExceptionFilter {
     const status =
       (maybeAxios.response?.status as number) || HttpStatus.BAD_GATEWAY;
     const message = exception.message || 'Upstream request failed';
-    const reqId = (request && (request.id || request.headers?.['x-request-id'])) || null;
-    const upstreamCode = (maybeAxios.response?.data as any)?.code || (maybeAxios as any)?.code || undefined;
+    const reqId =
+      (request && (request.id || request.headers?.['x-request-id'])) || null;
+    const upstreamCode =
+      (maybeAxios.response?.data as any)?.code ||
+      (maybeAxios as any)?.code ||
+      undefined;
 
     // Structured error log
     // eslint-disable-next-line no-console

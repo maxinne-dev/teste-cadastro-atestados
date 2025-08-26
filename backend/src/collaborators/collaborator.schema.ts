@@ -22,7 +22,12 @@ export class Collaborator {
   @Prop({ type: String })
   department?: string;
 
-  @Prop({ type: String, default: 'active', enum: ['active', 'inactive'], index: true })
+  @Prop({
+    type: String,
+    default: 'active',
+    enum: ['active', 'inactive'],
+    index: true,
+  })
   status!: 'active' | 'inactive';
 }
 

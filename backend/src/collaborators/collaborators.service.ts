@@ -54,7 +54,11 @@ export class CollaboratorsService {
       q.status = status;
     }
     const [results, total] = await Promise.all([
-      this.model.find(q).skip(Math.max(0, offset)).limit(Math.max(0, limit)).exec(),
+      this.model
+        .find(q)
+        .skip(Math.max(0, offset))
+        .limit(Math.max(0, limit))
+        .exec(),
       this.model.countDocuments(q).exec(),
     ]);
     return { results, total };
@@ -91,7 +95,9 @@ export class CollaboratorsService {
 
   async updateFields(
     cpf: string,
-    updates: Partial<Pick<Collaborator, 'fullName' | 'birthDate' | 'position' | 'department'>>,
+    updates: Partial<
+      Pick<Collaborator, 'fullName' | 'birthDate' | 'position' | 'department'>
+    >,
   ) {
     const normalized = normalizeCpf(cpf);
     await this.model.updateOne({ cpf: normalized }, { $set: updates }).exec();

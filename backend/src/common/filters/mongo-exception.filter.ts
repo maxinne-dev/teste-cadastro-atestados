@@ -1,4 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 
 @Catch()
 export class MongoExceptionFilter implements ExceptionFilter {
@@ -14,7 +20,9 @@ export class MongoExceptionFilter implements ExceptionFilter {
 
     // Duplicate key error (MongoServerError 11000)
     if (exception && (exception.code === 11000 || exception?.errno === 11000)) {
-      const key = Object.keys(exception.keyValue || exception.keyPattern || {})[0];
+      const key = Object.keys(
+        exception.keyValue || exception.keyPattern || {},
+      )[0];
       const value = key ? (exception.keyValue?.[key] ?? '') : undefined;
       const message = key
         ? `Duplicate ${key}: ${value}`
@@ -53,9 +61,12 @@ export class MongoExceptionFilter implements ExceptionFilter {
           requestId: request?.id || request?.headers?.['x-request-id'] || null,
         }),
       );
-      const payload = typeof res === 'object'
-        ? (reqId ? { ...res, requestId: reqId } : res)
-        : res;
+      const payload =
+        typeof res === 'object'
+          ? reqId
+            ? { ...res, requestId: reqId }
+            : res
+          : res;
       return response.status(status).json(payload);
     }
 

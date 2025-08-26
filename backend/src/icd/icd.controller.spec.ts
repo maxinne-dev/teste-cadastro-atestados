@@ -13,8 +13,8 @@ describe('IcdController', () => {
     const ctrl = module.get(IcdController);
     // limit default 60/min; we simulate with env override
     process.env.ICD_RATE_LIMIT_RPM = '2';
-    await ctrl.search({q: 'ab'});
-    await ctrl.search({q: 'ab'});
-    await expect(ctrl.search({q: 'ab'})).rejects.toBeInstanceOf(Error);
+    await ctrl.search({ q: 'ab' });
+    await ctrl.search({ q: 'ab' });
+    await expect(ctrl.search({ q: 'ab' })).rejects.toBeInstanceOf(Error);
   });
 });

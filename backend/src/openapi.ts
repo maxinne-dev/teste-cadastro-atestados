@@ -19,7 +19,9 @@ export async function buildOpenApiDocument() {
   } else {
     try {
       const { Test } = await import('@nestjs/testing');
-      const { getConnectionToken, getModelToken } = await import('@nestjs/mongoose');
+      const { getConnectionToken, getModelToken } = await import(
+        '@nestjs/mongoose'
+      );
       const builder = Test.createTestingModule({ imports: [AppModule] })
         .overrideProvider(getConnectionToken())
         .useValue({ model: () => ({}), close: async () => {} })

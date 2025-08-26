@@ -8,7 +8,10 @@ export class SearchCollaboratorsDto {
   @IsString()
   q?: string;
 
-  @ApiPropertyOptional({ enum: ['active', 'inactive'], description: 'Status do colaborador' })
+  @ApiPropertyOptional({
+    enum: ['active', 'inactive'],
+    description: 'Status do colaborador',
+  })
   @IsOptional()
   @IsEnum(['active', 'inactive'])
   status?: 'active' | 'inactive';

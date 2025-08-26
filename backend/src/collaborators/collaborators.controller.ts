@@ -77,7 +77,10 @@ export class CollaboratorsController {
     @Param() params: CpfParamDto,
     @Body() body: UpdateCollaboratorDto,
   ) {
-    const updated = await this.collaborators.updateFields(params.cpf, body as any);
+    const updated = await this.collaborators.updateFields(
+      params.cpf,
+      body as any,
+    );
     if (!updated) throw new NotFoundException('Collaborator not found');
     await this.audit.record({
       action: 'collaborator.update',

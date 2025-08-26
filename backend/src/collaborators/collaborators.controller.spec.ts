@@ -13,7 +13,10 @@ describe('CollaboratorsController', () => {
       create: jest.fn(async (dto: any) => ({ _id: '1', ...dto })),
       findByCpf: jest.fn(async () => null),
       searchByNameWithTotal: jest.fn(async () => ({ results: [], total: 0 })),
-      searchByNameWithTotalSorted: jest.fn(async () => ({ results: [], total: 0 })),
+      searchByNameWithTotalSorted: jest.fn(async () => ({
+        results: [],
+        total: 0,
+      })),
       setStatus: jest.fn(async () => null),
     };
 
@@ -73,7 +76,12 @@ describe('CollaboratorsController', () => {
       results: [],
       total: 0,
     });
-    await controller.search({ q: '', limit: 10, offset: 0, status: 'active' } as any);
+    await controller.search({
+      q: '',
+      limit: 10,
+      offset: 0,
+      status: 'active',
+    } as any);
     expect(service.searchByNameWithTotal).toHaveBeenCalledWith(
       '',
       10,

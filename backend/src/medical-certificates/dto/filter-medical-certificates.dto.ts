@@ -54,7 +54,10 @@ export class FilterMedicalCertificatesDto {
   @Max(100)
   limit?: number = 20;
 
-  @ApiPropertyOptional({ enum: ['issueDate', 'startDate', 'endDate', 'icdCode'], default: 'issueDate' })
+  @ApiPropertyOptional({
+    enum: ['issueDate', 'startDate', 'endDate', 'icdCode'],
+    default: 'issueDate',
+  })
   @IsOptional()
   @IsEnum(['issueDate', 'startDate', 'endDate', 'icdCode'])
   sortBy?: 'issueDate' | 'startDate' | 'endDate' | 'icdCode' = 'issueDate';

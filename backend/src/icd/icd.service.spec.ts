@@ -61,7 +61,6 @@ describe('IcdService', () => {
     expect(res).toEqual([{ code: 'B00', title: 'Herpesviral infection' }]);
   });
 
-  // eslint-disable-next-line no-unexpected-multiline
   it('retries once on 401 then succeeds', async () => {
     (axios.post as unknown as jest.Mock).mockResolvedValue({
       data: { access_token: 't', expires_in: 3600 },
@@ -73,5 +72,58 @@ describe('IcdService', () => {
       });
     const res = await service.search('cho');
     expect(res).toEqual([{ code: 'A00', title: 'Cholera' }]);
+  });
+
+  it('handles duplicate codes in search results without race conditions', async () => {
+    (axios.post as unknown as jest.Mock).mockResolvedValue({
+      data: { access_token: 't', expires_in: 3600 },
+    });
+    // Mock WHO API returning duplicate codes
+    (axios.get as unknown as jest.Mock).mockResolvedValue({
+      data: {
+        destinationEntities: [
+          { code: 'J06.9', title: 'URI, unspecified' },
+          { code: 'J06.9', title: 'URI, unspecified' }, // duplicate
+          { code: 'A00', title: 'Cholera' },
+          { code: 'A00', title: 'Cholera variation' }, // duplicate with diff title
+        ],
+      },
+    });
+
+    const res = await service.search('infection');
+    // Should return original results (including duplicates)
+    expect(res.length).toBe(4);
+    // But should only call upsert twice (once per unique code)
+    expect(cache.upsert).toHaveBeenCalledTimes(2);
+    expect(cache.upsert).toHaveBeenCalledWith(
+      'J06.9',
+      'URI, unspecified',
+      '2024-01',
+    );
+    expect(cache.upsert).toHaveBeenCalledWith(
+      'A00',
+      'Cholera variation',
+      '2024-01',
+    ); // Last occurrence wins
+  });
+
+  it('continues to return results even when cache upsert fails', async () => {
+    (axios.post as unknown as jest.Mock).mockResolvedValue({
+      data: { access_token: 't', expires_in: 3600 },
+    });
+    (axios.get as unknown as jest.Mock).mockResolvedValue({
+      data: {
+        destinationEntities: [{ code: 'B00', title: 'Herpesviral infection' }],
+      },
+    });
+    // Mock upsert to throw duplicate key error
+    (cache.upsert as jest.Mock).mockRejectedValue({
+      code: 11000,
+      message: 'E11000 duplicate key',
+    });
+
+    const res = await service.search('herpes');
+    // Should still return results even if caching fails
+    expect(res).toEqual([{ code: 'B00', title: 'Herpesviral infection' }]);
   });
 });

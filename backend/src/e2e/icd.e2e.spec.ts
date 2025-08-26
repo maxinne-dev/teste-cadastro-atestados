@@ -58,8 +58,8 @@ describe('E2E: ICD search', () => {
     // eslint-disable-next-line no-unexpected-multiline
     (axios.post as jest.Mock).mockResolvedValue({
       data: { access_token: 't', expires_in: 3600 },
-    })
-    ;(axios.get as jest.Mock).mockResolvedValue({
+    });
+    (axios.get as jest.Mock).mockResolvedValue({
       data: {
         destinationEntities: [
           { theCode: 'A00', title: { '@value': 'Cholera' } },

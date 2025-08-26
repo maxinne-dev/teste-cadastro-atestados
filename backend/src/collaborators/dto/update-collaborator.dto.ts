@@ -27,4 +27,3 @@ export class UpdateCollaboratorDto {
   @MaxLength(120)
   department?: string;
 }
-
