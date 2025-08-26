@@ -39,7 +39,7 @@ jobs:
 
       - name: Generate OpenAPI YAML
         env:
-          MONGODB_URI: xxxxyyyzzz
+          MONGODB_URI: mongodb://localhost:0/invalid?serverSelectionTimeoutMS=1&connectTimeoutMS=1&socketTimeoutMS=1
           JWT_SECRET: xxxxyyyzzz
         run: npm run openapi:yaml
 
