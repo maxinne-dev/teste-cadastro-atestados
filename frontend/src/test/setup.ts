@@ -1,7 +1,7 @@
 // Global test setup for Vitest
 // Register global directives, mocks, etc.
 import { config } from '@vue/test-utils'
-import { beforeEach, afterEach } from 'vitest'
+import { afterEach } from 'vitest'
 import mask from '../directives/mask'
 
 config.global.directives = {
@@ -11,9 +11,6 @@ config.global.directives = {
 
 // Clean up after each test
 afterEach(() => {
-  // Clear any lingering timers
-  clearTimeout();
-  clearInterval();
   // Clear DOM
   document.body.innerHTML = '';
   // Clear localStorage
@@ -36,7 +33,7 @@ console.error = (...args: any[]) => {
 }
 
 // Handle unhandled rejections gracefully
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason, ) => {
   // Only log significant errors, suppress test cleanup issues
   const reasonStr = reason?.toString() || ''
   if (!reasonStr.includes('test') && !reasonStr.includes('cleanup')) {
