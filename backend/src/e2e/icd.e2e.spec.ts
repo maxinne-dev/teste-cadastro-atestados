@@ -36,9 +36,13 @@ describe('E2E: ICD search', () => {
       .overrideProvider(IcdCacheService)
       .useValue({
         upsert: jest.fn(async () => ({})),
-        search: jest.fn(async () => [
-          { code: 'B00', title: 'Herpesviral infection' },
-        ]),
+        search: jest.fn()
+          .mockResolvedValueOnce([
+            { code: 'B00', title: 'Herpesviral infection', version: '10' },
+          ])
+          .mockResolvedValueOnce([
+            { code: 'B00', title: 'Herpesviral infection', version: '11' },
+          ]),
       })
       .compile();
 
@@ -86,7 +90,27 @@ describe('E2E: ICD search', () => {
       .get('/api/icd/search?q=herp')
       .expect(200);
     expect(res.body.results).toEqual([
-      { code: 'B00', title: 'Herpesviral infection' },
+      { code: 'B00', title: 'Herpesviral infection', version: '10' },
+      { code: 'B00', title: 'Herpesviral infection', version: '11' },
     ]);
+  });
+
+  it('GET /api/icd/search with version parameter', async () => {
+    (axios.post as jest.Mock).mockResolvedValue({
+      data: { access_token: 't', expires_in: 3600 },
+    });
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: {
+        destinationEntities: [
+          { theCode: 'A00', title: { '@value': 'Cholera' } },
+        ],
+      },
+    });
+
+    const res = await request(app.getHttpServer())
+      .get('/api/icd/search?q=cholera&version=10')
+      .expect(200);
+    expect(res.body.results.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.results[0]).toHaveProperty('version', '10');
   });
 });

@@ -74,16 +74,21 @@ Rotas principais
 ```
 
 ## Integração ICD (OMS)
-- Endpoint: `GET /api/icd/search?q=termo` (público)
+- Endpoint: `GET /api/icd/search?q=termo&version=10|11` (público)
+- Suporta ICD-10 e ICD-11 simultaneamente, com preferência para ICD-10 (Brasil)
 - OAuth2 Client Credentials contra `https://icdaccessmanagement.who.int/connect/token`.
 - Variáveis de ambiente:
   - `WHO_ICD_CLIENT_ID` e `WHO_ICD_CLIENT_SECRET` (obrigatórias para chamadas à OMS)
   - `WHO_ICD_BASE_URL` (padrão: `https://id.who.int`)
   - `WHO_ICD_RELEASE` (padrão: `2024-01`)
   - `WHO_ICD_LANGUAGE` (opcional; padrão `en`)
+  - `WHO_ICD_VERSIONS` (padrão: `10,11` - versões suportadas)
+  - `WHO_ICD_PREFERRED_VERSION` (padrão: `10` - versão preferencial para o Brasil)
   - `ICD_RATE_LIMIT_RPM` (padrão: `60`)
 - Comportamento:
-  - Cache local: resultados válidos são upsertados na coleção `icdcodes` (serviço `IcdCacheService`).
+  - Cache local: resultados válidos são upsertados na coleção `icdcodes` com campo `version` (serviço `IcdCacheService`).
+  - Por padrão busca em ambas as versões (ICD-10 e ICD-11), com preferência para a versão configurada em `WHO_ICD_PREFERRED_VERSION`.
+  - Parâmetro `version`: permite buscar apenas uma versão específica (10 ou 11).
   - Tolerância a falhas: se a OMS falhar, faz fallback pesquisando na coleção `icdcodes` por código/título.
   - Renovação de token: token é reutilizado até ~5 min antes da expiração; 401 força refresh e 1 retry.
   - Rate limit: janela em memória por IP com 429 ao exceder.

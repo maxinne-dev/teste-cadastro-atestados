@@ -32,30 +32,31 @@ describe('IcdCacheService', () => {
     await service.upsert(
       'J06.9',
       'Acute upper respiratory infection, unspecified',
+      '11',
       '2024-01',
     );
     expect(model.findOneAndUpdate).toHaveBeenCalled();
     const [filter, update, options] = (model.findOneAndUpdate as jest.Mock).mock
       .calls[0];
-    expect(filter).toEqual({ code: 'J06.9' });
+    expect(filter).toEqual({ code: 'J06.9', version: '11' });
     expect(update.$set.title).toBeDefined();
     expect(options.upsert).toBe(true);
     expect(options.new).toBe(true);
   });
 
   it('findByCode delegates to findOne', async () => {
-    await service.findByCode('J06.9');
-    expect(model.findOne).toHaveBeenCalledWith({ code: 'J06.9' });
+    await service.findByCode('J06.9', '11');
+    expect(model.findOne).toHaveBeenCalledWith({ code: 'J06.9', version: '11' });
   });
 });
 
 describe('IcdCodeSchema indexes', () => {
-  it('has unique code index', () => {
+  it('has unique compound index for code + version', () => {
     const indexes = (IcdCodeSchema as any).indexes();
-    const hasUnique = indexes.some(
+    const hasCompoundUnique = indexes.some(
       ([fields, opts]: [Record<string, any>, Record<string, any>]) =>
-        fields.code === 1 && opts?.unique === true,
+        fields.code === 1 && fields.version === 1 && opts?.unique === true,
     );
-    expect(hasUnique).toBe(true);
+    expect(hasCompoundUnique).toBe(true);
   });
 });

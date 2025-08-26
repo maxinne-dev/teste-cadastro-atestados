@@ -17,4 +17,19 @@ describe('IcdController', () => {
     await ctrl.search({q: 'ab'});
     await expect(ctrl.search({q: 'ab'})).rejects.toBeInstanceOf(Error);
   });
+
+  it('passes version parameter to service', async () => {
+    const icd = { search: jest.fn(async () => []) };
+    const module = await Test.createTestingModule({
+      controllers: [IcdController],
+      providers: [RateLimiterService, { provide: IcdService, useValue: icd }],
+    }).compile();
+    const ctrl = module.get(IcdController);
+    
+    await ctrl.search({q: 'fever', version: '10'});
+    expect(icd.search).toHaveBeenCalledWith('fever', '10');
+    
+    await ctrl.search({q: 'fever'});
+    expect(icd.search).toHaveBeenCalledWith('fever', undefined);
+  });
 });

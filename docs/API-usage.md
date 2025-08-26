@@ -37,13 +37,20 @@ Response example
 ## ICD Search (public)
 
 ```bash
+# Search in all supported versions (both ICD-10 and ICD-11)
 curl -sS 'http://localhost:3000/api/icd/search?q=fever'
-# => { "results": [ { "code":"..", "title":".." }, ... ] }
+# => { "results": [ { "code":"..", "title":"..", "version":"10" }, ... ] }
+
+# Search in specific ICD version
+curl -sS 'http://localhost:3000/api/icd/search?q=fever&version=10'
+# => { "results": [ { "code":"..", "title":"..", "version":"10" }, ... ] }
 ```
 
 Notes
 - Rate limited by the backend via `ICD_RATE_LIMIT_RPM`.
 - Falls back to local cache when WHO API is unavailable.
+- By default searches both ICD-10 and ICD-11; use `version=10` or `version=11` to search specific versions.
+- Results include a `version` field indicating which ICD version each code belongs to.
 
 ## Collaborators (protected)
 
@@ -127,7 +134,8 @@ curl -sS -X POST http://localhost:3000/api/medical-certificates \
     "days": 5,
     "diagnosis": "Resfriado comum",
     "icdCode": "J06.9",
-    "icdTitle": "Acute upper respiratory infection, unspecified"
+    "icdTitle": "Acute upper respiratory infection, unspecified",
+    "icdVersion": "10"
   }'
 
 # List with filters

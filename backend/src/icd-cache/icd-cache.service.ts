@@ -9,27 +9,32 @@ export class IcdCacheService {
     @InjectModel(IcdCode.name) private readonly model: Model<IcdCodeDocument>,
   ) {}
 
-  async upsert(code: string, title: string, release?: string) {
+  async upsert(code: string, title: string, version: string, release?: string) {
     const now = new Date();
     return this.model
       .findOneAndUpdate(
-        { code },
+        { code, version },
         { $set: { title, release, lastFetchedAt: now } },
         { new: true, upsert: true },
       )
       .exec();
   }
 
-  async findByCode(code: string) {
-    return this.model.findOne({ code }).exec();
+  async findByCode(code: string, version?: string) {
+    const query = version ? { code, version } : { code };
+    return this.model.findOne(query).exec();
   }
 
-  async search(term: string, limit = 10) {
+  async search(term: string, limit = 10, version?: string) {
     const trimmed = (term || '').trim();
     if (!trimmed) return [];
     const re = new RegExp(trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    const query: any = { $or: [{ code: re }, { title: re }] };
+    if (version) {
+      query.version = version;
+    }
     return this.model
-      .find({ $or: [{ code: re }, { title: re }] })
+      .find(query)
       .limit(limit)
       .exec();
   }

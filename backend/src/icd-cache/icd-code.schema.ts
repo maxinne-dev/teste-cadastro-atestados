@@ -7,11 +7,14 @@ export type IcdCodeDocument = HydratedDocument<IcdCode>;
 @Schema({ timestamps: true })
 export class IcdCode {
   // Explicitly declare type to avoid decorator metadata ambiguity during OpenAPI build
-  @Prop({ type: String, required: true, unique: true, index: true })
+  @Prop({ type: String, required: true, index: true })
   code!: string;
 
   @Prop({ type: String, required: true })
   title!: string;
+
+  @Prop({ type: String, required: true, enum: ['10', '11'], index: true })
+  version!: string; // '10' for ICD-10, '11' for ICD-11
 
   @Prop({ type: String, required: false })
   release?: string; // e.g., '2024-01'
@@ -25,3 +28,6 @@ export class IcdCode {
 
 export const IcdCodeSchema = SchemaFactory.createForClass(IcdCode);
 applyBaseSchemaOptions(IcdCodeSchema);
+
+// Create compound index for code + version uniqueness
+IcdCodeSchema.index({ code: 1, version: 1 }, { unique: true });
