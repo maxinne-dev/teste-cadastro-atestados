@@ -33,7 +33,7 @@ console.error = (...args: any[]) => {
 }
 
 // Handle unhandled rejections gracefully
-process.on('unhandledRejection', (reason, ) => {
+process.on('unhandledRejection', (reason: unknown) => {
   // Only log significant errors, suppress test cleanup issues
   const reasonStr = reason?.toString() || ''
   if (!reasonStr.includes('test') && !reasonStr.includes('cleanup')) {

@@ -10,7 +10,7 @@ import NotFound from './NotFound.vue'
 
 const router = createRouter({
   history:
-    typeof window === 'undefined' || process.env.NODE_ENV === 'test'
+    typeof window === 'undefined' || import.meta.env.MODE === 'test'
       ? createMemoryHistory()
       : createWebHistory(),
   routes: [
