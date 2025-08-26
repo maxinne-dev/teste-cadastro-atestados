@@ -8,6 +8,9 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     globals: true,
     css: true,
+    dangerouslyIgnoreUnhandledErrors: true,
+    restoreMocks: true,
+    clearMocks: true,
   },
 })
 

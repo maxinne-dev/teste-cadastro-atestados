@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createRouter, createMemoryHistory } from 'vue-router'
+import { createPinia } from 'pinia'
 import AppLayout from './layouts/AppLayout.vue'
 
 // Stub PrimeVue Drawer to expose v-model:visible via attribute
@@ -37,9 +38,10 @@ describe('Viewport behavior (sidebar + layout)', () => {
 
   async function mountLayout() {
     const router = makeRouter()
+    const pinia = createPinia()
     const wrap = mount(AppLayout, {
       global: {
-        plugins: [router],
+        plugins: [router, pinia],
         stubs: { RouterLink: { template: '<a><slot /></a>' } },
       },
       attachTo: document.body,

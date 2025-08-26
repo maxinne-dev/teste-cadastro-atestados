@@ -18,7 +18,10 @@ describe('Mock data updates visible', () => {
     ;(wrap.vm as any).form.collaboratorId = 'c1'
     ;(wrap.vm as any).form.startDate = '2025-05-10'
     ;(wrap.vm as any).form.endDate = '2025-05-12'
+    ;(wrap.vm as any).form.days = 3
     ;(wrap.vm as any).form.diagnosis = 'Teste'
+    ;(wrap.vm as any).form.icdCode = 'J06.9'
+    ;(wrap.vm as any).form.icdTitle = 'Test ICD'
     ;(wrap.vm as any).daysStr = '3'
     await wrap.vm.$nextTick()
     await wrap.find('form').trigger('submit.prevent')

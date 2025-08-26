@@ -4,16 +4,41 @@ import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 import router from '../router'
 import App from '../App.vue'
+import { afterEach } from 'vitest'
 
 describe('Pages render and navigation', () => {
+  let currentWrapper: any = null
+
+  afterEach(async () => {
+    // Clean up mounted components
+    if (currentWrapper) {
+      await currentWrapper.vm.$nextTick()
+      currentWrapper.unmount()
+      currentWrapper = null
+    }
+    // Clear any pending router navigation
+    await router.push('/login')
+    await router.isReady()
+    // Clear localStorage
+    localStorage.clear()
+  })
+
   async function mountApp(path: string) {
+    // Clean up any existing wrapper first
+    if (currentWrapper) {
+      currentWrapper.unmount()
+      currentWrapper = null
+    }
+    
     if (path !== '/login') {
       const { getConfiguredTokenKey } = await import('../services/token')
       localStorage.setItem(getConfiguredTokenKey(), 'test')
     }
+    
     await router.push(path)
     await router.isReady()
-    return mount(App, {
+    
+    const wrapper = mount(App, {
       global: {
         plugins: [
           [PrimeVue, { theme: { preset: Aura } }],
@@ -22,6 +47,9 @@ describe('Pages render and navigation', () => {
         ],
       },
     })
+    
+    currentWrapper = wrapper
+    return wrapper
   }
 
   it('renders Login', async () => {

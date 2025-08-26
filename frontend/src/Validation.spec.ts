@@ -9,7 +9,10 @@ import Collaborators from './Collaborators.vue'
 
 describe('Form Validation (client-only)', () => {
   it('Login disables submit until valid email and password', async () => {
-    const wrap = mount(Login)
+    const pinia = createPinia()
+    const wrap = mount(Login, {
+      global: { plugins: [pinia] }
+    })
     const submit = () => wrap.find('button[type="submit"]')
     expect(submit().attributes('disabled')).toBeDefined()
     await wrap.find('#email').setValue('user@company.com')
