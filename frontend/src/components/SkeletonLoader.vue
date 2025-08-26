@@ -1,5 +1,10 @@
 <template>
-  <div v-for="i in lines" :key="i" class="skeleton" :style="{ height }" />
+  <div
+    v-for="i in lines"
+    :key="i"
+    class="skeleton"
+    :style="{ height }"
+  />
 </template>
 
 <script setup lang="ts">

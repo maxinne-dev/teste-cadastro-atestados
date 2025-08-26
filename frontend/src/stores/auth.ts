@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import * as authApi from '../services/auth'
-import { getToken as getStoredToken, setToken as persistToken, clearAllTokens } from '../services/token'
+import { getToken as getStoredToken, setToken as persistToken } from '../services/token'
 
 type User = { email: string; roles: string[] } | null
 

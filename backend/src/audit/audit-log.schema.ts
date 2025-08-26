@@ -6,22 +6,22 @@ export type AuditLogDocument = HydratedDocument<AuditLog>;
 
 @Schema({ timestamps: true })
 export class AuditLog {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   action!: string;
 
   @Prop({ type: String })
   actorUserId?: string; // stored as string to avoid tight coupling
 
-  @Prop({ required: false })
+  @Prop({ type: String, required: false })
   resource?: string;
 
-  @Prop({ required: false })
+  @Prop({ type: String, required: false })
   targetId?: string;
 
-  @Prop({ required: false })
+  @Prop({ type: String, required: false })
   ip?: string;
 
-  @Prop({ required: false })
+  @Prop({ type: String, required: false })
   userAgent?: string;
 
   @Prop({ type: Date, default: () => new Date(), index: true })

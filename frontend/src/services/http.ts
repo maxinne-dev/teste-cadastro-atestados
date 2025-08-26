@@ -5,7 +5,6 @@ import { clearAllTokens, getToken } from './token'
 const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) || '/api'
 // Force API usage always in runtime
-const USE_API = true
 const TIMEOUT = Number(import.meta.env.VITE_HTTP_TIMEOUT_MS ?? 10000)
 const RETRY_ATTEMPTS = Number(import.meta.env.VITE_HTTP_RETRY_ATTEMPTS ?? 0)
 const RETRY_DELAY_MS = Number(import.meta.env.VITE_HTTP_RETRY_DELAY_MS ?? 300)

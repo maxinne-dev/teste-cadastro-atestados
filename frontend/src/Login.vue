@@ -1,7 +1,12 @@
 <template>
-  <div class="container" style="max-width: 420px; padding-top: 64px">
+  <div
+    class="container"
+    style="max-width: 420px; padding-top: 64px"
+  >
     <Card>
-      <h2 style="margin-top: 0">Entrar</h2>
+      <h2 style="margin-top: 0">
+        Entrar
+      </h2>
       <form @submit.prevent="onSubmit">
         <Banner
           v-if="formError"
@@ -11,7 +16,11 @@
           closable
           @close="formError = false"
         />
-        <FormField label="Email" :error="errors.email" for="email">
+        <FormField
+          label="Email"
+          :error="errors.email"
+          for="email"
+        >
           <BaseInput
             id="email"
             v-model="email"
@@ -19,7 +28,11 @@
             placeholder="email@empresa.com"
           />
         </FormField>
-        <FormField label="Senha" :error="errors.password" for="password">
+        <FormField
+          label="Senha"
+          :error="errors.password"
+          for="password"
+        >
           <BasePassword
             id="password"
             v-model="password"
@@ -34,9 +47,16 @@
             margin-bottom: 16px;
           "
         >
-          <input v-model="remember" type="checkbox" /> Lembrar-me
+          <input
+            v-model="remember"
+            type="checkbox"
+          > Lembrar-me
         </label>
-        <button class="btn primary" type="submit" :disabled="!canSubmit">
+        <button
+          class="btn primary"
+          type="submit"
+          :disabled="!canSubmit"
+        >
           Entrar
         </button>
       </form>
@@ -53,6 +73,7 @@ import BaseInput from './components/base/BaseInput.vue'
 import BasePassword from './components/base/BasePassword.vue'
 import Banner from './components/Banner.vue'
 
+// eslint-disable-next-line no-empty
 const email = ref('')
 const password = ref('')
 const remember = ref(false)
@@ -82,7 +103,9 @@ async function onSubmit() {
     try {
       const { getConfiguredTokenKey } = await import('./services/token')
       console.log('Login successful, token set under key:', getConfiguredTokenKey())
-    } catch {}
+    } catch {
+      // ignore
+    }
     
     if (remember.value) localStorage.setItem('remember', '1')
     

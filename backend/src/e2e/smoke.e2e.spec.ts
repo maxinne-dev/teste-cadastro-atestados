@@ -48,7 +48,7 @@ describe('E2E Smoke: Login → Create Collaborator → Create Certificate → Li
           if (email.toLowerCase() === hrUser.email) return hrUser
           return null
         },
-      } satisfies Partial<UsersService>)
+      } as any)
       // in-memory collaborators
       .overrideProvider(CollaboratorsService)
       .useValue(

@@ -14,7 +14,11 @@
         title="Colaboradores"
         :value="collaboratorCount"
       />
-      <StatCard icon="pi-id-card" title="Atestados" :value="certificateCount" />
+      <StatCard
+        icon="pi-id-card"
+        title="Atestados"
+        :value="certificateCount"
+      />
       <StatCard
         icon="pi-check-circle"
         title="Ativos"
@@ -23,7 +27,9 @@
     </div>
     <div class="mt-4">
       <Card>
-        <h3 style="margin-top: 0">Atividades Recentes</h3>
+        <h3 style="margin-top: 0">
+          Atividades Recentes
+        </h3>
         <ul>
           <li>João Pereira alterou status de colaborador</li>
           <li>Novo atestado para Maria da Silva</li>
@@ -32,8 +38,12 @@
     </div>
     <div class="mt-4">
       <Card>
-        <h3 style="margin-top: 0">Indicadores</h3>
-        <div class="chart-placeholder">Gráfico placeholder</div>
+        <h3 style="margin-top: 0">
+          Indicadores
+        </h3>
+        <div class="chart-placeholder">
+          Gráfico placeholder
+        </div>
       </Card>
     </div>
   </div>

@@ -32,14 +32,14 @@ export class MedicalCertificate {
   @Prop({ type: Number, required: true, min: 1, max: 365 })
   days!: number;
 
-  @Prop()
+  @Prop({ type: String })
   diagnosis?: string;
 
   // ICD denormalization
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   icdCode!: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   icdTitle!: string;
 
   // Optional link to cache collection
@@ -47,6 +47,7 @@ export class MedicalCertificate {
   icdRef?: Types.ObjectId;
 
   @Prop({
+    type: String,
     default: 'active',
     enum: ['active', 'cancelled', 'expired'],
     index: true,

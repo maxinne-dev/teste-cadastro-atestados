@@ -6,13 +6,14 @@ export type IcdCodeDocument = HydratedDocument<IcdCode>;
 
 @Schema({ timestamps: true })
 export class IcdCode {
-  @Prop({ required: true, unique: true, index: true })
+  // Explicitly declare type to avoid decorator metadata ambiguity during OpenAPI build
+  @Prop({ type: String, required: true, unique: true, index: true })
   code!: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   title!: string;
 
-  @Prop({ required: false })
+  @Prop({ type: String, required: false })
   release?: string; // e.g., '2024-01'
 
   @Prop({ type: Date, default: () => new Date() })

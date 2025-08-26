@@ -7,22 +7,22 @@ export type CollaboratorDocument = HydratedDocument<Collaborator>;
 
 @Schema({ timestamps: true })
 export class Collaborator {
-  @Prop({ required: true, index: true })
+  @Prop({ type: String, required: true, index: true })
   fullName!: string;
 
-  @Prop({ required: true, unique: true, index: true })
+  @Prop({ type: String, required: true, unique: true, index: true })
   cpf!: string;
 
   @Prop({ required: true, type: Date })
   birthDate!: Date;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   position!: string;
 
-  @Prop()
+  @Prop({ type: String })
   department?: string;
 
-  @Prop({ default: 'active', enum: ['active', 'inactive'], index: true })
+  @Prop({ type: String, default: 'active', enum: ['active', 'inactive'], index: true })
   status!: 'active' | 'inactive';
 }
 

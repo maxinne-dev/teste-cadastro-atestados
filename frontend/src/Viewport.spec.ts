@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createRouter, createMemoryHistory } from 'vue-router'
+import { createPinia } from 'pinia'
 import AppLayout from './layouts/AppLayout.vue'
 
 // Stub PrimeVue Drawer to expose v-model:visible via attribute
@@ -37,9 +38,10 @@ describe('Viewport behavior (sidebar + layout)', () => {
 
   async function mountLayout() {
     const router = makeRouter()
+    const pinia = createPinia()
     const wrap = mount(AppLayout, {
       global: {
-        plugins: [router],
+        plugins: [router, pinia],
         stubs: { RouterLink: { template: '<a><slot /></a>' } },
       },
       attachTo: document.body,
@@ -49,7 +51,7 @@ describe('Viewport behavior (sidebar + layout)', () => {
   }
 
   it('360px: clicking menu opens mobile sidebar overlay', async () => {
-    ;(window as any).innerWidth = 360
+    (window as any).innerWidth = 360
     const wrap = await mountLayout()
     await wrap.vm.$nextTick()
     // Click menu button in topbar
@@ -60,7 +62,7 @@ describe('Viewport behavior (sidebar + layout)', () => {
   })
 
   it('768px: clicking menu opens mobile sidebar overlay', async () => {
-    ;(window as any).innerWidth = 768
+    (window as any).innerWidth = 768
     const wrap = await mountLayout()
     const btn = wrap.find('.app-topbar .icon-btn')
     await btn.trigger('click')
@@ -69,7 +71,7 @@ describe('Viewport behavior (sidebar + layout)', () => {
   })
 
   it('1024px: clicking menu toggles collapsed class (desktop)', async () => {
-    ;(window as any).innerWidth = 1024
+    (window as any).innerWidth = 1024
     const wrap = await mountLayout()
     const shell = wrap.find('.app-shell')
     expect(shell.classes()).not.toContain('sidebar-collapsed')
@@ -79,7 +81,7 @@ describe('Viewport behavior (sidebar + layout)', () => {
   })
 
   it('1280px: clicking menu toggles collapsed class (desktop)', async () => {
-    ;(window as any).innerWidth = 1280
+    (window as any).innerWidth = 1280
     const wrap = await mountLayout()
     const shell = wrap.find('.app-shell')
     expect(shell.classes()).not.toContain('sidebar-collapsed')

@@ -15,6 +15,7 @@ describe('Navigation via sidebar and direct URLs', () => {
   })
 
   it('sidebar links navigate to routes', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const wrap = mount(App, {
       global: {
         plugins: [

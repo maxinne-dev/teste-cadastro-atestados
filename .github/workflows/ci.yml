@@ -38,6 +38,9 @@ jobs:
         run: npm run build
 
       - name: Generate OpenAPI YAML
+        env:
+          MONGODB_URI: mongodb://localhost:0/invalid?serverSelectionTimeoutMS=1&connectTimeoutMS=1&socketTimeoutMS=1
+          JWT_SECRET: xxxxyyyzzz
         run: npm run openapi:yaml
 
       - name: Upload OpenAPI spec artifact
@@ -72,7 +75,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install deps
-        run: npm ci
+        run: npm ci --include dev
 
       - name: Download OpenAPI spec artifact
         uses: actions/download-artifact@v4

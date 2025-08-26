@@ -3,7 +3,7 @@ import { IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class EmailParamDto {
-  @ApiProperty({ example: 'user@example.com' })
+  @ApiProperty({ type: String, example: 'user@example.com' })
   @IsEmail()
   @Transform(({ value }) => String(value).trim().toLowerCase())
   email!: string;
