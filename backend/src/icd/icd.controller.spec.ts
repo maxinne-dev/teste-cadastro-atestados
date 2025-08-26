@@ -11,11 +11,10 @@ describe('IcdController', () => {
       providers: [RateLimiterService, { provide: IcdService, useValue: icd }],
     }).compile();
     const ctrl = module.get(IcdController);
-    const req: any = { ip: '1.2.3.4' };
     // limit default 60/min; we simulate with env override
     process.env.ICD_RATE_LIMIT_RPM = '2';
-    await ctrl.search('ab', req);
-    await ctrl.search('ab', req);
-    await expect(ctrl.search('ab', req)).rejects.toBeInstanceOf(Error);
+    await ctrl.search({q: 'ab'});
+    await ctrl.search({q: 'ab'});
+    await expect(ctrl.search({q: 'ab'})).rejects.toBeInstanceOf(Error);
   });
 });
