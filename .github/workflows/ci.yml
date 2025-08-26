@@ -38,6 +38,8 @@ jobs:
         run: npm run build
 
       - name: Generate OpenAPI YAML
+        env:
+          key: xxxxyyyzzz
         run: npm run openapi:yaml
 
       - name: Upload OpenAPI spec artifact
