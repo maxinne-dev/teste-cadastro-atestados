@@ -39,7 +39,8 @@ jobs:
 
       - name: Generate OpenAPI YAML
         env:
-          key: xxxxyyyzzz
+          MONGODB_URI: xxxxyyyzzz
+          JWT_SECRET: xxxxyyyzzz
         run: npm run openapi:yaml
 
       - name: Upload OpenAPI spec artifact
