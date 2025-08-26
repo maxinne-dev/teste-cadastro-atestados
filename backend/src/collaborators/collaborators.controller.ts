@@ -13,6 +13,7 @@ import { CreateCollaboratorDto } from './dto/create-collaborator.dto.js';
 import { CpfParamDto } from './dto/cpf-param.dto.js';
 import { SearchCollaboratorsDto } from './dto/search-collaborators.dto.js';
 import { UpdateStatusDto } from './dto/update-status.dto.js';
+import { UpdateCollaboratorDto } from './dto/update-collaborator.dto.js';
 import { AuditService } from '../audit/audit.service.js';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -74,15 +75,9 @@ export class CollaboratorsController {
   @Patch(':cpf')
   async update(
     @Param() params: CpfParamDto,
-    @Body()
-    body: Partial<{
-      fullName: string;
-      birthDate: Date;
-      position: string;
-      department?: string;
-    }>,
+    @Body() body: UpdateCollaboratorDto,
   ) {
-    const updated = await this.collaborators.updateFields(params.cpf, body);
+    const updated = await this.collaborators.updateFields(params.cpf, body as any);
     if (!updated) throw new NotFoundException('Collaborator not found');
     await this.audit.record({
       action: 'collaborator.update',

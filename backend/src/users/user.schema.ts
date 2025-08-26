@@ -8,19 +8,19 @@ type UserStatus = 'active' | 'disabled';
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true, unique: true, index: true })
+  @Prop({ type: String, required: true, unique: true, index: true })
   email!: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   passwordHash!: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   fullName!: string;
 
   @Prop({ type: [String], default: [], index: true })
   roles!: string[];
 
-  @Prop({ default: 'active', enum: ['active', 'disabled'] })
+  @Prop({ type: String, default: 'active', enum: ['active', 'disabled'] })
   status!: UserStatus;
 }
 

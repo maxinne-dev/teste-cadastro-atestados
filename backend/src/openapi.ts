@@ -6,14 +6,32 @@ import { MongoExceptionFilter } from './common/filters/mongo-exception.filter.js
 import { AxiosExceptionFilter } from './common/filters/axios-exception.filter.js';
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
+import { Test } from '@nestjs/testing';
+import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 
 export async function buildOpenApiDocument() {
-  // Create app similarly to main bootstrap but without listening
-  const app = await NestFactory.create(AppModule, { logger: false });
+  // Build a testing module and override Mongoose providers to avoid real DB connections
+  const builder = Test.createTestingModule({ imports: [AppModule] })
+    .overrideProvider(getConnectionToken())
+    .useValue({ model: () => ({}), close: async () => {} })
+    .overrideProvider(getModelToken('Collaborator'))
+    .useValue({})
+    .overrideProvider(getModelToken('IcdCode'))
+    .useValue({})
+    .overrideProvider(getModelToken('MedicalCertificate'))
+    .useValue({})
+    .overrideProvider(getModelToken('User'))
+    .useValue({})
+    .overrideProvider(getModelToken('AuditLog'))
+    .useValue({});
+
+  const moduleRef = await builder.compile();
+  const app = moduleRef.createNestApplication({ logger: false });
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new MongoExceptionFilter());
   app.useGlobalFilters(new AxiosExceptionFilter());
+  await app.init();
   // Keep OpenAPI routes version-neutral (no /v1 prefix)
 
   const { SwaggerModule, DocumentBuilder } = await import('@nestjs/swagger');

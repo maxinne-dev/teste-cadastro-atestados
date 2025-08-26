@@ -13,12 +13,12 @@ import { ApiBearerAuth, ApiBody, ApiTags, ApiProperty } from '@nestjs/swagger';
 import { RateLimiterService } from '../common/rate-limiter.service.js';
 
 class LoginDto {
-  @ApiProperty({ example: 'user@example.com' })
+  @ApiProperty({ type: String, example: 'user@example.com' })
   @IsEmail()
   @Transform(({ value }) => String(value).trim().toLowerCase())
   email!: string;
 
-  @ApiProperty({ example: 'secret12345', minLength: 8 })
+  @ApiProperty({ type: String, example: 'secret12345', minLength: 8 })
   @IsString()
   @MinLength(8)
   password!: string;

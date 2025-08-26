@@ -11,18 +11,18 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'alice@example.com' })
+  @ApiProperty({ type: String, example: 'alice@example.com' })
   @IsEmail()
   @Transform(({ value }) => String(value).trim().toLowerCase())
   email!: string;
 
-  @ApiProperty({ example: 'Alice', maxLength: 200 })
+  @ApiProperty({ type: String, example: 'Alice', maxLength: 200 })
   @IsString()
   @IsNotEmpty()
   @MaxLength(200)
   fullName!: string;
 
-  @ApiProperty({ example: 'secret12345', minLength: 8 })
+  @ApiProperty({ type: String, example: 'secret12345', minLength: 8 })
   @IsString()
   @MinLength(8)
   @MaxLength(200)

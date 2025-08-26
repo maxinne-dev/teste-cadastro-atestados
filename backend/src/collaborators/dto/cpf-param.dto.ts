@@ -7,7 +7,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CpfParamDto {
-  @ApiProperty({ example: '52998224725' })
+  @ApiProperty({ type: String, example: '52998224725' })
   @IsString()
   @IsNotEmpty()
   @MinLength(11)

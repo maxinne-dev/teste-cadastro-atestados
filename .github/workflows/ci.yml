@@ -37,14 +37,14 @@ jobs:
       - name: Build
         run: npm run build
 
-#      - name: Generate OpenAPI YAML
-#        run: npm run openapi:yaml
-#
-#      - name: Upload OpenAPI spec artifact
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: openapi-spec
-#          path: openapi.yaml
+      - name: Generate OpenAPI YAML
+        run: npm run openapi:yaml
+
+      - name: Upload OpenAPI spec artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-spec
+          path: openapi.yaml
 
       - name: Upload coverage artifact
         if: always()
@@ -74,14 +74,14 @@ jobs:
       - name: Install deps
         run: npm ci
 
-#      - name: Download OpenAPI spec artifact
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: openapi-spec
-#          path: .
+      - name: Download OpenAPI spec artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-spec
+          path: .
 
-#      - name: Generate API types from OpenAPI
-#        run: npm run generate:api-types
+      - name: Generate API types from OpenAPI
+        run: npm run generate:api-types
 
       - name: Lint (ESLint)
         run: npm run lint
