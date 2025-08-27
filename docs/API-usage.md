@@ -37,13 +37,23 @@ Response example
 ## ICD Search (public)
 
 ```bash
+# Search for text (uses WHO ICD-11 API)
 curl -sS 'http://localhost:3000/api/icd/search?q=fever'
 # => { "results": [ { "code":"..", "title":".." }, ... ] }
+
+# Search for CID-10 codes (uses CREMESP + WHO validation)
+curl -sS 'http://localhost:3000/api/icd/search?q=F69'
+# => { "results": [ { "code":"F69", "title":"Transtorno da personalidade..." }, ... ] }
+
+curl -sS 'http://localhost:3000/api/icd/search?q=F84.1'
+# => { "results": [ { "code":"F84.1", "title":"Autismo atípico" }, ... ] }
 ```
 
 Notes
 - Rate limited by the backend via `ICD_RATE_LIMIT_RPM`.
-- Falls back to local cache when WHO API is unavailable.
+- **CID-10 support**: Automatically detects CID-10 patterns (F69, Z99.1) and uses CREMESP table.
+- **CID-11 support**: Text searches use WHO ICD-11 API.
+- Falls back to local cache when external APIs are unavailable.
 
 ## Collaborators (protected)
 

@@ -1,6 +1,21 @@
 # WHO ICD API — Credentials & Configuration
 
-This app integrates with the WHO ICD API for diagnosis search/autocomplete.
+This app integrates with the WHO ICD API for diagnosis search/autocomplete, with support for both CID-11 (ICD-11) and CID-10 codes.
+
+## CID-10 and CID-11 Support
+
+The service automatically detects the code format and uses the appropriate data source:
+
+- **CID-10 codes** (e.g., F69, Z99.1, F84): Uses CREMESP CID-10 table as primary source, then validates with WHO ICD API
+- **Other searches** (text, non-CID patterns): Uses WHO ICD-11 API directly
+
+### CID-10 Flow
+1. Detects CID-10 patterns using regex (letter + 2-3 digits, optional decimals)
+2. Fetches from CREMESP table at `http://cremesp.org.br/resources/views/site_cid10_tabela.php`
+3. For subcodes (F84.1), extracts parent code (F84) and fetches detailed subcodes
+4. Validates results with WHO ICD API when possible
+5. Falls back to CID-11 search if CID-10 fails
+6. Caches results with appropriate release tags
 
 ## 1) Create credentials
 
