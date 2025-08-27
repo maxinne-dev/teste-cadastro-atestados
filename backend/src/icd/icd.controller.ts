@@ -19,7 +19,7 @@ export class IcdController {
     const key = `icd:anon`;
     const limit = parseInt(process.env.ICD_RATE_LIMIT_RPM || '60', 10);
     this.limiter.consume(key, isFinite(limit) ? limit : 60, 60_000);
-    const results = await this.icd.search(query.q || '');
-    return { results };
+    const results = await this.icd.search(query.q || '', query.version || '11');
+    return { results, version: query.version || '11' };
   }
 }

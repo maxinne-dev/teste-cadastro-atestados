@@ -50,11 +50,19 @@ export class IcdService {
     return access_token;
   }
 
-  async search(term: string) {
+  async search(term: string, version: string = '11') {
     if (!term || term.length < 2) return [];
-    const searchUrl = `${this.baseRoot}/icd/release/11/${this.release}/mms/search?flatResults=true&useFlexisearch=true&q=${encodeURIComponent(
-      term,
-    )}`;
+    
+    // Construct URL based on ICD version
+    let searchUrl: string;
+    if (version === '10') {
+      // ICD-10 uses a different endpoint structure
+      searchUrl = `${this.baseRoot}/icd/release/10/2019/search?flatResults=true&useFlexisearch=true&q=${encodeURIComponent(term)}`;
+    } else {
+      // Default to ICD-11
+      searchUrl = `${this.baseRoot}/icd/release/11/${this.release}/mms/search?flatResults=true&useFlexisearch=true&q=${encodeURIComponent(term)}`;
+    }
+    
     const tryFetch = async () => {
       const token = await this.getToken();
       return axios.get(searchUrl, {
@@ -96,15 +104,16 @@ export class IcdService {
       }
       const dest = res.data?.destinationEntities ?? [];
       const mapped = mapResults(dest).filter((r) => r.code && r.title);
-      // Upsert in cache (best-effort)
+      // Upsert in cache (best-effort) with version
+      const releaseToCache = version === '10' ? '2019' : this.release;
       await Promise.all(
-        mapped.map((r) => this.cache.upsert(r.code, r.title, this.release)),
+        mapped.map((r) => this.cache.upsert(r.code, r.title, releaseToCache, version)),
       );
       return mapped;
     } catch (err) {
-      this.logger.error('ICD search failed', err as any);
+      this.logger.error(`ICD-${version} search failed`, err as any);
       // Fallback to local cache
-      const cached = await this.cache.search(term, 10);
+      const cached = await this.cache.search(term, 10, version);
       return cached.map((c: any) => ({ code: c.code, title: c.title }));
     }
   }
