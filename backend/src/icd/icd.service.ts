@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { IcdCacheService } from '../icd-cache/icd-cache.service.js';
+import { CremespCid10Service } from './cremesp-cid10.service.js';
 
 @Injectable()
 export class IcdService {
@@ -12,7 +13,10 @@ export class IcdService {
   private release = process.env.WHO_ICD_RELEASE || '2024-01';
   private language = process.env.WHO_ICD_LANGUAGE || 'en';
 
-  constructor(private readonly cache: IcdCacheService) {}
+  constructor(
+    private readonly cache: IcdCacheService,
+    private readonly cremespCid10: CremespCid10Service,
+  ) {}
 
   private async getToken(): Promise<string> {
     const clientId = process.env.WHO_ICD_CLIENT_ID;
@@ -50,8 +54,12 @@ export class IcdService {
     return access_token;
   }
 
-  async search(term: string) {
-    if (!term || term.length < 2) return [];
+  private isCid10Pattern(term: string): boolean {
+    // CID-10 patterns: Letter + 2+ digits, possibly with dots
+    return /^[A-Z]\d{2}(\.\d+|\d*)?$/i.test(term.trim());
+  }
+
+  private async searchCid11(term: string) {
     const searchUrl = `${this.baseRoot}/icd/release/11/${this.release}/mms/search?flatResults=true&useFlexisearch=true&q=${encodeURIComponent(
       term,
     )}`;
@@ -102,10 +110,93 @@ export class IcdService {
       );
       return mapped;
     } catch (err) {
-      this.logger.error('ICD search failed', err as any);
+      this.logger.error('ICD-11 search failed', err as any);
       // Fallback to local cache
       const cached = await this.cache.search(term, 10);
       return cached.map((c: any) => ({ code: c.code, title: c.title }));
     }
+  }
+
+  private async fetchCid10FromIcdApi(codes: string[]) {
+    const results = [];
+    
+    for (const code of codes.slice(0, 10)) { // Limit to avoid API abuse
+      try {
+        const cid10Url = `${this.baseRoot}/icd/release/10/${this.release}/${code}`;
+        const token = await this.getToken();
+        
+        const response = await axios.get(cid10Url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+            'Accept-Language': this.language,
+            'API-Version': 'v2',
+          },
+          timeout: 8000,
+        });
+
+        const data = response.data;
+        const title = 
+          (data.title && (data.title['@value'] || data.title.value || data.title)) ||
+          data.name ||
+          data.label ||
+          '';
+
+        if (title) {
+          results.push({
+            code,
+            title,
+            source: 'cid10',
+          });
+
+          // Cache the result
+          await this.cache.upsert(code, title, '10-' + this.release).catch(() => {
+            // Ignore cache errors
+          });
+        }
+      } catch (error: any) {
+        // If specific code fails, try to get from cache or skip
+        try {
+          const cached = await this.cache.findByCode(code);
+          if (cached && cached.title) {
+            results.push({
+              code,
+              title: cached.title,
+              source: 'cid10',
+            });
+          }
+        } catch (cacheError) {
+          this.logger.warn(`Failed to fetch CID-10 code ${code} from API and cache`, error?.message);
+        }
+      }
+    }
+
+    return results;
+  }
+
+  async search(term: string) {
+    if (!term || term.length < 2) return [];
+
+    // Determine if this looks like a CID-10 search
+    if (this.isCid10Pattern(term)) {
+      try {
+        // Step 1: Validate code exists in CREMESP table
+        const validCodes = await this.cremespCid10.validateCid10Code(term);
+        
+        if (validCodes.length > 0) {
+          // Step 2: Fetch data from ICD API
+          return await this.fetchCid10FromIcdApi(validCodes);
+        }
+      } catch (error) {
+        this.logger.warn('CID-10 validation failed, falling back to CID-11', error);
+      }
+    }
+
+    // Fallback to CID-11 search (original behavior)
+    const cid11Results = await this.searchCid11(term);
+    return cid11Results.map(r => ({
+      ...r,
+      source: 'cid11',
+    }));
   }
 }

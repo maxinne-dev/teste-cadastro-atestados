@@ -74,6 +74,7 @@ describe('E2E: ICD search', () => {
     expect(res.body.results.length).toBeGreaterThanOrEqual(2);
     expect(res.body.results[0]).toHaveProperty('code');
     expect(res.body.results[0]).toHaveProperty('title');
+    expect(res.body.results[0]).toHaveProperty('source');
   });
 
   it('GET /api/icd/search falls back to cache when WHO fails', async () => {
@@ -86,7 +87,7 @@ describe('E2E: ICD search', () => {
       .get('/api/icd/search?q=herp')
       .expect(200);
     expect(res.body.results).toEqual([
-      { code: 'B00', title: 'Herpesviral infection' },
+      { code: 'B00', title: 'Herpesviral infection', source: 'cid11' },
     ]);
   });
 });
