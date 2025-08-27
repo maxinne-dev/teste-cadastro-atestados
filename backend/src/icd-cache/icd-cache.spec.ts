@@ -14,7 +14,11 @@ describe('IcdCacheService', () => {
         exec: jest.fn(async () => ({ code: 'J06.9', title: 'Old' })),
       }),
       findOne: jest.fn().mockReturnValue({
-        exec: jest.fn(async () => ({ code: 'J06.9', title: 'Acute...' })),
+        exec: jest.fn(async () => ({ 
+          code: 'J06.9', 
+          title: 'Acute...',
+          save: jest.fn().mockResolvedValue({ code: 'J06.9', title: 'Updated' })
+        })),
       }),
     };
 
@@ -46,6 +50,31 @@ describe('IcdCacheService', () => {
   it('findByCode delegates to findOne', async () => {
     await service.findByCode('J06.9');
     expect(model.findOne).toHaveBeenCalledWith({ code: 'J06.9' });
+  });
+
+  it('handles duplicate key error (E11000) gracefully', async () => {
+    const duplicateKeyError = new Error('Duplicate key error');
+    (duplicateKeyError as any).code = 11000;
+    
+    (model.findOneAndUpdate as jest.Mock).mockReturnValue({
+      exec: jest.fn().mockRejectedValue(duplicateKeyError),
+    });
+
+    const mockDoc = {
+      code: 'J06.9',
+      title: 'Old title',
+      save: jest.fn().mockResolvedValue({ code: 'J06.9', title: 'New title' })
+    };
+
+    (model.findOne as jest.Mock).mockReturnValue({
+      exec: jest.fn().mockResolvedValue(mockDoc),
+    });
+
+    const result = await service.upsert('J06.9', 'New title', '2024-01');
+    
+    expect(model.findOne).toHaveBeenCalledWith({ code: 'J06.9' });
+    expect(mockDoc.save).toHaveBeenCalled();
+    expect(mockDoc.title).toBe('New title');
   });
 });
 

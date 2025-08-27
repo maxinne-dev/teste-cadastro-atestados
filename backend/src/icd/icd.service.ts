@@ -96,9 +96,15 @@ export class IcdService {
       }
       const dest = res.data?.destinationEntities ?? [];
       const mapped = mapResults(dest).filter((r) => r.code && r.title);
-      // Upsert in cache (best-effort)
-      await Promise.all(
-        mapped.map((r) => this.cache.upsert(r.code, r.title, this.release)),
+      // Upsert in cache (best-effort) - handle individual failures gracefully
+      await Promise.allSettled(
+        mapped.map(async (r) => {
+          try {
+            await this.cache.upsert(r.code, r.title, this.release);
+          } catch (err) {
+            this.logger.warn(`Failed to cache ICD code ${r.code}: ${err.message}`);
+          }
+        }),
       );
       return mapped;
     } catch (err) {
