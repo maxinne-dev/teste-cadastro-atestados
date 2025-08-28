@@ -4,9 +4,10 @@ import { IcdService } from './icd.service.js';
 import { IcdController } from './icd.controller.js';
 import { IcdCacheModule } from '../icd-cache/icd-cache.module.js';
 import { RateLimiterService } from '../common/rate-limiter.service.js';
+import { CremespModule } from '../cremesp/cremesp.module.js';
 
 @Module({
-  imports: [HttpModule, IcdCacheModule],
+  imports: [HttpModule, IcdCacheModule, CremespModule],
   controllers: [IcdController],
   providers: [IcdService, RateLimiterService],
   exports: [IcdService],
