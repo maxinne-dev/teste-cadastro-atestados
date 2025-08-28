@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "target": "es2022",
     "outDir": "./dist",
     "rootDir": "./src",
@@ -17,6 +17,11 @@
       "@/*": ["src/*"]
     }
   },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.spec.ts"
+  ],
   "include": [
     "src"
   ]

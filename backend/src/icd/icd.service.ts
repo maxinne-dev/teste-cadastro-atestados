@@ -67,11 +67,17 @@ export class IcdService {
   /**
    * Validate a CID-10 code with WHO ICD API (try CID-10 endpoint first)
    */
-  private async validateCid10WithIcd(code: string): Promise<{ code: string; title: string } | null> {
+  private async validateCid10WithIcd(
+    code: string,
+  ): Promise<{ code: string; title: string } | null> {
     try {
+      if (code.length > 3) {
+        code = `${code.substring(0, 3)}.${code.substring(3)}`;
+      }
       // Try CID-10 validation endpoint first
-      const cid10Url = `${this.baseRoot}/icd/release/10/2019/mms/codeinfo?code=${encodeURIComponent(code)}`;
-      
+      const cid10Url = `${this.baseRoot}/icd/release/10/${code}`;
+      this.logger.debug(`Validating CID-10 code ${code} via ${cid10Url}`);
+
       const token = await this.getToken();
       const response = await axios.get(cid10Url, {
         headers: {
@@ -84,11 +90,13 @@ export class IcdService {
       });
 
       if (response.data) {
-        const title = response.data.title?.['@value'] || 
-                     response.data.title?.value || 
-                     response.data.title || 
-                     response.data.label || '';
-        
+        const title =
+          response.data.title?.['@value'] ||
+          response.data.title?.value ||
+          response.data.title ||
+          response.data.label ||
+          '';
+
         if (title) {
           return { code, title };
         }
@@ -112,13 +120,13 @@ export class IcdService {
       for (const entry of cremespResults) {
         // Try to validate with WHO ICD API
         const validated = await this.validateCid10WithIcd(entry.code);
-        
+
         // Only include results that are validated by WHO ICD API
         if (validated) {
           validatedResults.push(validated);
         }
         // If WHO validation fails, skip this entry completely
-        
+
         // Break early if we have enough results
         if (validatedResults.length >= 10) break;
       }

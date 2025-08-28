@@ -146,8 +146,8 @@ export class CremespService {
       if (matchingMainEntry && matchingMainEntry.internalId) {
         const subItems = await this.fetchSubItems(matchingMainEntry.internalId);
         return subItems.filter(entry => 
-          entry.code.toUpperCase().includes(trimmedQuery) ||
-          entry.code.toUpperCase() === trimmedQuery
+          entry.code.toUpperCase().includes(trimmedQuery.replace('.', '')) ||
+          entry.code.toUpperCase() === trimmedQuery.replace('.', '')
         );
       }
     }
