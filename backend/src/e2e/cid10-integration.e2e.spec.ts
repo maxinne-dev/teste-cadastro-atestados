@@ -10,7 +10,6 @@ import { RateLimiterService } from '../common/rate-limiter.service';
 describe('CID-10 Integration E2E', () => {
   let app: INestApplication;
   let icdService: jest.Mocked<IcdService>;
-  let cremespService: jest.Mocked<CremespService>;
 
   beforeEach(async () => {
     // Mock services
@@ -45,7 +44,6 @@ describe('CID-10 Integration E2E', () => {
     await app.init();
 
     icdService = moduleRef.get(IcdService);
-    cremespService = moduleRef.get(CremespService);
   });
 
   afterEach(async () => {

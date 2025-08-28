@@ -86,7 +86,7 @@ describe('IcdService', () => {
 
   // CID-10 specific tests
   describe('CID-10 functionality', () => {
-    it('should detect CID-10 patterns correctly', async () => {
+    it('should detect CID-10 patterns correctly and only return WHO-validated results', async () => {
       // Mock CREMESP results
       (cremesp.searchCid10 as jest.Mock).mockResolvedValue([
         { code: 'F84', description: 'Transtornos globais do desenvolvimento' }
@@ -97,19 +97,17 @@ describe('IcdService', () => {
         data: { access_token: 't', expires_in: 3600 },
       });
 
-      // Mock CID-10 validation failure (use CREMESP data)
+      // Mock CID-10 validation failure - should return empty results
       (axios.get as unknown as jest.Mock).mockRejectedValue(new Error('CID-10 not found'));
 
       const result = await service.search('F84');
       
-      expect(result).toEqual([{
-        code: 'F84',
-        title: 'Transtornos globais do desenvolvimento',
-      }]);
+      // Should return empty array since WHO validation failed
+      expect(result).toEqual([]);
       expect(cremesp.searchCid10).toHaveBeenCalledWith('F84');
     });
 
-    it('should handle CID-10 codes with dots', async () => {
+    it('should handle CID-10 codes with dots and only return WHO-validated results', async () => {
       (cremesp.searchCid10 as jest.Mock).mockResolvedValue([
         { code: 'F84.1', description: 'Autismo atípico' }
       ]);
@@ -118,14 +116,13 @@ describe('IcdService', () => {
         data: { access_token: 't', expires_in: 3600 },
       });
 
+      // Mock WHO validation failure - should return empty results
       (axios.get as unknown as jest.Mock).mockRejectedValue(new Error('Not found'));
 
       const result = await service.search('F84.1');
       
-      expect(result).toEqual([{
-        code: 'F84.1',
-        title: 'Autismo atípico',
-      }]);
+      // Should return empty array since WHO validation failed
+      expect(result).toEqual([]);
     });
 
     it('should validate CID-10 codes with WHO API when available', async () => {

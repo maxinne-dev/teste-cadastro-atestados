@@ -102,6 +102,7 @@ export class IcdService {
 
   /**
    * Search CID-10 codes via CREMESP and validate with ICD API
+   * Only returns codes that are found in both CREMESP table and WHO ICD API
    */
   private async searchCid10(term: string) {
     try {
@@ -109,18 +110,14 @@ export class IcdService {
       const validatedResults = [];
 
       for (const entry of cremespResults) {
-        // First try to validate with WHO ICD API
+        // Try to validate with WHO ICD API
         const validated = await this.validateCid10WithIcd(entry.code);
         
+        // Only include results that are validated by WHO ICD API
         if (validated) {
           validatedResults.push(validated);
-        } else {
-          // If WHO validation fails, use CREMESP data directly
-          validatedResults.push({
-            code: entry.code,
-            title: entry.description,
-          });
         }
+        // If WHO validation fails, skip this entry completely
         
         // Break early if we have enough results
         if (validatedResults.length >= 10) break;
