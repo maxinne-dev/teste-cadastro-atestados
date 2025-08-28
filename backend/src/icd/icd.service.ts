@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { IcdCacheService } from '../icd-cache/icd-cache.service.js';
+import { CremespService } from '../cremesp/cremesp.service.js';
 
 @Injectable()
 export class IcdService {
@@ -12,7 +13,10 @@ export class IcdService {
   private release = process.env.WHO_ICD_RELEASE || '2024-01';
   private language = process.env.WHO_ICD_LANGUAGE || 'en';
 
-  constructor(private readonly cache: IcdCacheService) {}
+  constructor(
+    private readonly cache: IcdCacheService,
+    private readonly cremesp: CremespService,
+  ) {}
 
   private async getToken(): Promise<string> {
     const clientId = process.env.WHO_ICD_CLIENT_ID;
@@ -50,8 +54,100 @@ export class IcdService {
     return access_token;
   }
 
+  /**
+   * Detect if a search term looks like a CID-10 code
+   */
+  private isCid10Pattern(term: string): boolean {
+    const trimmed = term.trim().toUpperCase();
+    // CID-10 patterns: Letter followed by digits, optionally with dots
+    // Examples: F84, F84.1, Z99.9, A00-A99, etc.
+    return /^[A-Z]\d{1,3}(\.\d{1,2})?$/.test(trimmed);
+  }
+
+  /**
+   * Validate a CID-10 code with WHO ICD API (try CID-10 endpoint first)
+   */
+  private async validateCid10WithIcd(
+    code: string,
+  ): Promise<{ code: string; title: string } | null> {
+    try {
+      if (code.length > 3) {
+        code = `${code.substring(0, 3)}.${code.substring(3)}`;
+      }
+      // Try CID-10 validation endpoint first
+      const cid10Url = `${this.baseRoot}/icd/release/10/${code}`;
+      this.logger.debug(`Validating CID-10 code ${code} via ${cid10Url}`);
+
+      const token = await this.getToken();
+      const response = await axios.get(cid10Url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Accept-Language': this.language,
+          'API-Version': 'v2',
+        },
+        timeout: 8000,
+      });
+
+      if (response.data) {
+        const title =
+          response.data.title?.['@value'] ||
+          response.data.title?.value ||
+          response.data.title ||
+          response.data.label ||
+          '';
+
+        if (title) {
+          return { code, title };
+        }
+      }
+    } catch (error: any) {
+      this.logger.debug(`CID-10 validation failed for ${code}`, error.message);
+    }
+
+    return null;
+  }
+
+  /**
+   * Search CID-10 codes via CREMESP and validate with ICD API
+   * Only returns codes that are found in both CREMESP table and WHO ICD API
+   */
+  private async searchCid10(term: string) {
+    try {
+      const cremespResults = await this.cremesp.searchCid10(term);
+      const validatedResults = [];
+
+      for (const entry of cremespResults) {
+        // Try to validate with WHO ICD API
+        const validated = await this.validateCid10WithIcd(entry.code);
+
+        // Only include results that are validated by WHO ICD API
+        if (validated) {
+          validatedResults.push(validated);
+        }
+        // If WHO validation fails, skip this entry completely
+
+        // Break early if we have enough results
+        if (validatedResults.length >= 10) break;
+      }
+
+      return validatedResults;
+    } catch (error) {
+      this.logger.error('CID-10 search via CREMESP failed', error);
+      return [];
+    }
+  }
+
   async search(term: string) {
     if (!term || term.length < 2) return [];
+
+    // Check if this looks like a CID-10 code and route accordingly
+    if (this.isCid10Pattern(term)) {
+      this.logger.debug(`Detected CID-10 pattern for term: ${term}`);
+      return this.searchCid10(term);
+    }
+
+    // Default to CID-11 search for non-CID-10 patterns
     const searchUrl = `${this.baseRoot}/icd/release/11/${this.release}/mms/search?flatResults=true&useFlexisearch=true&q=${encodeURIComponent(
       term,
     )}`;
