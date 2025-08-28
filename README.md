@@ -84,7 +84,7 @@ Para ajudar no desenvolvimento e compreensão do projeto, a documentação está
 
 ---
 
-##  troubleshooting
+## Troubleshooting
 
 -   **API não inicia:** Verifique as variáveis `MONGODB_URI` e `REDIS_URL` no seu arquivo `.env` e consulte os logs com `docker compose logs -f api`.
 -   **Erro de CORS:** Certifique-se de que `CORS_ORIGINS` no `.env` inclui o endereço do seu frontend (e.g., `http://localhost:5173`).
