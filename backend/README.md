@@ -1,3 +1,6 @@
+> Para uma visão geral da arquitetura do sistema, consulte o **[Documento de Arquitetura](../docs/Architecture.md)**.
+> Para instruções de setup inicial, veja o **[README principal](../README.md)**.
+
 # Backend (NestJS)
 
 ## Setup
@@ -53,7 +56,7 @@ SEED_DISABLE_ICD=true npm run seed
 - MongoDB: usa `MONGODB_URI` (ou `mongodb://localhost:27017/atestados`).
 - Senhas: se `passwordHash` não for um hash bcrypt, o seed gera o hash a partir do valor informado (por exemplo, `dev-hash`).
 
-Mais detalhes em `docs/Seed.md`.
+Mais detalhes em `../docs/Seed.md`.
 
 ## Testes
 - Unit + e2e (Supertest) já inclusos; execute `npm run test:cov` para cobertura.
