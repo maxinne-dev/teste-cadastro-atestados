@@ -46,8 +46,23 @@ console.warn = (...args: any[]) => {
 
 // Handle unhandled rejections gracefully
 process.on('unhandledRejection', (reason: unknown) => {
-  // Suppress all unhandled rejections in tests
-  return
+  // Suppress only specific, expected unhandled rejections in tests
+  const message = typeof reason === 'string'
+    ? reason
+    : (reason && typeof (reason as any).message === 'string'
+        ? (reason as any).message
+        : '');
+  if (
+    message.includes('No auth token found') ||
+    message.includes('injection') ||
+    message.includes('unhandled') ||
+    message.includes('Symbol(')
+  ) {
+    // Suppress known, harmless rejections
+    return;
+  }
+  // Log unexpected unhandled rejections for visibility
+  console.error('Unhandled promise rejection in test:', reason);
 });
 
 window.addEventListener('unhandledrejection', (event) => {
