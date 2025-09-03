@@ -1,4 +1,4 @@
-module.exports = {
+exports = {
   root: true,
   env: { browser: true, es2022: true },
   // Use vue-eslint-parser for .vue SFCs and delegate script parsing to TS parser

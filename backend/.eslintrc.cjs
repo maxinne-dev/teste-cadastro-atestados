@@ -1,4 +1,4 @@
-module.exports = {
+exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: { project: null },

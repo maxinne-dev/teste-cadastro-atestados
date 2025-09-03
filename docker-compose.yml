@@ -6,7 +6,7 @@ services:
     command: npm run start:dev
     env_file: ./.env
     ports:
-      - "${API_PORT-3000}:3000"
+      - "${API_PORT:-3000}:3000"
     volumes:
       - ./backend:/usr/src/app
     healthcheck:

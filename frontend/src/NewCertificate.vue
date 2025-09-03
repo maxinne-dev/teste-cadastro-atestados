@@ -361,7 +361,7 @@ function formatSize(size: number) {
   cursor: default;
 }
 .sugg.warn {
-  background: color-mix(in srgb, var(--color-warn, #f59e0b) 10%, transparent);
+  background: color-mix(in srgb, var(--color-warning, #f59e0b) 10%, transparent);
   border-top: 1px solid var(--color-border);
 }
 .sugg:hover {

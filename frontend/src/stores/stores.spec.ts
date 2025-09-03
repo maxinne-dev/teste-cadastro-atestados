@@ -1,3 +1,9 @@
+import { vi, beforeEach } from 'vitest'
+
+// Mock the auth service - this needs to be hoisted
+vi.mock('../services/auth')
+vi.mock('../services/token')
+
 import { setActivePinia, createPinia } from 'pinia'
 import { useCollaboratorsStore } from './collaborators'
 import { useCertificatesStore } from './certificates'
@@ -5,7 +11,17 @@ import { useAuthStore } from './auth'
 import { daysBetweenInclusive, clampDateRange } from '../utils/date-range'
 
 describe('Pinia stores', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    const authModule = await import('../services/auth')
+    const tokenModule = await import('../services/token')
+    
+    // Setup mocks
+    vi.mocked(authModule.login).mockResolvedValue({ accessToken: 'test-token' })
+    vi.mocked(authModule.logout).mockResolvedValue({ success: true })
+    vi.mocked(tokenModule.getToken).mockReturnValue(null)
+    vi.mocked(tokenModule.setToken).mockImplementation(() => {})
+    vi.mocked(tokenModule.clearAllTokens).mockImplementation(() => {})
+    
     setActivePinia(createPinia())
   })
 

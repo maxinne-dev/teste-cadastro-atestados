@@ -11,6 +11,13 @@ export default defineConfig({
     dangerouslyIgnoreUnhandledErrors: true,
     restoreMocks: true,
     clearMocks: true,
+    env: {
+      MODE: 'test',
+      NODE_ENV: 'test',
+    },
+  },
+  define: {
+    'import.meta.env.MODE': '"test"',
   },
 })
 
