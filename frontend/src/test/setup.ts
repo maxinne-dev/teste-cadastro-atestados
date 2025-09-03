@@ -1,13 +1,15 @@
 // Global test setup for Vitest
 // Register global directives, mocks, etc.
 import { config } from '@vue/test-utils'
-import { afterEach } from 'vitest'
+import { afterEach, vi } from 'vitest'
 import mask from '../directives/mask'
 
 config.global.directives = {
   ...(config.global.directives || {}),
   mask,
 }
+
+// Note: Service mocking is done per test file to avoid conflicts
 
 // Clean up after each test
 afterEach(() => {
@@ -19,26 +21,48 @@ afterEach(() => {
 
 // Suppress unhandled errors that don't affect test functionality
 const originalConsoleError = console.error
+const originalConsoleWarn = console.warn
 console.error = (...args: any[]) => {
   // Suppress Vue injection warnings and other test-only warnings that don't indicate real issues
   const message = args[0]?.toString() || ''
   if (
     message.includes('injection') ||
     message.includes('Symbol(') ||
-    message.includes('No auth token found')
+    message.includes('No auth token found') ||
+    message.includes('unhandled')
   ) {
     return
   }
   originalConsoleError.apply(console, args)
 }
 
+console.warn = (...args: any[]) => {
+  const message = args[0]?.toString() || ''
+  if (message.includes('No auth token found') || message.includes('Unhandled')) {
+    return
+  }
+  originalConsoleWarn.apply(console, args)
+}
+
 // Handle unhandled rejections gracefully
 process.on('unhandledRejection', (reason: unknown) => {
-  // Only log significant errors, suppress test cleanup issues
-  const reasonStr = reason?.toString() || ''
-  if (!reasonStr.includes('test') && !reasonStr.includes('cleanup')) {
-    console.warn('Unhandled Rejection (suppressed):', reason);
+  // Suppress only specific, expected unhandled rejections in tests
+  const message = typeof reason === 'string'
+    ? reason
+    : (reason && typeof (reason as any).message === 'string'
+        ? (reason as any).message
+        : '');
+  if (
+    message.includes('No auth token found') ||
+    message.includes('injection') ||
+    message.includes('unhandled') ||
+    message.includes('Symbol(')
+  ) {
+    // Suppress known, harmless rejections
+    return;
   }
+  // Log unexpected unhandled rejections for visibility
+  console.error('Unhandled promise rejection in test:', reason);
 });
 
 window.addEventListener('unhandledrejection', (event) => {

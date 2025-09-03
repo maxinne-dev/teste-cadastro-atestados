@@ -215,7 +215,7 @@ export class CIDAutocompleteService {
 
 **Setup recomendado:** Vue 3 + Composition API + Pinia + TypeScript + PrimeVue + Vite
 
-```typescript
+```
 // Estrutura de projeto Vue 3
 src/
 ├── api/               # Clientes de API
